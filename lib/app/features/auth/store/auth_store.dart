@@ -33,4 +33,13 @@ abstract class _AuthStoreBase with Store {
 
     isLoading = false;
   }
+
+  @action
+  Future<void> signInWithGoogle(BuildContext context) async {
+    isLoading = true;
+
+    try {} catch (error) {}
+
+    isLoading = false;
+  }
 }
