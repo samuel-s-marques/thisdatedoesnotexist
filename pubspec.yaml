@@ -28,8 +28,5 @@ dev_dependencies:
   lints: ^3.0.0
   mobx_codegen: ^2.4.0
 
-scripts:
-  mobx: fvm dart pub run build_runner build --delete-conflicting-outputs
-
 flutter:
   uses-material-design: true
