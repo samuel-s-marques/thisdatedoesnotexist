@@ -24,4 +24,13 @@ abstract class _AuthStoreBase with Store {
 
     isLoading = false;
   }
+
+  @action
+  Future<void> signIn(BuildContext context) async {
+    isLoading = true;
+
+    try {} catch (error) {}
+
+    isLoading = false;
+  }
 }
