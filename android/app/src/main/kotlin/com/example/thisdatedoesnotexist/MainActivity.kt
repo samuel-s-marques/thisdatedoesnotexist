@@ -1,4 +1,4 @@
-package com.example.thisdatedoesnotexist
+package com.samuelmarques.thisdatedoesnotexist
 
 import io.flutter.embedding.android.FlutterActivity
 
