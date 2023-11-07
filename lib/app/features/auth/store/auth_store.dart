@@ -15,4 +15,13 @@ abstract class _AuthStoreBase with Store {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   TextEditingController repeatPasswordController = TextEditingController();
+
+  @action
+  Future<void> signUp(BuildContext context) async {
+    isLoading = true;
+
+    try {} catch (error) {}
+
+    isLoading = false;
+  }
 }
