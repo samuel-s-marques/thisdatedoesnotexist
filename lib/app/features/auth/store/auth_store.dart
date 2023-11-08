@@ -48,7 +48,22 @@ abstract class AuthStoreBase with Store {
   Future<void> signIn(BuildContext context) async {
     isLoading = true;
 
-    try {} catch (error) {}
+    try {
+      final credential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: emailController.text.trim(),
+        password: passwordController.text,
+      );
+    } on FirebaseAuthException catch (error) {
+      if (error.code == 'user-not-found') {
+        // TODO: show error message
+        print('No user found for that email.');
+      } else if (error.code == 'wrong-password') {
+        // TODO: show error message
+        print('Wrong password provided for that user.');
+      }
+    } catch (error) {
+      // TODO: show error message
+    }
 
     isLoading = false;
   }
