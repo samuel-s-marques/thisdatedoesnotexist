@@ -36,6 +36,7 @@ class _AuthPageState extends State<AuthPage> {
           key: formKey,
           child: Observer(
             builder: (_) => Wrap(
+              runSpacing: 15,
               children: [
                 TextFormField(
                   controller: store.emailController,
@@ -66,6 +67,16 @@ class _AuthPageState extends State<AuthPage> {
                     return null;
                   },
                 ),
+                if (!store.isSignUp)
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      TextButton(
+                        onPressed: () {},
+                        child: Text("Forgot Password?"),
+                      ),
+                    ],
+                  ),
                 if (store.isSignUp)
                   TextFormField(
                     controller: store.repeatPasswordController,
