@@ -25,6 +25,15 @@ class _AuthPageState extends State<AuthPage> {
   }
 
   @override
+  void dispose() {
+    store.emailController.dispose();
+    store.passwordController.dispose();
+    store.repeatPasswordController.dispose();
+
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(),
