@@ -21,6 +21,13 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
   }
 
   @override
+  void dispose() {
+    store.emailController.dispose();
+
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(),
@@ -56,9 +63,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                           store.forgotPassword(context);
                         }
                       },
-                      child: store.isLoading
-                          ? const CircularProgressIndicator()
-                          : const Text('Send reset password e-mail'),
+                      child: store.isLoading ? const CircularProgressIndicator() : const Text('Send reset password e-mail'),
                     ),
                   ),
                 ),
