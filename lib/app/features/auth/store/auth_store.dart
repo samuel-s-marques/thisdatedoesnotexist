@@ -19,9 +19,9 @@ abstract class AuthStoreBase with Store {
   @observable
   bool obscurePassword = true;
 
-  TextEditingController emailController = TextEditingController();
-  TextEditingController passwordController = TextEditingController();
-  TextEditingController repeatPasswordController = TextEditingController();
+  late TextEditingController emailController;
+  late TextEditingController passwordController;
+  late TextEditingController repeatPasswordController;
 
   @action
   Future<void> signUp(BuildContext context) async {
