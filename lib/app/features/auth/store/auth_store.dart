@@ -83,4 +83,20 @@ abstract class AuthStoreBase with Store {
 
   @action
   void toggleIsSignUp() => isSignUp = !isSignUp;
+
+  @action
+  Future<void> forgotPassword(BuildContext context) async {
+    isLoading = true;
+
+    final AuthStatus status = await authService.resetPassword(email: emailController.text);
+
+    if (status == AuthStatus.successful) {
+      context.showSnackBarSuccess(message: 'Sent reset password e-mail!');
+    } else {
+      final String error = AuthExceptionHandler.generateErrorMessage(status);
+      context.showSnackBarError(message: error);
+    }
+
+    isLoading = false;
+  }
 }
