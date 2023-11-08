@@ -90,4 +90,14 @@ class AuthService {
 
     return status;
   }
+
+  User getUser() {
+    User? user = _auth.currentUser;
+
+    if (user == null) {
+      // TODO: redirect to /auth
+    }
+
+    return user!;
+  }
 }
