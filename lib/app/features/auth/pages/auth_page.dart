@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:flutter_modular/flutter_modular.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:thisdatedoesnotexist/app/features/auth/store/auth_store.dart';
 
@@ -72,7 +73,7 @@ class _AuthPageState extends State<AuthPage> {
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       TextButton(
-                        onPressed: () {},
+                        onPressed: () => Modular.to.pushNamed('forgot_password'),
                         child: Text('Forgot Password?'),
                       ),
                     ],
