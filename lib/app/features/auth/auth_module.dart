@@ -12,6 +12,6 @@ class AuthModule extends Module {
   @override
   void routes(r) {
     r.child('/', child: (context) => AuthPage());
-    r.child('/forgot', child: (context) => ForgotPasswordPage());
+    r.child('/forgot_password', child: (context) => ForgotPasswordPage());
   }
 }
