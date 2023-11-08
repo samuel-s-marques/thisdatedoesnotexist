@@ -73,7 +73,7 @@ class _AuthPageState extends State<AuthPage> {
                     children: [
                       TextButton(
                         onPressed: () {},
-                        child: Text("Forgot Password?"),
+                        child: Text('Forgot Password?'),
                       ),
                     ],
                   ),
