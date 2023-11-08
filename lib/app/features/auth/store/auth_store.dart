@@ -1,8 +1,8 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:mobx/mobx.dart';
+import 'package:thisdatedoesnotexist/app/core/enum/auth_status_enum.dart';
+import 'package:thisdatedoesnotexist/app/core/exceptions/auth_exception.dart';
+import 'package:thisdatedoesnotexist/app/core/services/auth_service.dart';
 import 'package:thisdatedoesnotexist/app/core/util.dart';
 
 part 'auth_store.g.dart';
@@ -10,6 +10,11 @@ part 'auth_store.g.dart';
 class AuthStore = AuthStoreBase with _$AuthStore;
 
 abstract class AuthStoreBase with Store {
+  AuthService authService = AuthService();
+  late TextEditingController emailController;
+  late TextEditingController passwordController;
+  late TextEditingController repeatPasswordController;
+
   @observable
   bool isLoading = false;
 
@@ -19,35 +24,21 @@ abstract class AuthStoreBase with Store {
   @observable
   bool obscurePassword = true;
 
-  TextEditingController emailController = TextEditingController();
-  TextEditingController passwordController = TextEditingController();
-  TextEditingController repeatPasswordController = TextEditingController();
-
   @action
   Future<void> signUp(BuildContext context) async {
     isLoading = true;
 
-    try {
-      final credential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
-        email: emailController.text.trim(),
-        password: passwordController.text,
-      );
+    final AuthStatus status = await authService.createAccount(
+      email: emailController.text,
+      password: passwordController.text,
+    );
 
+    if (status == AuthStatus.successful) {
       // TODO: Redirect to HomePage or Onboarding
       context.showSnackBarSuccess(message: 'Signed up with e-mail and password!');
-    } on FirebaseAuthException catch (error) {
-      if (error.code == 'weak-password') {
-        context.showSnackBarError(message: 'The password provided is too weak.');
-      } else if (error.code == 'email-already-in-use') {
-        context.showSnackBarError(message: 'The account already exists for that email.');
-      }
-    } catch (error) {
-      context.showSnackBarError(message: 'An unknown error occurred.');
-
-      // TODO: Implement Sentry
-      if (kDebugMode) {
-        print(error);
-      }
+    } else {
+      final String error = AuthExceptionHandler.generateErrorMessage(status);
+      context.showSnackBarError(message: error);
     }
 
     isLoading = false;
@@ -57,25 +48,17 @@ abstract class AuthStoreBase with Store {
   Future<void> signIn(BuildContext context) async {
     isLoading = true;
 
-    try {
-      final credential = await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: emailController.text.trim(),
-        password: passwordController.text,
-      );
+    final AuthStatus status = await authService.login(
+      email: emailController.text,
+      password: passwordController.text,
+    );
 
+    if (status == AuthStatus.successful) {
+      // TODO: Redirect to HomePage or Onboarding
       context.showSnackBarSuccess(message: 'Signed in with e-mail and password!');
-    } on FirebaseAuthException catch (error) {
-      if (error.code == 'user-not-found') {
-        context.showSnackBarError(message: 'No user found for that e-mail.');
-      } else if (error.code == 'wrong-password') {
-        context.showSnackBarError(message: 'Wrong password provided for that user.');
-      }
-    } catch (error) {
-      context.showSnackBarError(message: 'An unknown error occurred.');
-
-      if (kDebugMode) {
-        print(error);
-      }
+    } else {
+      final String error = AuthExceptionHandler.generateErrorMessage(status);
+      context.showSnackBarError(message: error);
     }
 
     isLoading = false;
@@ -85,24 +68,14 @@ abstract class AuthStoreBase with Store {
   Future<void> signInWithGoogle(BuildContext context) async {
     isLoading = true;
 
-    try {
-      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
-      final GoogleSignInAuthentication googleAuth = await googleUser!.authentication;
+    final AuthStatus status = await authService.loginWithGoogle();
 
-      final credential = GoogleAuthProvider.credential(
-        accessToken: googleAuth.accessToken,
-        idToken: googleAuth.idToken,
-      );
-
-      await FirebaseAuth.instance.signInWithCredential(credential);
-
+    if (status == AuthStatus.successful) {
+      // TODO: Redirect to HomePage or Onboarding
       context.showSnackBarSuccess(message: 'Signed in with Google!');
-    } catch (error) {
-      context.showSnackBarError(message: 'An unknown error occurred.');
-
-      if (kDebugMode) {
-        print(error);
-      }
+    } else {
+      final String error = AuthExceptionHandler.generateErrorMessage(status);
+      context.showSnackBarError(message: error);
     }
 
     isLoading = false;
@@ -110,4 +83,20 @@ abstract class AuthStoreBase with Store {
 
   @action
   void toggleIsSignUp() => isSignUp = !isSignUp;
+
+  @action
+  Future<void> forgotPassword(BuildContext context) async {
+    isLoading = true;
+
+    final AuthStatus status = await authService.resetPassword(email: emailController.text);
+
+    if (status == AuthStatus.successful) {
+      context.showSnackBarSuccess(message: 'Sent reset password e-mail!');
+    } else {
+      final String error = AuthExceptionHandler.generateErrorMessage(status);
+      context.showSnackBarError(message: error);
+    }
+
+    isLoading = false;
+  }
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:flutter_modular/flutter_modular.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:thisdatedoesnotexist/app/features/auth/store/auth_store.dart';
 
@@ -15,6 +16,24 @@ class _AuthPageState extends State<AuthPage> {
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
   @override
+  void initState() {
+    store.emailController = TextEditingController();
+    store.passwordController = TextEditingController();
+    store.repeatPasswordController = TextEditingController();
+
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    store.emailController.dispose();
+    store.passwordController.dispose();
+    store.repeatPasswordController.dispose();
+
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(),
@@ -27,6 +46,7 @@ class _AuthPageState extends State<AuthPage> {
           key: formKey,
           child: Observer(
             builder: (_) => Wrap(
+              runSpacing: 15,
               children: [
                 TextFormField(
                   controller: store.emailController,
@@ -57,6 +77,16 @@ class _AuthPageState extends State<AuthPage> {
                     return null;
                   },
                 ),
+                if (!store.isSignUp)
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      TextButton(
+                        onPressed: () => Modular.to.pushNamed('forgot_password'),
+                        child: Text('Forgot Password?'),
+                      ),
+                    ],
+                  ),
                 if (store.isSignUp)
                   TextFormField(
                     controller: store.repeatPasswordController,
@@ -74,22 +104,26 @@ class _AuthPageState extends State<AuthPage> {
                       return null;
                     },
                   ),
-                Observer(
-                  builder: (_) => ElevatedButton(
-                    onPressed: () {
-                      if (!store.isLoading) {
-                        if (store.isSignUp) {
-                          store.signUp(context);
-                        } else {
-                          store.signIn(context);
+                SizedBox(
+                  height: 40,
+                  width: double.infinity,
+                  child: Observer(
+                    builder: (_) => ElevatedButton(
+                      onPressed: () {
+                        if (!store.isLoading && formKey.currentState!.validate()) {
+                          if (store.isSignUp) {
+                            store.signUp(context);
+                          } else {
+                            store.signIn(context);
+                          }
                         }
-                      }
-                    },
-                    child: store.isLoading
-                        ? const CircularProgressIndicator()
-                        : store.isSignUp
-                            ? const Text('Sign up')
-                            : const Text('Sign In'),
+                      },
+                      child: store.isLoading
+                          ? const CircularProgressIndicator()
+                          : store.isSignUp
+                              ? const Text('Sign up')
+                              : const Text('Sign In'),
+                    ),
                   ),
                 ),
                 Row(
@@ -110,6 +144,7 @@ class _AuthPageState extends State<AuthPage> {
                 ),
                 SizedBox(
                   height: 40,
+                  width: double.infinity,
                   child: ElevatedButton.icon(
                     onPressed: () => store.signInWithGoogle(context),
                     icon: SvgPicture.asset('assets/icons/google.svg'),
