@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_modular/flutter_modular.dart';
 import 'package:mobx/mobx.dart';
 import 'package:thisdatedoesnotexist/app/core/enum/auth_status_enum.dart';
 import 'package:thisdatedoesnotexist/app/core/exceptions/auth_exception.dart';
@@ -36,6 +37,7 @@ abstract class AuthStoreBase with Store {
     if (status == AuthStatus.successful) {
       // TODO: Redirect to HomePage or Onboarding
       context.showSnackBarSuccess(message: 'Signed up with e-mail and password!');
+      Modular.to.pushReplacementNamed('/home');
     } else {
       final String error = AuthExceptionHandler.generateErrorMessage(status);
       context.showSnackBarError(message: error);
@@ -56,6 +58,7 @@ abstract class AuthStoreBase with Store {
     if (status == AuthStatus.successful) {
       // TODO: Redirect to HomePage or Onboarding
       context.showSnackBarSuccess(message: 'Signed in with e-mail and password!');
+      Modular.to.pushReplacementNamed('/home');
     } else {
       final String error = AuthExceptionHandler.generateErrorMessage(status);
       context.showSnackBarError(message: error);
@@ -73,6 +76,7 @@ abstract class AuthStoreBase with Store {
     if (status == AuthStatus.successful) {
       // TODO: Redirect to HomePage or Onboarding
       context.showSnackBarSuccess(message: 'Signed in with Google!');
+      Modular.to.pushReplacementNamed('/home');
     } else {
       final String error = AuthExceptionHandler.generateErrorMessage(status);
       context.showSnackBarError(message: error);
