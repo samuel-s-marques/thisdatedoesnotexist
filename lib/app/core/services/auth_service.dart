@@ -41,6 +41,20 @@ class AuthService {
     return status;
   }
 
+  Future<AuthStatus> logout() async {
+    AuthStatus status = AuthStatus.unknown;
+
+    try {
+      await _auth.signOut();
+
+      status = AuthStatus.successful;
+    } on FirebaseAuthException catch (exception) {
+      status = AuthExceptionHandler.handleAuthException(exception);
+    }
+
+    return status;
+  }
+
   Future<AuthStatus> resetPassword({required String email}) async {
     AuthStatus status = AuthStatus.unknown;
 
