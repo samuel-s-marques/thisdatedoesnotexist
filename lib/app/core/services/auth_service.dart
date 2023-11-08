@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:thisdatedoesnotexist/app/core/enum/auth_status_enum.dart';
 import 'package:thisdatedoesnotexist/app/core/exceptions/auth_exception.dart';
 import 'package:thisdatedoesnotexist/app/core/util.dart';
@@ -33,6 +34,27 @@ class AuthService {
         password: password,
       );
 
+      status = AuthStatus.successful;
+    } on FirebaseAuthException catch (exception) {
+      status = AuthExceptionHandler.handleAuthException(exception);
+    }
+
+    return status;
+  }
+
+  Future<AuthStatus> loginWithGoogle() async {
+    AuthStatus status = AuthStatus.unknown;
+
+    try {
+      final googleUser = await GoogleSignIn().signIn();
+      final googleAuth = await googleUser!.authentication;
+
+      final credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+
+      await _auth.signInWithCredential(credential);
       status = AuthStatus.successful;
     } on FirebaseAuthException catch (exception) {
       status = AuthExceptionHandler.handleAuthException(exception);
