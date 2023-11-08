@@ -23,4 +23,21 @@ class AuthService {
 
     return status;
   }
+
+  Future<AuthStatus> login({required String email, required String password}) async {
+    AuthStatus status = AuthStatus.unknown;
+
+    try {
+      await _auth.signInWithEmailAndPassword(
+        email: email.trim(),
+        password: password,
+      );
+      
+      status = AuthStatus.successful;
+    } on FirebaseAuthException catch (exception) {
+      status = AuthExceptionHandler.handleAuthException(exception);
+    }
+
+    return status;
+  }
 }
