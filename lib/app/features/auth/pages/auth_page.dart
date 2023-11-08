@@ -15,6 +15,15 @@ class _AuthPageState extends State<AuthPage> {
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
   @override
+  void initState() {
+    store.emailController = TextEditingController();
+    store.passwordController = TextEditingController();
+    store.repeatPasswordController = TextEditingController();
+
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(),
@@ -77,7 +86,7 @@ class _AuthPageState extends State<AuthPage> {
                 Observer(
                   builder: (_) => ElevatedButton(
                     onPressed: () {
-                      if (!store.isLoading) {
+                      if (!store.isLoading && formKey.currentState!.validate()) {
                         if (store.isSignUp) {
                           store.signUp(context);
                         } else {
