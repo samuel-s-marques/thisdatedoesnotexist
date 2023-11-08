@@ -94,6 +94,8 @@ abstract class AuthStoreBase with Store {
         idToken: googleAuth.idToken,
       );
 
+      await FirebaseAuth.instance.signInWithCredential(credential);
+
       context.showSnackBarSuccess(message: 'Signed in with Google!');
     } catch (error) {
       context.showSnackBarError(message: 'An unknown error occurred.');
