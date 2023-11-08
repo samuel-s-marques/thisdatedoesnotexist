@@ -8,6 +8,9 @@ class AuthStore = AuthStoreBase with _$AuthStore;
 abstract class AuthStoreBase with Store {
   @observable
   bool isLoading = false;
+  
+  @observable
+  bool isSignUp = false;
 
   @observable
   bool obscurePassword = true;
@@ -42,4 +45,7 @@ abstract class AuthStoreBase with Store {
 
     isLoading = false;
   }
+
+  @action
+  void toggleIsSignUp() => isSignUp = !isSignUp;
 }
