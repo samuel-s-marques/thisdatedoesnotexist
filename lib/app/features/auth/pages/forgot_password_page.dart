@@ -39,6 +39,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
         child: Form(
           child: Observer(
             builder: (_) => Wrap(
+              runSpacing: 15,
               children: [
                 TextFormField(
                   controller: store.emailController,
