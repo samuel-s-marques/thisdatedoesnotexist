@@ -37,6 +37,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
           vertical: 12,
         ),
         child: Form(
+          key: formKey,
           child: Observer(
             builder: (_) => Wrap(
               runSpacing: 15,
