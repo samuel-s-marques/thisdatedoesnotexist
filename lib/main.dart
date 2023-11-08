@@ -6,6 +6,7 @@ import 'package:thisdatedoesnotexist/app/app_widget.dart';
 import 'package:thisdatedoesnotexist/firebase_options.dart';
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   runApp(
