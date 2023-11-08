@@ -10,7 +10,11 @@ class AppWidget extends StatelessWidget {
       title: 'This Date Does Not Exist',
       routeInformationParser: Modular.routeInformationParser,
       routerDelegate: Modular.routerDelegate,
-      theme: ThemeData(),
+      theme: ThemeData(
+        progressIndicatorTheme: ProgressIndicatorThemeData(
+          color: Colors.white,
+        ),
+      ),
     );
   }
 }
