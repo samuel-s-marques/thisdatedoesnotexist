@@ -1,7 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:mobx/mobx.dart';
+import 'package:thisdatedoesnotexist/app/core/util.dart';
 
 part 'auth_store.g.dart';
 
@@ -30,16 +32,22 @@ abstract class AuthStoreBase with Store {
         email: emailController.text.trim(),
         password: passwordController.text,
       );
+
+      // TODO: Redirect to HomePage or Onboarding
+      context.showSnackBarSuccess(message: 'Signed up with e-mail and password!');
     } on FirebaseAuthException catch (error) {
       if (error.code == 'weak-password') {
-        // TODO: show error message
-        print('The password provided is too weak.');
+        context.showSnackBarError(message: 'The password provided is too weak.');
       } else if (error.code == 'email-already-in-use') {
-        // TODO: show error message
-        print('The account already exists for that email.');
+        context.showSnackBarError(message: 'The account already exists for that email.');
       }
     } catch (error) {
-      // TODO: show error message
+      context.showSnackBarError(message: 'An unknown error occurred.');
+
+      // TODO: Implement Sentry
+      if (kDebugMode) {
+        print(error);
+      }
     }
 
     isLoading = false;
@@ -54,16 +62,20 @@ abstract class AuthStoreBase with Store {
         email: emailController.text.trim(),
         password: passwordController.text,
       );
+
+      context.showSnackBarSuccess(message: 'Signed in with e-mail and password!');
     } on FirebaseAuthException catch (error) {
       if (error.code == 'user-not-found') {
-        // TODO: show error message
-        print('No user found for that email.');
+        context.showSnackBarError(message: 'No user found for that e-mail.');
       } else if (error.code == 'wrong-password') {
-        // TODO: show error message
-        print('Wrong password provided for that user.');
+        context.showSnackBarError(message: 'Wrong password provided for that user.');
       }
     } catch (error) {
-      // TODO: show error message
+      context.showSnackBarError(message: 'An unknown error occurred.');
+
+      if (kDebugMode) {
+        print(error);
+      }
     }
 
     isLoading = false;
@@ -81,8 +93,14 @@ abstract class AuthStoreBase with Store {
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
       );
+
+      context.showSnackBarSuccess(message: 'Signed in with Google!');
     } catch (error) {
-      // TODO: show error message
+      context.showSnackBarError(message: 'An unknown error occurred.');
+
+      if (kDebugMode) {
+        print(error);
+      }
     }
 
     isLoading = false;
