@@ -10,6 +10,10 @@ part 'auth_store.g.dart';
 class AuthStore = AuthStoreBase with _$AuthStore;
 
 abstract class AuthStoreBase with Store {
+  late TextEditingController emailController;
+  late TextEditingController passwordController;
+  late TextEditingController repeatPasswordController;
+
   @observable
   bool isLoading = false;
 
@@ -18,10 +22,6 @@ abstract class AuthStoreBase with Store {
 
   @observable
   bool obscurePassword = true;
-
-  late TextEditingController emailController;
-  late TextEditingController passwordController;
-  late TextEditingController repeatPasswordController;
 
   @action
   Future<void> signUp(BuildContext context) async {
