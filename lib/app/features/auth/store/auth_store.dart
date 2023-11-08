@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:mobx/mobx.dart';
 
 part 'auth_store.g.dart';
@@ -72,7 +73,17 @@ abstract class AuthStoreBase with Store {
   Future<void> signInWithGoogle(BuildContext context) async {
     isLoading = true;
 
-    try {} catch (error) {}
+    try {
+      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+      final GoogleSignInAuthentication googleAuth = await googleUser!.authentication;
+
+      final credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+    } catch (error) {
+      // TODO: show error message
+    }
 
     isLoading = false;
   }
