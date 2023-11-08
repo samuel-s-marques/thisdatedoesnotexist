@@ -32,7 +32,21 @@ class AuthService {
         email: email.trim(),
         password: password,
       );
-      
+
+      status = AuthStatus.successful;
+    } on FirebaseAuthException catch (exception) {
+      status = AuthExceptionHandler.handleAuthException(exception);
+    }
+
+    return status;
+  }
+
+  Future<AuthStatus> resetPassword({required String email}) async {
+    AuthStatus status = AuthStatus.unknown;
+
+    try {
+      await _auth.sendPasswordResetEmail(email: email.trim());
+
       status = AuthStatus.successful;
     } on FirebaseAuthException catch (exception) {
       status = AuthExceptionHandler.handleAuthException(exception);
