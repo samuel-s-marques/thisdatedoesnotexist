@@ -83,22 +83,26 @@ class _AuthPageState extends State<AuthPage> {
                       return null;
                     },
                   ),
-                Observer(
-                  builder: (_) => ElevatedButton(
-                    onPressed: () {
-                      if (!store.isLoading && formKey.currentState!.validate()) {
-                        if (store.isSignUp) {
-                          store.signUp(context);
-                        } else {
-                          store.signIn(context);
+                SizedBox(
+                  height: 40,
+                  width: double.infinity,
+                  child: Observer(
+                    builder: (_) => ElevatedButton(
+                      onPressed: () {
+                        if (!store.isLoading && formKey.currentState!.validate()) {
+                          if (store.isSignUp) {
+                            store.signUp(context);
+                          } else {
+                            store.signIn(context);
+                          }
                         }
-                      }
-                    },
-                    child: store.isLoading
-                        ? const CircularProgressIndicator()
-                        : store.isSignUp
-                            ? const Text('Sign up')
-                            : const Text('Sign In'),
+                      },
+                      child: store.isLoading
+                          ? const CircularProgressIndicator()
+                          : store.isSignUp
+                              ? const Text('Sign up')
+                              : const Text('Sign In'),
+                    ),
                   ),
                 ),
                 Row(
@@ -119,6 +123,7 @@ class _AuthPageState extends State<AuthPage> {
                 ),
                 SizedBox(
                   height: 40,
+                  width: double.infinity,
                   child: ElevatedButton.icon(
                     onPressed: () => store.signInWithGoogle(context),
                     icon: SvgPicture.asset('assets/icons/google.svg'),
