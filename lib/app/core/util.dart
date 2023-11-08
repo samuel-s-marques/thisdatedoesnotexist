@@ -1,5 +1,12 @@
 import 'package:flutter/material.dart';
 
+extension UserExtension on String {
+  String toUsername() {
+    final List<String> splittedEmail = split('@');
+    return splittedEmail[0];
+  }
+}
+
 extension ShowSnackBar on BuildContext {
   void showSnackBar({
     required String message,
