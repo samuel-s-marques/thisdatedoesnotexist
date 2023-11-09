@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mobx/mobx.dart';
+import 'package:thisdatedoesnotexist/app/features/chat/chat_module.dart';
 import 'package:thisdatedoesnotexist/app/features/profile/profile_module.dart';
 
 part 'home_store.g.dart';
@@ -8,7 +9,7 @@ class HomeStore = HomeStoreBase with _$HomeStore;
 
 abstract class HomeStoreBase with Store {
   List<Widget> pages = [
-    Text('teste 2'),
+    ChatModule(),
     ProfileModule(),
   ];
 
