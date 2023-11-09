@@ -1,27 +1,23 @@
 import 'package:flutter/material.dart';
-import 'package:thisdatedoesnotexist/app/features/chat/widgets/chat_list_tile.dart';
+import 'package:flutter_chat_ui/flutter_chat_ui.dart';
+// ignore: depend_on_referenced_packages
+import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 
-class ChatListPage extends StatefulWidget {
-  const ChatListPage({super.key});
+class ChatPage extends StatefulWidget {
+  const ChatPage({super.key});
 
   @override
-  State<ChatListPage> createState() => _ChatListPageState();
+  State<ChatPage> createState() => _ChatPageState();
 }
 
-class _ChatListPageState extends State<ChatListPage> {
+class _ChatPageState extends State<ChatPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: ListView.builder(
-        itemCount: 2,
-        itemBuilder: (BuildContext context, int index) {
-          return ChatListTile(
-            name: 'Samuel',
-            message: 'Hiiii',
-            time: DateTime.now(),
-            avatarUrl: 'https://placehold.co/256x256',
-          );
-        },
+      body: Chat(
+        messages: [],
+        onSendPressed: (types.PartialText message) {},
+        user: types.User(id: '0'),
       ),
     );
   }
