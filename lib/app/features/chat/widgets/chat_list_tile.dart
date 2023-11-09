@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_modular/flutter_modular.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 class ChatListTile extends StatelessWidget {
+  final String id;
   final String name;
   final String message;
   final DateTime time;
@@ -9,6 +11,7 @@ class ChatListTile extends StatelessWidget {
 
   const ChatListTile({
     super.key,
+    required this.id,
     required this.name,
     required this.message,
     required this.time,
@@ -24,6 +27,7 @@ class ChatListTile extends StatelessWidget {
       leading: CircleAvatar(
         backgroundImage: NetworkImage(avatarUrl),
       ),
+      onTap: () => Modular.to.pushNamed('/chat'),
     );
   }
 }
