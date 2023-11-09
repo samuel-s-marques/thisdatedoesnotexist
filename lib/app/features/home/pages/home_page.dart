@@ -15,8 +15,20 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
-      body: Observer(builder: (_) => [Column(), ...store.pages].elementAt(store.selectedIndex)),
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(kToolbarHeight),
+        child: Observer(
+          builder: (_) => AppBar(
+            title: Text(store.appbars.keys.elementAt(store.selectedIndex)),
+            actions: [
+              store.appbars.values.elementAt(store.selectedIndex),
+            ],
+          ),
+        ),
+      ),
+      body: Observer(
+        builder: (_) => [Column(), ...store.pages].elementAt(store.selectedIndex),
+      ),
       bottomNavigationBar: Observer(
         builder: (_) => BottomNavigationBar(
           items: [
