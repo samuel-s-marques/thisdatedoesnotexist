@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:thisdatedoesnotexist/app/features/chat/widgets/chat_list_tile.dart';
 
 class ChatListPage extends StatefulWidget {
   const ChatListPage({super.key});
@@ -12,8 +13,15 @@ class _ChatListPageState extends State<ChatListPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: ListView.builder(
-        itemCount: 0,
-        itemBuilder: (BuildContext context, int index) {},
+        itemCount: 2,
+        itemBuilder: (BuildContext context, int index) {
+          return ChatListTile(
+            name: 'Samuel',
+            message: 'Hiiii',
+            time: DateTime.now(),
+            avatarUrl: 'https://placehold.co/256x256',
+          );
+        },
       ),
     );
   }
