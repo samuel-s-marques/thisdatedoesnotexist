@@ -24,7 +24,7 @@ class _ProfilePageState extends State<ProfilePage> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // TODO: Add profile images with carrousel
+            // TODO: Add profile image
             Placeholder(
               fallbackWidth: double.infinity,
               fallbackHeight: 400,
