@@ -34,7 +34,19 @@ class _ProfilePageState extends State<ProfilePage> {
             SectionWidget(
               title: 'Bio',
               content: Text('data'),
-            )
+            ),
+            SectionWidget(
+              title: 'Interests',
+              content: Text('data'),
+            ),
+            SectionWidget(
+              title: 'Hobbies',
+              content: Text('data'),
+            ),
+            SectionWidget(
+              title: 'Relationship Goals',
+              content: Text('data'),
+            ),
           ],
         ),
       ),
