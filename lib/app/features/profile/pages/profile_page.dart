@@ -1,6 +1,6 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:thisdatedoesnotexist/app/features/profile/store/profile_store.dart';
+import 'package:thisdatedoesnotexist/app/features/profile/widgets/section_widget.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -20,8 +20,9 @@ class _ProfilePageState extends State<ProfilePage> {
           horizontal: 24,
           vertical: 12,
         ),
-        child: Wrap(
-          runSpacing: 15,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // TODO: Add profile images with carrousel
             Placeholder(
@@ -29,7 +30,11 @@ class _ProfilePageState extends State<ProfilePage> {
               fallbackHeight: 400,
             ),
             // TODO: Add profile name
-            Text('Name Surname')
+            Text('Name Surname'),
+            SectionWidget(
+              title: 'Bio',
+              content: Text('data'),
+            )
           ],
         ),
       ),
