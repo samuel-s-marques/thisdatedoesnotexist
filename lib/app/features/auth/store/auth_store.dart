@@ -2,8 +2,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:mobx/mobx.dart';
 import 'package:thisdatedoesnotexist/app/core/enum/auth_status_enum.dart';
+import 'package:thisdatedoesnotexist/app/core/enum/database_status_enum.dart';
 import 'package:thisdatedoesnotexist/app/core/exceptions/auth_exception.dart';
 import 'package:thisdatedoesnotexist/app/core/services/auth_service.dart';
+import 'package:thisdatedoesnotexist/app/core/services/database_service.dart';
 import 'package:thisdatedoesnotexist/app/core/util.dart';
 
 part 'auth_store.g.dart';
@@ -76,7 +78,11 @@ abstract class AuthStoreBase with Store {
     if (status == AuthStatus.successful) {
       // TODO: Redirect to HomePage or Onboarding
       context.showSnackBarSuccess(message: 'Signed in with Google!');
-      Modular.to.pushReplacementNamed('/home');
+
+      // TODO: move this line to the end of onboarding
+      if (await DatabaseService().createUser() == DatabaseStatus.successful) {
+        Modular.to.pushReplacementNamed('/home');
+      }
     } else {
       final String error = AuthExceptionHandler.generateErrorMessage(status);
       context.showSnackBarError(message: error);
