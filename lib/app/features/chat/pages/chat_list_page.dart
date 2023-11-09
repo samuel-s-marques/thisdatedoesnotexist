@@ -16,6 +16,7 @@ class _ChatListPageState extends State<ChatListPage> {
         itemCount: 2,
         itemBuilder: (BuildContext context, int index) {
           return ChatListTile(
+            id: '0',
             name: 'Samuel',
             message: 'Hiiii',
             time: DateTime.now(),
