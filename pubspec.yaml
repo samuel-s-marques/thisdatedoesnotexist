@@ -21,6 +21,7 @@ dependencies:
   flutter_svg: ^2.0.9
   google_sign_in: ^6.1.5
   timeago: ^3.6.0
+  flutter_chat_ui: ^1.6.9
 
 dev_dependencies:
   flutter_test:
