@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:timeago/timeago.dart' as timeago;
 
 class ChatListTile extends StatelessWidget {
   final String name;
@@ -19,7 +20,7 @@ class ChatListTile extends StatelessWidget {
     return ListTile(
       title: Text(name),
       subtitle: Text(message),
-      trailing: Text(time.toString()),
+      trailing: Text(timeago.format(time)),
       leading: CircleAvatar(
         backgroundImage: NetworkImage(avatarUrl),
       ),
