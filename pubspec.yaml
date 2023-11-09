@@ -20,6 +20,9 @@ dependencies:
   flutter_modular: ^6.3.2
   flutter_svg: ^2.0.9
   google_sign_in: ^6.1.5
+  timeago: ^3.6.0
+  flutter_chat_ui: ^1.6.9
+  flutter_firebase_chat_core: ^1.6.7
 
 dev_dependencies:
   flutter_test:
