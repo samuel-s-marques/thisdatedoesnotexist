@@ -24,6 +24,7 @@ dependencies:
   flutter_chat_ui: ^1.6.9
   flutter_firebase_chat_core: ^1.6.7
   sentry_flutter: ^7.12.0
+  cloud_firestore: ^4.13.0
 
 dev_dependencies:
   flutter_test:
