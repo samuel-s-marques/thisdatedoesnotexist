@@ -52,11 +52,11 @@ class _SettingsPageState extends State<SettingsPage> {
                           title: const Text('Log Out'),
                           content: const Text('Are you sure you want to log out?'),
                           actions: [
-                            ElevatedButton(
+                            TextButton(
                               onPressed: () => Modular.to.pop(),
                               child: const Text('No'),
                             ),
-                            ElevatedButton(
+                            TextButton(
                               onPressed: () => store.logOut(context),
                               child: const Text('Yes'),
                             ),
