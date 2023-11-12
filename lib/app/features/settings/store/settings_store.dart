@@ -13,6 +13,16 @@ abstract class SettingsStoreBase with Store {
   AuthService authService = AuthService();
 
   @action
+  Future<void> deleteAccount(BuildContext context) async {
+    if (await authService.deleteAccount() == AuthStatus.successful) {
+      await Modular.to.pushReplacementNamed('/');
+      context.showSnackBarSuccess(message: 'Account deleted successfully.');
+    } else {
+      context.showSnackBarError(message: 'Error deleting account. Try again later.');
+    }
+  }
+
+  @action
   Future<void> logOut(BuildContext context) async {
     if (await authService.logout() == AuthStatus.successful) {
       await Modular.to.pushReplacementNamed('/');
