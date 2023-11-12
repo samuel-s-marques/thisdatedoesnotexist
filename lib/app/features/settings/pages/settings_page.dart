@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:thisdatedoesnotexist/app/features/settings/store/settings_store.dart';
 import 'package:thisdatedoesnotexist/app/features/settings/widgets/settings_section.dart';
 import 'package:thisdatedoesnotexist/app/features/settings/widgets/settings_tile.dart';
 
@@ -10,6 +11,8 @@ class SettingsPage extends StatefulWidget {
 }
 
 class _SettingsPageState extends State<SettingsPage> {
+  SettingsStore store = SettingsStore();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
