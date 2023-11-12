@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_modular/flutter_modular.dart';
 import 'package:mobx/mobx.dart';
 import 'package:thisdatedoesnotexist/app/features/chat/chat_module.dart';
 import 'package:thisdatedoesnotexist/app/features/profile/profile_module.dart';
@@ -13,19 +14,29 @@ abstract class HomeStoreBase with Store {
     ProfileModule(),
   ];
 
-  Map<String, Widget> appbars = {
-    'Home': IconButton(
-      onPressed: () {},
-      icon: Icon(Icons.tune),
-    ),
-    'Chat': IconButton(
-      onPressed: () {},
-      icon: Icon(Icons.search),
-    ),
-    'Profile': IconButton(
-      onPressed: () {},
-      icon: Icon(Icons.settings),
-    ),
+  Map<String, List<Widget>> appbars = {
+    'Home': [
+      IconButton(
+        onPressed: () {},
+        icon: Icon(Icons.tune),
+      )
+    ],
+    'Chat': [
+      IconButton(
+        onPressed: () {},
+        icon: Icon(Icons.search),
+      )
+    ],
+    'Profile': [
+      IconButton(
+        onPressed: () {},
+        icon: Icon(Icons.edit),
+      ),
+      IconButton(
+        onPressed: () => Modular.to.pushNamed('/settings/'),
+        icon: Icon(Icons.settings),
+      ),
+    ]
   };
 
   @observable
