@@ -10,6 +10,15 @@ class SettingsPage extends StatefulWidget {
 class _SettingsPageState extends State<SettingsPage> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold();
+    return Scaffold(
+      appBar: AppBar(),
+      body: SingleChildScrollView(
+        child: ListView.separated(
+          itemBuilder: (BuildContext context, int index) {},
+          separatorBuilder: (BuildContext context, int index) => const SizedBox(height: 5),
+          itemCount: 0,
+        ),
+      ),
+    );
   }
 }
