@@ -35,10 +35,31 @@ class _SettingsPageState extends State<SettingsPage> {
                   leading: Icon(Icons.lock_person),
                   trailing: Icon(Icons.arrow_forward_ios),
                 ),
-                const SettingsTile(
+                SettingsTile(
                   title: 'Delete Account',
-                  leading: Icon(Icons.delete),
-                  trailing: Icon(Icons.arrow_forward_ios),
+                  leading: const Icon(Icons.delete),
+                  trailing: const Icon(Icons.arrow_forward_ios),
+                  onTap: () {
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: const Text('Delete Account'),
+                          content: const Text('Are you sure you want to delete your account?'),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Modular.to.pop(),
+                              child: const Text('No'),
+                            ),
+                            TextButton(
+                              onPressed: () => store.deleteAccount(context),
+                              child: const Text('Yes'),
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  },
                 ),
                 SettingsTile(
                   title: 'Log Out',
