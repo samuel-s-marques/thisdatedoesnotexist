@@ -16,7 +16,7 @@ class AuthService {
         password: password,
       );
 
-      _auth.currentUser!.updateDisplayName(email.toUsername());
+      await _auth.currentUser!.updateDisplayName(email.toUsername());
       status = AuthStatus.successful;
     } on FirebaseAuthException catch (exception) {
       status = AuthExceptionHandler.handleAuthException(exception);
@@ -92,7 +92,7 @@ class AuthService {
   }
 
   User getUser() {
-    User? user = _auth.currentUser;
+    final User? user = _auth.currentUser;
 
     if (user == null) {
       // TODO: redirect to /auth
