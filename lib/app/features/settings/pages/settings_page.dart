@@ -25,6 +25,8 @@ class _SettingsPageState extends State<SettingsPage> {
           SectionWidget(
             title: 'Account Settings',
             content: ListView(
+              shrinkWrap: true,
+              physics: NeverScrollableScrollPhysics(),
               children: [
                 ListTile(
                   title: Text('Change Password'),
@@ -42,6 +44,8 @@ class _SettingsPageState extends State<SettingsPage> {
           SectionWidget(
             title: 'Notification',
             content: ListView(
+              shrinkWrap: true,
+              physics: NeverScrollableScrollPhysics(),
               children: [
                 ListTile(
                   title: Text('Push Notifications'),
@@ -59,6 +63,8 @@ class _SettingsPageState extends State<SettingsPage> {
           SectionWidget(
             title: 'Security',
             content: ListView(
+              shrinkWrap: true,
+              physics: NeverScrollableScrollPhysics(),
               children: [
                 ListTile(
                   title: Text('Two-Factor Authentication'),
@@ -76,6 +82,8 @@ class _SettingsPageState extends State<SettingsPage> {
           SectionWidget(
             title: 'App Preferences',
             content: ListView(
+              shrinkWrap: true,
+              physics: NeverScrollableScrollPhysics(),
               children: [
                 ListTile(
                   title: Text('Language'),
@@ -98,6 +106,8 @@ class _SettingsPageState extends State<SettingsPage> {
           SectionWidget(
             title: 'Help and Support',
             content: ListView(
+              shrinkWrap: true,
+              physics: NeverScrollableScrollPhysics(),
               children: [
                 ListTile(
                   title: Text('FAQs'),
@@ -120,6 +130,8 @@ class _SettingsPageState extends State<SettingsPage> {
           SectionWidget(
             title: 'Legal and Terms',
             content: ListView(
+              shrinkWrap: true,
+              physics: NeverScrollableScrollPhysics(),
               children: [
                 ListTile(
                   title: Text('Terms of Service and Privacy Policy'),
