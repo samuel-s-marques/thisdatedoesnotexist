@@ -31,6 +31,11 @@ class _SettingsPageState extends State<SettingsPage> {
                   leading: Icon(Icons.delete),
                   trailing: Icon(Icons.arrow_forward_ios),
                 ),
+                SettingsTile(
+                  title: 'Log Out',
+                  leading: Icon(Icons.logout),
+                  trailing: Icon(Icons.arrow_forward_ios),
+                ),
               ],
             ),
             const SettingsSection(
