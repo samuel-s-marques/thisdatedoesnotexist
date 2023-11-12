@@ -14,9 +14,9 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return const Scaffold(
       body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(
+        padding: EdgeInsets.symmetric(
           horizontal: 24,
           vertical: 12,
         ),
@@ -27,7 +27,6 @@ class _ProfilePageState extends State<ProfilePage> {
             // TODO: Add profile image
             Placeholder(
               fallbackWidth: double.infinity,
-              fallbackHeight: 400,
             ),
             // TODO: Add profile name
             Text('Name Surname'),

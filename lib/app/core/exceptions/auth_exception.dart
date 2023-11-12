@@ -2,7 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:thisdatedoesnotexist/app/core/enum/auth_status_enum.dart';
 
 class AuthExceptionHandler {
-  static handleAuthException(FirebaseAuthException exception) {
+  static AuthStatus handleAuthException(FirebaseAuthException exception) {
     AuthStatus status;
 
     switch (exception.code) {

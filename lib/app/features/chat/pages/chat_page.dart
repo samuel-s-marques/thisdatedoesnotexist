@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 // ignore: depend_on_referenced_packages
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
+import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:flutter_firebase_chat_core/flutter_firebase_chat_core.dart';
 
 class ChatPage extends StatefulWidget {
@@ -16,12 +16,12 @@ class _ChatPageState extends State<ChatPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Chat name'),
+        title: const Text('Chat name'),
       ),
       body: StreamBuilder<List<types.Message>>(
         initialData: const [],
         stream: FirebaseChatCore.instance.messages(
-          types.Room(
+          const types.Room(
             id: 'id',
             type: types.RoomType.direct,
             users: [],
@@ -29,9 +29,9 @@ class _ChatPageState extends State<ChatPage> {
         ),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           return Chat(
-            messages: [],
+            messages: const [],
             onSendPressed: (types.PartialText message) {},
-            user: types.User(id: '0'),
+            user: const types.User(id: '0'),
           );
         },
       ),

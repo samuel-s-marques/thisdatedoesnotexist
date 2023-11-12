@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_firebase_chat_core/flutter_firebase_chat_core.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:thisdatedoesnotexist/app/core/enum/auth_status_enum.dart';
 import 'package:thisdatedoesnotexist/app/core/exceptions/auth_exception.dart';
@@ -16,7 +17,7 @@ class AuthService {
         password: password,
       );
 
-      _auth.currentUser!.updateDisplayName(email.toUsername());
+      await _auth.currentUser!.updateDisplayName(email.toUsername());
       status = AuthStatus.successful;
     } on FirebaseAuthException catch (exception) {
       status = AuthExceptionHandler.handleAuthException(exception);
@@ -91,8 +92,23 @@ class AuthService {
     return status;
   }
 
+  Future<AuthStatus> deleteAccount() async {
+    AuthStatus status = AuthStatus.unknown;
+
+    try {
+      await FirebaseChatCore.instance.deleteUserFromFirestore(_auth.currentUser!.uid);
+      await _auth.currentUser!.delete();
+
+      status = AuthStatus.successful;
+    } on FirebaseAuthException catch (exception) {
+      status = AuthExceptionHandler.handleAuthException(exception);
+    }
+
+    return status;
+  }
+
   User getUser() {
-    User? user = _auth.currentUser;
+    final User? user = _auth.currentUser;
 
     if (user == null) {
       // TODO: redirect to /auth

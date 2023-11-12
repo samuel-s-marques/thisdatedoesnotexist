@@ -11,13 +11,13 @@ void main() async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await SentryFlutter.init(
     (options) {
-      options.dsn = String.fromEnvironment('SENTRY_DSN');
+      options.dsn = const String.fromEnvironment('SENTRY_DSN');
       options.tracesSampleRate = 1.0;
     },
     appRunner: () => runApp(
       ModularApp(
         module: AppModule(),
-        child: AppWidget(),
+        child: const AppWidget(),
       ),
     ),
   );

@@ -16,22 +16,20 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: Size.fromHeight(kToolbarHeight),
+        preferredSize: const Size.fromHeight(kToolbarHeight),
         child: Observer(
           builder: (_) => AppBar(
             title: Text(store.appbars.keys.elementAt(store.selectedIndex)),
-            actions: [
-              store.appbars.values.elementAt(store.selectedIndex),
-            ],
+            actions: store.appbars.values.elementAt(store.selectedIndex),
           ),
         ),
       ),
       body: Observer(
-        builder: (_) => [Column(), ...store.pages].elementAt(store.selectedIndex),
+        builder: (_) => [const Column(), ...store.pages].elementAt(store.selectedIndex),
       ),
       bottomNavigationBar: Observer(
         builder: (_) => BottomNavigationBar(
-          items: [
+          items: const [
             BottomNavigationBarItem(
               icon: Icon(Icons.home),
               label: 'Home',

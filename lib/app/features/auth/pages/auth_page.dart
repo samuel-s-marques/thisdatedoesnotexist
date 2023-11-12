@@ -83,7 +83,7 @@ class _AuthPageState extends State<AuthPage> {
                     children: [
                       TextButton(
                         onPressed: () => Modular.to.pushNamed('forgot_password'),
-                        child: Text('Forgot Password?'),
+                        child: const Text('Forgot Password?'),
                       ),
                     ],
                   ),
@@ -126,9 +126,9 @@ class _AuthPageState extends State<AuthPage> {
                     ),
                   ),
                 ),
-                Row(
+                const Row(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: const [
+                  children: [
                     Expanded(
                       child: Divider(
                         endIndent: 20,
@@ -172,7 +172,7 @@ class _AuthPageState extends State<AuthPage> {
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(store.isSignUp ? 'Already have an account?' : 'Don\'t have an account?'),
+              Text(store.isSignUp ? 'Already have an account?' : "Don't have an account?"),
               TextButton(
                 onPressed: () => store.toggleIsSignUp(),
                 child: Text(store.isSignUp ? 'Sign in' : 'Sign up'),

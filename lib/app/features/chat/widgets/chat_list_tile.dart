@@ -3,11 +3,6 @@ import 'package:flutter_modular/flutter_modular.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 class ChatListTile extends StatelessWidget {
-  final String id;
-  final String name;
-  final String message;
-  final DateTime time;
-  final String avatarUrl;
 
   const ChatListTile({
     super.key,
@@ -17,6 +12,11 @@ class ChatListTile extends StatelessWidget {
     required this.time,
     required this.avatarUrl,
   });
+  final String id;
+  final String name;
+  final String message;
+  final DateTime time;
+  final String avatarUrl;
 
   @override
   Widget build(BuildContext context) {
