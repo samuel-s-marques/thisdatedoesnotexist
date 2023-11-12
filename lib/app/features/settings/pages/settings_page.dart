@@ -21,28 +21,29 @@ class _SettingsPageState extends State<SettingsPage> {
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 15),
         child: Column(
           children: [
-            const SettingsSection(
+            SettingsSection(
               title: 'Account Settings',
               content: [
-                SettingsTile(
+                const SettingsTile(
                   title: 'Account Information',
                   leading: Icon(Icons.info),
                   trailing: Icon(Icons.arrow_forward_ios),
                 ),
-                SettingsTile(
+                const SettingsTile(
                   title: 'Change Password',
                   leading: Icon(Icons.lock_person),
                   trailing: Icon(Icons.arrow_forward_ios),
                 ),
-                SettingsTile(
+                const SettingsTile(
                   title: 'Delete Account',
                   leading: Icon(Icons.delete),
                   trailing: Icon(Icons.arrow_forward_ios),
                 ),
                 SettingsTile(
                   title: 'Log Out',
-                  leading: Icon(Icons.logout),
-                  trailing: Icon(Icons.arrow_forward_ios),
+                  leading: const Icon(Icons.logout),
+                  trailing: const Icon(Icons.arrow_forward_ios),
+                  onTap: () => store.logOut(context),
                 ),
               ],
             ),
