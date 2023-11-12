@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_modular/flutter_modular.dart';
 import 'package:thisdatedoesnotexist/app/features/settings/store/settings_store.dart';
 import 'package:thisdatedoesnotexist/app/features/settings/widgets/settings_section.dart';
 import 'package:thisdatedoesnotexist/app/features/settings/widgets/settings_tile.dart';
@@ -43,7 +44,27 @@ class _SettingsPageState extends State<SettingsPage> {
                   title: 'Log Out',
                   leading: const Icon(Icons.logout),
                   trailing: const Icon(Icons.arrow_forward_ios),
-                  onTap: () => store.logOut(context),
+                  onTap: () {
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: const Text('Log Out'),
+                          content: const Text('Are you sure you want to log out?'),
+                          actions: [
+                            ElevatedButton(
+                              onPressed: () => Modular.to.pop(),
+                              child: const Text('No'),
+                            ),
+                            ElevatedButton(
+                              onPressed: () => store.logOut(context),
+                              child: const Text('Yes'),
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  },
                 ),
               ],
             ),
