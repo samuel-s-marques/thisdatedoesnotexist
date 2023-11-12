@@ -1,9 +1,6 @@
 import 'package:flutter/cupertino.dart';
 
 class SectionWidget extends StatelessWidget {
-  final String title;
-  final Widget content;
-  final EdgeInsetsGeometry? padding;
 
   const SectionWidget({
     super.key,
@@ -11,6 +8,9 @@ class SectionWidget extends StatelessWidget {
     required this.content,
     this.padding = const EdgeInsets.only(bottom: 10),
   });
+  final String title;
+  final Widget content;
+  final EdgeInsetsGeometry? padding;
 
   @override
   Widget build(BuildContext context) {

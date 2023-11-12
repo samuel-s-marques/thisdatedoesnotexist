@@ -1,11 +1,6 @@
 import 'package:flutter/material.dart';
 
 class SettingsTile extends StatelessWidget {
-  final String title;
-  final String? subtitle;
-  final GestureTapCallback? onTap;
-  final Widget? leading;
-  final Widget? trailing;
 
   const SettingsTile({
     super.key,
@@ -15,6 +10,11 @@ class SettingsTile extends StatelessWidget {
     this.leading,
     this.trailing,
   });
+  final String title;
+  final String? subtitle;
+  final GestureTapCallback? onTap;
+  final Widget? leading;
+  final Widget? trailing;
 
   @override
   Widget build(BuildContext context) {
