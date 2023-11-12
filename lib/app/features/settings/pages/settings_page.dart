@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:thisdatedoesnotexist/app/features/settings/widgets/settings_section.dart';
+import 'package:thisdatedoesnotexist/app/features/settings/widgets/settings_tile.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -27,69 +28,61 @@ class _SettingsPageState extends State<SettingsPage> {
             SettingsSection(
               title: 'Account Settings',
               content: [
-                ListTile(
-                  title: Text('Change Password'),
+                SettingsTile(
+                  title: 'Change Password',
                   leading: Icon(Icons.lock_person),
                   trailing: Icon(Icons.arrow_forward_ios),
-                  contentPadding: EdgeInsets.zero,
                 ),
-                ListTile(
-                  title: Text('Delete Account'),
+                SettingsTile(
+                  title: 'Delete Account',
                   leading: Icon(Icons.delete),
                   trailing: Icon(Icons.arrow_forward_ios),
-                  contentPadding: EdgeInsets.zero,
                 ),
               ],
             ),
             SettingsSection(
               title: 'Notification',
               content: [
-                ListTile(
-                  title: Text('Push Notifications'),
+                SettingsTile(
+                  title: 'Push Notifications',
                   leading: Icon(Icons.notifications),
                   trailing: Icon(Icons.arrow_forward_ios),
-                  contentPadding: EdgeInsets.zero,
                 ),
-                ListTile(
-                  title: Text('E-mail Notifications'),
+                SettingsTile(
+                  title: 'E-mail Notifications',
                   leading: Icon(Icons.email),
                   trailing: Icon(Icons.arrow_forward_ios),
-                  contentPadding: EdgeInsets.zero,
                 ),
               ],
             ),
             SettingsSection(
               title: 'Security',
               content: [
-                ListTile(
-                  title: Text('Two-Factor Authentication'),
+                SettingsTile(
+                  title: 'Two-Factor Authentication',
                   leading: Icon(Icons.lock),
                   trailing: Icon(Icons.arrow_forward_ios),
-                  contentPadding: EdgeInsets.zero,
                 ),
-                ListTile(
-                  title: Text('Account Linked Services'),
+                SettingsTile(
+                  title: 'Account Linked Services',
                   leading: Icon(Icons.link),
                   trailing: Icon(Icons.arrow_forward_ios),
-                  contentPadding: EdgeInsets.zero,
                 ),
               ],
             ),
             SettingsSection(
               title: 'App Preferences',
               content: [
-                ListTile(
-                  title: Text('Language'),
+                SettingsTile(
+                  title: 'Language',
                   leading: Icon(Icons.language),
-                  subtitle: Text('English'),
+                  subtitle: 'English',
                   trailing: Icon(Icons.arrow_forward_ios),
-                  contentPadding: EdgeInsets.zero,
                 ),
-                ListTile(
-                  title: Text('Theme'),
+                SettingsTile(
+                  title: 'Theme',
                   leading: Icon(Icons.colorize),
-                  subtitle: Text('Light'),
-                  contentPadding: EdgeInsets.zero,
+                  subtitle: 'Light',
                   trailing: Switch(
                     value: false,
                     onChanged: (value) {},
@@ -100,34 +93,30 @@ class _SettingsPageState extends State<SettingsPage> {
             SettingsSection(
               title: 'Help and Support',
               content: [
-                ListTile(
-                  title: Text('FAQs'),
+                SettingsTile(
+                  title: 'FAQs',
                   leading: Icon(Icons.help),
                   trailing: Icon(Icons.arrow_forward_ios),
-                  contentPadding: EdgeInsets.zero,
                 ),
-                ListTile(
-                  title: Text('Feedback'),
+                SettingsTile(
+                  title: 'Feedback',
                   leading: Icon(Icons.feedback),
                   trailing: Icon(Icons.arrow_forward_ios),
-                  contentPadding: EdgeInsets.zero,
                 ),
-                ListTile(
-                  title: Text('Contact Support'),
+                SettingsTile(
+                  title: 'Contact Support',
                   leading: Icon(Icons.contact_support),
                   trailing: Icon(Icons.arrow_forward_ios),
-                  contentPadding: EdgeInsets.zero,
                 ),
               ],
             ),
             SettingsSection(
               title: 'Legal and Terms',
               content: [
-                ListTile(
-                  title: Text('Terms of Service and Privacy Policy'),
+                SettingsTile(
+                  title: 'Terms of Service and Privacy Policy',
                   leading: Icon(Icons.policy),
                   trailing: Icon(Icons.arrow_forward_ios),
-                  contentPadding: EdgeInsets.zero,
                 ),
               ],
             ),
