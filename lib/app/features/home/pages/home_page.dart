@@ -20,9 +20,7 @@ class _HomePageState extends State<HomePage> {
         child: Observer(
           builder: (_) => AppBar(
             title: Text(store.appbars.keys.elementAt(store.selectedIndex)),
-            actions: [
-              store.appbars.values.elementAt(store.selectedIndex),
-            ],
+            actions: store.appbars.values.elementAt(store.selectedIndex),
           ),
         ),
       ),
