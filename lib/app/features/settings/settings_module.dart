@@ -10,6 +10,6 @@ class SettingsModule extends Module {
 
   @override
   void routes(r) {
-    r.child('/', child: (context) => SettingsPage());
+    r.child('/', child: (context) => const SettingsPage());
   }
 }
