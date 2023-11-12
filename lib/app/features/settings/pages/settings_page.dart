@@ -22,6 +22,11 @@ class _SettingsPageState extends State<SettingsPage> {
               title: 'Account Settings',
               content: [
                 SettingsTile(
+                  title: 'Account Information',
+                  leading: Icon(Icons.info),
+                  trailing: Icon(Icons.arrow_forward_ios),
+                ),
+                SettingsTile(
                   title: 'Change Password',
                   leading: Icon(Icons.lock_person),
                   trailing: Icon(Icons.arrow_forward_ios),
