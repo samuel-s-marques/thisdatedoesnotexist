@@ -19,7 +19,14 @@ class SettingsTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      leading: leading,
+      leading: leading != null
+          ? Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                leading!,
+              ],
+            )
+          : null,
       trailing: trailing,
       title: Text(title),
       contentPadding: EdgeInsets.zero,
