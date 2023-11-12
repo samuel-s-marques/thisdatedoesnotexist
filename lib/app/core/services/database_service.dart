@@ -1,8 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter_firebase_chat_core/flutter_firebase_chat_core.dart';
-import 'package:thisdatedoesnotexist/app/core/enum/database_status_enum.dart';
 // ignore: depend_on_referenced_packages
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
+import 'package:flutter_firebase_chat_core/flutter_firebase_chat_core.dart';
+import 'package:thisdatedoesnotexist/app/core/enum/database_status_enum.dart';
 import 'package:thisdatedoesnotexist/app/core/services/auth_service.dart';
 
 class DatabaseService {
