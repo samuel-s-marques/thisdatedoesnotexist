@@ -10,7 +10,7 @@ class DatabaseService {
 
   Future<DatabaseStatus> createUser() async {
     DatabaseStatus status = DatabaseStatus.unknown;
-    User authenticatedUser = authService.getUser();
+    final User authenticatedUser = authService.getUser();
 
     try {
       await FirebaseChatCore.instance.createUserInFirestore(
