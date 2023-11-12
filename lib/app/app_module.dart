@@ -19,7 +19,7 @@ class AppModule extends Module {
   void routes(r) {
     r.module('/', module: AuthModule());
     r.module('/home', module: HomeModule());
-    r.module('/chat', module: ChatModule());
+    r.module('/chat', module: const ChatModule());
     r.module('/settings', module: SettingsModule());
   }
 }

@@ -5,11 +5,13 @@ import 'package:thisdatedoesnotexist/app/features/profile/pages/profile_page.dar
 import 'package:thisdatedoesnotexist/app/features/profile/store/profile_store.dart';
 
 class ProfileModule extends WidgetModule {
+  const ProfileModule({super.key});
+
   @override
   void binds(Injector i) {
     i.addLazySingleton((i) => ProfileStore());
   }
 
   @override
-  Widget get view => ProfilePage();
+  Widget get view => const ProfilePage();
 }

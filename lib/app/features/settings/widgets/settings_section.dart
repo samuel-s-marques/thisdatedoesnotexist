@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:thisdatedoesnotexist/app/features/profile/widgets/section_widget.dart';
 
 class SettingsSection extends StatelessWidget {
-  final String title;
-  final List<Widget> content;
 
   const SettingsSection({
     super.key,
     required this.title,
     required this.content,
   });
+  final String title;
+  final List<Widget> content;
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +18,7 @@ class SettingsSection extends StatelessWidget {
       content: ListView(
         shrinkWrap: true,
         padding: EdgeInsets.zero,
-        physics: NeverScrollableScrollPhysics(),
+        physics: const NeverScrollableScrollPhysics(),
         children: content,
       ),
     );

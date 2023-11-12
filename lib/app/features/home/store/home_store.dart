@@ -10,31 +10,31 @@ class HomeStore = HomeStoreBase with _$HomeStore;
 
 abstract class HomeStoreBase with Store {
   List<Widget> pages = [
-    ChatModule(),
-    ProfileModule(),
+    const ChatModule(),
+    const ProfileModule(),
   ];
 
   Map<String, List<Widget>> appbars = {
     'Home': [
       IconButton(
         onPressed: () {},
-        icon: Icon(Icons.tune),
+        icon: const Icon(Icons.tune),
       )
     ],
     'Chat': [
       IconButton(
         onPressed: () {},
-        icon: Icon(Icons.search),
+        icon: const Icon(Icons.search),
       )
     ],
     'Profile': [
       IconButton(
         onPressed: () {},
-        icon: Icon(Icons.edit),
+        icon: const Icon(Icons.edit),
       ),
       IconButton(
         onPressed: () => Modular.to.pushNamed('/settings/'),
-        icon: Icon(Icons.settings),
+        icon: const Icon(Icons.settings),
       ),
     ]
   };

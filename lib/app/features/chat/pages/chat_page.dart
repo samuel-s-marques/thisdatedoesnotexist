@@ -29,7 +29,7 @@ class _ChatPageState extends State<ChatPage> {
         ),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           return Chat(
-            messages: [],
+            messages: const [],
             onSendPressed: (types.PartialText message) {},
             user: const types.User(id: '0'),
           );
