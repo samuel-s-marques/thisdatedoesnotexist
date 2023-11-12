@@ -13,19 +13,12 @@ class _SettingsPageState extends State<SettingsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        actions: [
-          IconButton(
-            onPressed: () {},
-            icon: Icon(Icons.search),
-          ),
-        ],
-      ),
+      appBar: AppBar(),
       body: SingleChildScrollView(
-        padding: EdgeInsets.symmetric(horizontal: 24, vertical: 15),
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 15),
         child: Column(
           children: [
-            SettingsSection(
+            const SettingsSection(
               title: 'Account Settings',
               content: [
                 SettingsTile(
@@ -40,7 +33,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 ),
               ],
             ),
-            SettingsSection(
+            const SettingsSection(
               title: 'Notification',
               content: [
                 SettingsTile(
@@ -55,7 +48,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 ),
               ],
             ),
-            SettingsSection(
+            const SettingsSection(
               title: 'Security',
               content: [
                 SettingsTile(
@@ -73,7 +66,7 @@ class _SettingsPageState extends State<SettingsPage> {
             SettingsSection(
               title: 'App Preferences',
               content: [
-                SettingsTile(
+                const SettingsTile(
                   title: 'Language',
                   leading: Icon(Icons.language),
                   subtitle: 'English',
@@ -81,7 +74,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 ),
                 SettingsTile(
                   title: 'Theme',
-                  leading: Icon(Icons.colorize),
+                  leading: const Icon(Icons.colorize),
                   subtitle: 'Light',
                   trailing: Switch(
                     value: false,
@@ -90,7 +83,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 ),
               ],
             ),
-            SettingsSection(
+            const SettingsSection(
               title: 'Help and Support',
               content: [
                 SettingsTile(
@@ -110,7 +103,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 ),
               ],
             ),
-            SettingsSection(
+            const SettingsSection(
               title: 'Legal and Terms',
               content: [
                 SettingsTile(
