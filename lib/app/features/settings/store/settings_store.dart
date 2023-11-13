@@ -11,6 +11,7 @@ class SettingsStore = SettingsStoreBase with _$SettingsStore;
 
 abstract class SettingsStoreBase with Store {
   AuthService authService = AuthService();
+  // TODO: move to JSON file
   Map<String, String> faq = {
     'What is this app?':
         '"This Date Does Not Exist" is a conceptual project designed for a portfolio. It introduces a unique digital experience where users interact with AI-generated characters in a chat and matchmaking environment. The project showcases the fusion of cutting-edge technology to create personalized and engaging interactions.',
