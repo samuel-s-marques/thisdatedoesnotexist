@@ -27,6 +27,12 @@ abstract class SettingsStoreBase with Store {
         "AI-generated photos using Stable Diffusion add an extra layer of authenticity to the characters' profiles, enhancing realism. This contributes to the overall goal of creating a more immersive and engaging user experience.",
   };
 
+  @observable
+  Map<String, String> filteredFaq = {};
+
+  @action
+  void searchFaq(String query) {}
+
   @action
   Future<void> deleteAccount(BuildContext context) async {
     if (await authService.deleteAccount() == AuthStatus.successful) {
