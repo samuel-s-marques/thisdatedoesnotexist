@@ -31,10 +31,23 @@ abstract class SettingsStoreBase with Store {
   String searchFaqQuery = '';
 
   @observable
-  Map<String, String> filteredFaq = {};
+  ObservableList<MapEntry<String, String>> filteredFaq = ObservableList();
 
   @action
-  void searchFaq(String query) {}
+  void searchFaq(String query) {
+    searchFaqQuery = query;
+    filteredFaq.clear();
+
+    if (searchFaqQuery.isEmpty) {
+      filteredFaq.clear();
+    } else {
+      faq.forEach((key, value) {
+        if (key.toLowerCase().contains(searchFaqQuery.toLowerCase()) || value.toLowerCase().contains(searchFaqQuery.toLowerCase())) {
+          filteredFaq.add(MapEntry(key, value));
+        }
+      });
+    }
+  }
 
   @action
   Future<void> deleteAccount(BuildContext context) async {
