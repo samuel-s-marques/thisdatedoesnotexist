@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:thisdatedoesnotexist/app/features/settings/store/settings_store.dart';
-import 'package:thisdatedoesnotexist/app/features/settings/widgets/settings_section.dart';
 import 'package:thisdatedoesnotexist/app/features/settings/widgets/settings_tile.dart';
 
 class SettingsPage extends StatefulWidget {
@@ -67,6 +66,7 @@ class _SettingsPageState extends State<SettingsPage> {
             SettingsTile(
               title: 'Log Out',
               leading: const Icon(Icons.logout, color: Colors.red),
+              titleStyle: const TextStyle(color: Colors.red),
               trailing: const Icon(Icons.arrow_forward_ios),
               onTap: () {
                 showDialog(
