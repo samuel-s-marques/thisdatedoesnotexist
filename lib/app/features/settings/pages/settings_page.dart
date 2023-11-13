@@ -60,10 +60,10 @@ class _SettingsPageState extends State<SettingsPage> {
               onTap: () {},
             ),
             SettingsTile(
-              title: 'Support',
+              title: 'Help & Support',
               leading: const Icon(Icons.contact_support),
               trailing: const Icon(Icons.arrow_forward_ios),
-              onTap: () {},
+              onTap: () => Modular.to.pushNamed('help'),
             ),
             SettingsTile(
               title: 'Log Out',
