@@ -28,6 +28,9 @@ abstract class SettingsStoreBase with Store {
   };
 
   @observable
+  String searchFaqQuery = '';
+
+  @observable
   Map<String, String> filteredFaq = {};
 
   @action
