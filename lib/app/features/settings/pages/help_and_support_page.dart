@@ -8,7 +8,9 @@ class HelpAndSupportPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+        title: const Text('Help & Support'),
+      ),
       body: ListView(
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 15),
         children: [
