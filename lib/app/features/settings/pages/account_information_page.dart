@@ -8,6 +8,16 @@ class AccountInformationPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold();
+    return Scaffold(
+      appBar: AppBar(),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 15),
+        child: Column(
+          children: [
+            
+          ],
+        ),
+      ),
+    );
   }
 }
