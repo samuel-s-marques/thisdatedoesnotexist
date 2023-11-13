@@ -4,7 +4,7 @@ import 'package:thisdatedoesnotexist/app/features/settings/store/settings_store.
 class AccountInformationPage extends StatelessWidget {
   AccountInformationPage({super.key});
 
-  final SettingsStore settingsStore = SettingsStore();
+  final SettingsStore store = SettingsStore();
 
   @override
   Widget build(BuildContext context) {
@@ -12,9 +12,27 @@ class AccountInformationPage extends StatelessWidget {
       appBar: AppBar(),
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 15),
-        child: Column(
+        child: Wrap(
+          runSpacing: 10,
           children: [
-            
+            TextField(
+              enabled: false,
+              controller: TextEditingController(
+                text: store.authService.getUser().displayName,
+              ),
+              decoration: const InputDecoration(
+                labelText: 'Name',
+              ),
+            ),
+            TextField(
+              enabled: false,
+              controller: TextEditingController(
+                text: store.authService.getUser().email,
+              ),
+              decoration: const InputDecoration(
+                labelText: 'E-mail',
+              ),
+            ),
           ],
         ),
       ),
