@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:thisdatedoesnotexist/app/features/settings/store/settings_store.dart';
 
 class FaqPage extends StatelessWidget {
   FaqPage({super.key});
 
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+  final SettingsStore store = SettingsStore();
 
   @override
   Widget build(BuildContext context) {
@@ -23,74 +26,35 @@ class FaqPage extends StatelessWidget {
                 ),
               ),
             ),
-            ListView(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              children: [
-                ListTile(
-                  title: Text('aaaa'),
-                ),
-                ListTile(
-                  title: Text('aaaa'),
-                ),
-                ListTile(
-                  title: Text('aaaa'),
-                ),
-                ListTile(
-                  title: Text('aaaa'),
-                ),
-                ListTile(
-                  title: Text('aaaa'),
-                ),
-                ListTile(
-                  title: Text('aaaa'),
-                ),
-                ListTile(
-                  title: Text('aaaa'),
-                ),
-                ListTile(
-                  title: Text('aaaa'),
-                ),
-                ListTile(
-                  title: Text('aaaa'),
-                ),
-                ListTile(
-                  title: Text('aaaa'),
-                ),
-                ListTile(
-                  title: Text('aaaa'),
-                ),
-                ListTile(
-                  title: Text('aaaa'),
-                ),
-                ListTile(
-                  title: Text('aaaa'),
-                ),
-                ListTile(
-                  title: Text('aaaa'),
-                ),
-                ListTile(
-                  title: Text('aaaa'),
-                ),
-                ListTile(
-                  title: Text('aaaa'),
-                ),
-                ListTile(
-                  title: Text('aaaa'),
-                ),
-                ListTile(
-                  title: Text('aaaa'),
-                ),
-                ListTile(
-                  title: Text('aaaa'),
-                ),
-                ListTile(
-                  title: Text('aaaa'),
-                ),
-                ListTile(
-                  title: Text('aaaa'),
-                ),
-              ],
+            Observer(
+              builder: (_) => ListView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: store.faq.length,
+                padding: EdgeInsets.zero,
+                itemBuilder: (context, index) {
+                  return ExpansionTile(
+                    tilePadding: EdgeInsets.zero,
+                    title: Text(
+                      store.faq.keys.elementAt(index),
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(left: 15, bottom: 15),
+                        child: Text(
+                          store.faq.values.elementAt(index),
+                          style: const TextStyle(
+                            fontSize: 14,
+                          ),
+                        ),
+                      ),
+                    ],
+                  );
+                },
+              ),
             ),
           ],
         ),
