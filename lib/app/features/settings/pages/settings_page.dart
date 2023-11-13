@@ -22,152 +22,73 @@ class _SettingsPageState extends State<SettingsPage> {
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 15),
         child: Column(
           children: [
-            SettingsSection(
-              title: 'Account Settings',
-              content: [
-                const SettingsTile(
-                  title: 'Account Information',
-                  leading: Icon(Icons.info),
-                  trailing: Icon(Icons.arrow_forward_ios),
-                ),
-                const SettingsTile(
-                  title: 'Change Password',
-                  leading: Icon(Icons.lock_person),
-                  trailing: Icon(Icons.arrow_forward_ios),
-                ),
-                SettingsTile(
-                  title: 'Delete Account',
-                  leading: const Icon(Icons.delete),
-                  trailing: const Icon(Icons.arrow_forward_ios),
-                  onTap: () {
-                    showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return AlertDialog(
-                          title: const Text('Delete Account'),
-                          content: const Text('Are you sure you want to delete your account?'),
-                          actions: [
-                            TextButton(
-                              onPressed: () => Modular.to.pop(),
-                              child: const Text('No'),
-                            ),
-                            TextButton(
-                              onPressed: () => store.deleteAccount(context),
-                              child: const Text('Yes'),
-                            ),
-                          ],
-                        );
-                      },
-                    );
-                  },
-                ),
-                SettingsTile(
-                  title: 'Log Out',
-                  leading: const Icon(Icons.logout),
-                  trailing: const Icon(Icons.arrow_forward_ios),
-                  onTap: () {
-                    showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return AlertDialog(
-                          title: const Text('Log Out'),
-                          content: const Text('Are you sure you want to log out?'),
-                          actions: [
-                            TextButton(
-                              onPressed: () => Modular.to.pop(),
-                              child: const Text('No'),
-                            ),
-                            TextButton(
-                              onPressed: () => store.logOut(context),
-                              child: const Text('Yes'),
-                            ),
-                          ],
-                        );
-                      },
-                    );
-                  },
-                ),
-              ],
+            SettingsTile(
+              title: 'Account',
+              leading: const Icon(Icons.person),
+              trailing: const Icon(Icons.arrow_forward_ios),
+              onTap: () => Modular.to.pushNamed('account'),
             ),
-            const SettingsSection(
-              title: 'Notification',
-              content: [
-                SettingsTile(
-                  title: 'Push Notifications',
-                  leading: Icon(Icons.notifications),
-                  trailing: Icon(Icons.arrow_forward_ios),
-                ),
-                SettingsTile(
-                  title: 'E-mail Notifications',
-                  leading: Icon(Icons.email),
-                  trailing: Icon(Icons.arrow_forward_ios),
-                ),
-              ],
+            SettingsTile(
+              title: 'Discovery Preferences',
+              leading: const Icon(Icons.explore),
+              trailing: const Icon(Icons.arrow_forward_ios),
+              onTap: () {},
             ),
-            const SettingsSection(
+            SettingsTile(
               title: 'Security',
-              content: [
-                SettingsTile(
-                  title: 'Two-Factor Authentication',
-                  leading: Icon(Icons.lock),
-                  trailing: Icon(Icons.arrow_forward_ios),
-                ),
-                SettingsTile(
-                  title: 'Account Linked Services',
-                  leading: Icon(Icons.link),
-                  trailing: Icon(Icons.arrow_forward_ios),
-                ),
-              ],
+              leading: const Icon(Icons.security),
+              trailing: const Icon(Icons.arrow_forward_ios),
+              onTap: () {},
             ),
-            SettingsSection(
+            SettingsTile(
+              title: 'Notifications',
+              leading: const Icon(Icons.notifications),
+              trailing: const Icon(Icons.arrow_forward_ios),
+              onTap: () {},
+            ),
+            SettingsTile(
               title: 'App Preferences',
-              content: [
-                const SettingsTile(
-                  title: 'Language',
-                  leading: Icon(Icons.language),
-                  subtitle: 'English',
-                  trailing: Icon(Icons.arrow_forward_ios),
-                ),
-                SettingsTile(
-                  title: 'Theme',
-                  leading: const Icon(Icons.colorize),
-                  subtitle: 'Light',
-                  trailing: Switch(
-                    value: false,
-                    onChanged: (value) {},
-                  ),
-                ),
-              ],
+              leading: const Icon(Icons.colorize),
+              trailing: const Icon(Icons.arrow_forward_ios),
+              onTap: () {},
             ),
-            const SettingsSection(
-              title: 'Help and Support',
-              content: [
-                SettingsTile(
-                  title: 'FAQs',
-                  leading: Icon(Icons.help),
-                  trailing: Icon(Icons.arrow_forward_ios),
-                ),
-                SettingsTile(
-                  title: 'Feedback',
-                  leading: Icon(Icons.feedback),
-                  trailing: Icon(Icons.arrow_forward_ios),
-                ),
-                SettingsTile(
-                  title: 'Contact Support',
-                  leading: Icon(Icons.contact_support),
-                  trailing: Icon(Icons.arrow_forward_ios),
-                ),
-              ],
+            SettingsTile(
+              title: 'Data',
+              leading: const Icon(Icons.analytics),
+              trailing: const Icon(Icons.arrow_forward_ios),
+              onTap: () {},
             ),
-            const SettingsSection(
-              title: 'Legal and Terms',
-              content: [
-                SettingsTile(
-                  title: 'Terms of Service and Privacy Policy',
-                  leading: Icon(Icons.policy),
-                  trailing: Icon(Icons.arrow_forward_ios),
-                ),
-              ],
+            SettingsTile(
+              title: 'Support',
+              leading: const Icon(Icons.contact_support),
+              trailing: const Icon(Icons.arrow_forward_ios),
+              onTap: () {},
+            ),
+            SettingsTile(
+              title: 'Log Out',
+              leading: const Icon(Icons.logout, color: Colors.red),
+              trailing: const Icon(Icons.arrow_forward_ios),
+              onTap: () {
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      title: const Text('Log Out'),
+                      content: const Text('Are you sure you want to log out?'),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Modular.to.pop(),
+                          child: const Text('No'),
+                        ),
+                        TextButton(
+                          onPressed: () => store.logOut(context),
+                          child: const Text('Yes'),
+                        ),
+                      ],
+                    );
+                  },
+                );
+              },
             ),
           ],
         ),
