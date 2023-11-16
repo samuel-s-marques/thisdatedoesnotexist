@@ -45,7 +45,13 @@ class _HomePageState extends State<HomePage> {
                     allowedSwipeDirection: AllowedSwipeDirection.only(left: true, right: true),
                     isLoop: false,
                     onSwipe: store.onSwipe,
-                    cardBuilder: (context, index, percentThresholdX, percentThresholdY) => store.cards[index],
+                    cardBuilder: (
+                      BuildContext context,
+                      int index,
+                      int percentThresholdX,
+                      int percentThresholdY,
+                    ) =>
+                        store.cards[index],
                   ),
                 ),
                 const SizedBox(height: 15),
