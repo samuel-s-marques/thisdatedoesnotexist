@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_card_swiper/flutter_card_swiper.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:thisdatedoesnotexist/app/features/home/store/home_store.dart';
 
@@ -25,7 +26,45 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
       body: Observer(
-        builder: (_) => [const Column(), ...store.pages].elementAt(store.selectedIndex),
+        builder: (_) => [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 15),
+            child: Column(
+              children: [
+                Flexible(
+                  child: CardSwiper(
+                    padding: EdgeInsets.zero,
+                    cardsCount: store.cards.length,
+                    cardBuilder: (context, index, percentThresholdX, percentThresholdY) => store.cards[index],
+                  ),
+                ),
+                const SizedBox(height: 15),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    IconButton(
+                      onPressed: () {},
+                      color: Colors.white,
+                      style: IconButton.styleFrom(
+                        backgroundColor: Colors.red,
+                      ),
+                      icon: const Icon(Icons.close),
+                    ),
+                    IconButton(
+                      onPressed: () {},
+                      color: Colors.white,
+                      style: IconButton.styleFrom(
+                        backgroundColor: Colors.green,
+                      ),
+                      icon: const Icon(Icons.check),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          ...store.pages
+        ].elementAt(store.selectedIndex),
       ),
       bottomNavigationBar: Observer(
         builder: (_) => BottomNavigationBar(
