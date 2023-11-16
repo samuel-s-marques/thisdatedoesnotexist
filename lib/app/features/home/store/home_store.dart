@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_card_swiper/flutter_card_swiper.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:mobx/mobx.dart';
 import 'package:thisdatedoesnotexist/app/features/chat/chat_module.dart';
@@ -56,6 +57,8 @@ abstract class HomeStoreBase with Store {
       ),
     ]
   };
+
+  CardSwiperController cardSwiperController = CardSwiperController();
 
   @observable
   int selectedIndex = 0;
