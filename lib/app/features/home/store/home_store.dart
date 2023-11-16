@@ -3,6 +3,7 @@ import 'package:flutter_card_swiper/flutter_card_swiper.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:mobx/mobx.dart';
 import 'package:thisdatedoesnotexist/app/features/chat/chat_module.dart';
+import 'package:thisdatedoesnotexist/app/features/home/models/character_model.dart';
 import 'package:thisdatedoesnotexist/app/features/profile/profile_module.dart';
 
 part 'home_store.g.dart';
@@ -15,22 +16,10 @@ abstract class HomeStoreBase with Store {
     const ProfileModule(),
   ];
 
-  List<Container> cards = [
-    Container(
-      alignment: Alignment.center,
-      color: Colors.blue,
-      child: const Text('1'),
-    ),
-    Container(
-      alignment: Alignment.center,
-      color: Colors.red,
-      child: const Text('2'),
-    ),
-    Container(
-      alignment: Alignment.center,
-      color: Colors.purple,
-      child: const Text('3'),
-    )
+  List<CharacterModel> cards = [
+    CharacterModel(name: "John", surname: "Doe", age: 18,),
+    CharacterModel(name: "Name", surname: "Surname", age: 18,),
+    CharacterModel(name: "Example 1", surname: "Example 2", age: 78,),
   ];
 
   Map<String, List<Widget>> appbars = {
