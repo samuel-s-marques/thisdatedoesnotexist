@@ -44,7 +44,7 @@ class _HomePageState extends State<HomePage> {
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     IconButton(
-                      onPressed: () {},
+                      onPressed: () => store.cardSwiperController.swipeLeft(),
                       color: Colors.white,
                       style: IconButton.styleFrom(
                         backgroundColor: Colors.red,
@@ -52,7 +52,7 @@ class _HomePageState extends State<HomePage> {
                       icon: const Icon(Icons.close),
                     ),
                     IconButton(
-                      onPressed: () {},
+                      onPressed: () => store.cardSwiperController.swipeRight(),
                       color: Colors.white,
                       style: IconButton.styleFrom(
                         backgroundColor: Colors.green,
