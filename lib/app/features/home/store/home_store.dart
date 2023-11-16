@@ -60,6 +60,17 @@ abstract class HomeStoreBase with Store {
 
   CardSwiperController cardSwiperController = CardSwiperController();
 
+  bool onSwipe(
+    int previousIndex,
+    int? currentIndex,
+    CardSwiperDirection direction,
+  ) {
+    debugPrint(
+      'The card $previousIndex was swiped to the ${direction.name}. Now the card $currentIndex is on top',
+    );
+    return true;
+  }
+
   @observable
   int selectedIndex = 0;
 
