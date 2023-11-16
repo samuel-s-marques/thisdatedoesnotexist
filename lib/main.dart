@@ -1,3 +1,4 @@
+import 'package:feedback/feedback.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
@@ -15,9 +16,11 @@ void main() async {
       options.tracesSampleRate = 1.0;
     },
     appRunner: () => runApp(
-      ModularApp(
-        module: AppModule(),
-        child: const AppWidget(),
+      BetterFeedback(
+        child: ModularApp(
+          module: AppModule(),
+          child: const AppWidget(),
+        ),
       ),
     ),
   );

@@ -15,7 +15,7 @@ class SettingsModule extends Module {
   void routes(r) {
     r.child('/', child: (context) => const SettingsPage());
     r.child('/account', child: (context) => AccountInformationPage());
-    r.child('/help', child: (context) => const HelpAndSupportPage());
-    r.child('/faq', child: (context) => FaqPage());
+    r.child('/help', child: (context) => HelpAndSupportPage());
+    r.child('/faq', child: (context) => const FaqPage());
   }
 }

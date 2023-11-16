@@ -11,6 +11,8 @@ class SettingsStore = SettingsStoreBase with _$SettingsStore;
 
 abstract class SettingsStoreBase with Store {
   AuthService authService = AuthService();
+  String server = const String.fromEnvironment('SERVER');
+
   // TODO: move to JSON file
   Map<String, String> faq = {
     'What is this app?':
