@@ -14,6 +14,12 @@ class _HomePageState extends State<HomePage> {
   HomeStore store = HomeStore();
 
   @override
+  void dispose() {
+    store.cardSwiperController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: PreferredSize(
