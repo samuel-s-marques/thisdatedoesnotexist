@@ -14,6 +14,24 @@ abstract class HomeStoreBase with Store {
     const ProfileModule(),
   ];
 
+  List<Container> cards = [
+    Container(
+      alignment: Alignment.center,
+      color: Colors.blue,
+      child: const Text('1'),
+    ),
+    Container(
+      alignment: Alignment.center,
+      color: Colors.red,
+      child: const Text('2'),
+    ),
+    Container(
+      alignment: Alignment.center,
+      color: Colors.purple,
+      child: const Text('3'),
+    )
+  ];
+
   Map<String, List<Widget>> appbars = {
     'Home': [
       IconButton(
