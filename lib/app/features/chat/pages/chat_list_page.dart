@@ -20,7 +20,7 @@ class _ChatListPageState extends State<ChatListPage> {
             name: 'Samuel',
             message: 'Hiiii',
             time: DateTime.now(),
-            avatarUrl: 'https://placehold.co/256x256',
+            avatarUrl: 'https://placehold.co/256x256/png',
           );
         },
       ),
