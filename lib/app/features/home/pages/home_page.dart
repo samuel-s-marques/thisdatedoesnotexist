@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_card_swiper/flutter_card_swiper.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:thisdatedoesnotexist/app/features/home/store/home_store.dart';
+import 'package:thisdatedoesnotexist/app/features/home/widgets/card_widget.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -50,8 +51,9 @@ class _HomePageState extends State<HomePage> {
                       int index,
                       int percentThresholdX,
                       int percentThresholdY,
-                    ) =>
-                        store.cards[index],
+                    ) {
+                      return CardWidget(character: store.cards[index]);
+                    },
                   ),
                 ),
                 const SizedBox(height: 15),
