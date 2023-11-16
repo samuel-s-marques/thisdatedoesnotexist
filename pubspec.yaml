@@ -28,6 +28,7 @@ dependencies:
   feedback: ^3.0.0
   dio: ^5.3.3
   path_provider: ^2.1.1
+  flutter_card_swiper: ^6.0.0
 
 dev_dependencies:
   flutter_test:
