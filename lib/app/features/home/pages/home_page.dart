@@ -37,6 +37,7 @@ class _HomePageState extends State<HomePage> {
                     cardsCount: store.cards.length,
                     controller: store.cardSwiperController,
                     allowedSwipeDirection: AllowedSwipeDirection.only(left: true, right: true),
+                    isLoop: false,
                     onSwipe: store.onSwipe,
                     cardBuilder: (context, index, percentThresholdX, percentThresholdY) => store.cards[index],
                   ),
