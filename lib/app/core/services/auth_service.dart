@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_firebase_chat_core/flutter_firebase_chat_core.dart';
+import 'package:flutter_modular/flutter_modular.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:thisdatedoesnotexist/app/core/enum/auth_status_enum.dart';
 import 'package:thisdatedoesnotexist/app/core/exceptions/auth_exception.dart';
@@ -111,7 +112,7 @@ class AuthService {
     final User? user = _auth.currentUser;
 
     if (user == null) {
-      // TODO: redirect to /auth
+      Modular.to.pushNamed('/');
     }
 
     return user!;
