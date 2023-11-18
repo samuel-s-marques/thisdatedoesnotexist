@@ -23,6 +23,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void initState() {
+    store.getTodayCards();
     UserModel(uid: store.authService.getUser().uid).getSwipes().then((swipes) => store.setSwipes(swipes));
     super.initState();
   }
