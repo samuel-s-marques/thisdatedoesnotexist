@@ -17,6 +17,9 @@ abstract class HomeStoreBase with Store {
   FirebaseFirestore db = FirebaseFirestore.instance;
   AuthService authService = AuthService();
 
+  @observable
+  int swipes = 20;
+
   List<Widget> pages = [
     const ChatModule(),
     const ProfileModule(),
@@ -76,12 +79,23 @@ abstract class HomeStoreBase with Store {
     CardSwiperDirection direction,
   ) async {
     try {
+      if (swipes == 0) {
+        return false;
+      }
+
       await db.collection('swipes').add({
         'targetId': cards[previousIndex].uuid,
         'userId': authService.getUser().uid,
         'direction': direction.name,
         'createdAt': Timestamp.fromDate(DateTime.now()),
       });
+
+      swipes--;
+
+      await db.collection('users').doc(authService.getUser().uid).set({
+        'swipes': swipes,
+        'lastSwipe': Timestamp.fromDate(DateTime.now()),
+      }, SetOptions(merge: true));
 
       return true;
     } catch (exception, stackTrace) {
@@ -101,4 +115,7 @@ abstract class HomeStoreBase with Store {
   void setIndex(int index) {
     selectedIndex = index;
   }
+
+  @action
+  void setSwipes(int swipes) => this.swipes = swipes;
 }
