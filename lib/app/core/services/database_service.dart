@@ -14,7 +14,11 @@ class DatabaseService {
   Future<DatabaseStatus> createUser() async {
     DatabaseStatus status = DatabaseStatus.unknown;
     final User authenticatedUser = authService.getUser();
-    final UserModel user = UserModel(uid: authenticatedUser.uid);
+    final UserModel user = UserModel(
+      uid: authenticatedUser.uid,
+      active: false,
+      swipes: 20,
+    );
 
     try {
       await FirebaseChatCore.instance.createUserInFirestore(
@@ -32,5 +36,19 @@ class DatabaseService {
     }
 
     return status;
+  }
+
+  Future<UserModel> getUser() async {
+    final User authenticatedUser = authService.getUser();
+    final DocumentSnapshot<Map<String, dynamic>> user = await db.collection('users').doc(authenticatedUser.uid).get();
+
+    return UserModel.fromMap(user.data()!);
+  }
+
+  Future<bool> userExists() async {
+    final User authenticatedUser = authService.getUser();
+    final DocumentSnapshot<Map<String, dynamic>> user = await db.collection('users').doc(authenticatedUser.uid).get();
+
+    return user.exists;
   }
 }
