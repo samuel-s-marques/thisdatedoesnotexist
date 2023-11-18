@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_card_swiper/flutter_card_swiper.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:thisdatedoesnotexist/app/core/models/user_model.dart';
 import 'package:thisdatedoesnotexist/app/features/home/store/home_store.dart';
 import 'package:thisdatedoesnotexist/app/features/home/widgets/card_widget.dart';
 
@@ -18,6 +19,12 @@ class _HomePageState extends State<HomePage> {
   void dispose() {
     store.cardSwiperController.dispose();
     super.dispose();
+  }
+
+  @override
+  void initState() {
+    UserModel(uid: store.authService.getUser().uid).getSwipes().then((swipes) => store.setSwipes(swipes));
+    super.initState();
   }
 
   @override
