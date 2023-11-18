@@ -1,16 +1,20 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 // ignore: depend_on_referenced_packages
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_firebase_chat_core/flutter_firebase_chat_core.dart';
 import 'package:thisdatedoesnotexist/app/core/enum/database_status_enum.dart';
+import 'package:thisdatedoesnotexist/app/core/models/user_model.dart';
 import 'package:thisdatedoesnotexist/app/core/services/auth_service.dart';
 
 class DatabaseService {
   final AuthService authService = AuthService();
+  FirebaseFirestore db = FirebaseFirestore.instance;
 
   Future<DatabaseStatus> createUser() async {
     DatabaseStatus status = DatabaseStatus.unknown;
     final User authenticatedUser = authService.getUser();
+    final UserModel user = UserModel(uid: authenticatedUser.uid);
 
     try {
       await FirebaseChatCore.instance.createUserInFirestore(
@@ -20,6 +24,7 @@ class DatabaseService {
           imageUrl: authenticatedUser.photoURL,
         ),
       );
+      await db.collection('users').doc(authenticatedUser.uid).set(user.toMap(), SetOptions(merge: true));
 
       status = DatabaseStatus.successful;
     } catch (error) {
