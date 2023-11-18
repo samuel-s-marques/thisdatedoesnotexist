@@ -18,7 +18,7 @@ class UserModel {
   factory UserModel.fromMap(Map<String, dynamic> map) {
     return UserModel(
       uid: map['uid'],
-      lastSwipe: (map['lastSwipe'] as Timestamp).toDate(),
+      lastSwipe: map['lastSwipe'] != null ? (map['lastSwipe'] as Timestamp).toDate() : null,
       active: map['active'],
       swipes: map['swipes'],
     );
