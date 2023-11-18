@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_card_swiper/flutter_card_swiper.dart';
 import 'package:flutter_modular/flutter_modular.dart';
@@ -16,6 +17,7 @@ class HomeStore = HomeStoreBase with _$HomeStore;
 abstract class HomeStoreBase with Store {
   FirebaseFirestore db = FirebaseFirestore.instance;
   AuthService authService = AuthService();
+  String server = const String.fromEnvironment('SERVER');
 
   @observable
   int swipes = 20;
@@ -25,26 +27,8 @@ abstract class HomeStoreBase with Store {
     const ProfileModule(),
   ];
 
-  List<CharacterModel> cards = [
-    CharacterModel(
-      uuid: 'uuid-1',
-      name: 'John',
-      surname: 'Doe',
-      age: 18,
-    ),
-    CharacterModel(
-      uuid: 'uuid-2',
-      name: 'Name',
-      surname: 'Surname',
-      age: 18,
-    ),
-    CharacterModel(
-      uuid: 'uuid-3',
-      name: 'Example 1',
-      surname: 'Example 2',
-      age: 78,
-    ),
-  ];
+  @observable
+  List<CharacterModel> cards = [];
 
   Map<String, List<Widget>> appbars = {
     'Home': [
@@ -105,6 +89,19 @@ abstract class HomeStoreBase with Store {
       );
 
       return false;
+    }
+  }
+
+  @action
+  Future<void> getTodayCards() async {
+    final Response<dynamic> response = await Dio().get(
+      '$server/api/character?sex=female&minAge=18&maxAge=21',
+    );
+
+    if (response.statusCode == 200) {
+      cards = (response.data['data'] as List<dynamic>).map((e) => CharacterModel.fromMap(e)).toList();
+    } else {
+      cards = [];
     }
   }
 
