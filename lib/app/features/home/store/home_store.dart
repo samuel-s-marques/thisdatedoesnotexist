@@ -1,7 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_card_swiper/flutter_card_swiper.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:mobx/mobx.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
+import 'package:thisdatedoesnotexist/app/core/services/auth_service.dart';
 import 'package:thisdatedoesnotexist/app/features/chat/chat_module.dart';
 import 'package:thisdatedoesnotexist/app/features/home/models/character_model.dart';
 import 'package:thisdatedoesnotexist/app/features/profile/profile_module.dart';
@@ -11,6 +14,9 @@ part 'home_store.g.dart';
 class HomeStore = HomeStoreBase with _$HomeStore;
 
 abstract class HomeStoreBase with Store {
+  FirebaseFirestore db = FirebaseFirestore.instance;
+  AuthService authService = AuthService();
+
   List<Widget> pages = [
     const ChatModule(),
     const ProfileModule(),
@@ -18,18 +24,21 @@ abstract class HomeStoreBase with Store {
 
   List<CharacterModel> cards = [
     CharacterModel(
-      name: "John",
-      surname: "Doe",
+      uuid: 'uuid-1',
+      name: 'John',
+      surname: 'Doe',
       age: 18,
     ),
     CharacterModel(
-      name: "Name",
-      surname: "Surname",
+      uuid: 'uuid-2',
+      name: 'Name',
+      surname: 'Surname',
       age: 18,
     ),
     CharacterModel(
-      name: "Example 1",
-      surname: "Example 2",
+      uuid: 'uuid-3',
+      name: 'Example 1',
+      surname: 'Example 2',
       age: 78,
     ),
   ];
@@ -61,18 +70,28 @@ abstract class HomeStoreBase with Store {
 
   CardSwiperController cardSwiperController = CardSwiperController();
 
-  bool onSwipe(
+  Future<bool> onSwipe(
     int previousIndex,
     int? currentIndex,
     CardSwiperDirection direction,
-  ) {
-    if (direction.name == 'right') {
-      // TODO: Add like
-    } else {
-      // TODO: Add dislike
-    }
+  ) async {
+    try {
+      await db.collection('swipes').add({
+        'targetId': cards[previousIndex].uuid,
+        'userId': authService.getUser().uid,
+        'direction': direction.name,
+        'createdAt': Timestamp.fromDate(DateTime.now()),
+      });
 
-    return true;
+      return true;
+    } catch (exception, stackTrace) {
+      await Sentry.captureException(
+        exception,
+        stackTrace: stackTrace,
+      );
+
+      return false;
+    }
   }
 
   @observable
