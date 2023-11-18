@@ -2,7 +2,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class UserModel {
-  UserModel({required this.uid, this.lastSwipe});
+  UserModel({
+    required this.uid,
+    this.lastSwipe,
+    this.swipes,
+    this.active,
+  });
 
   factory UserModel.fromFirebase(User user) {
     return UserModel(
@@ -13,20 +18,25 @@ class UserModel {
   factory UserModel.fromMap(Map<String, dynamic> map) {
     return UserModel(
       uid: map['uid'],
-      lastSwipe: map['lastSwipe'],
+      lastSwipe: (map['lastSwipe'] as Timestamp).toDate(),
+      active: map['active'],
+      swipes: map['swipes'],
     );
   }
 
   FirebaseFirestore db = FirebaseFirestore.instance;
 
   final String uid;
-  final int swipes = 20;
+  final int? swipes;
+  final bool? active;
   final DateTime? lastSwipe;
 
   Map<String, dynamic> toMap() {
     return {
+      'uid': uid,
       'swipes': swipes,
-      'lastSwipe': lastSwipe,
+      'lastSwipe': Timestamp.fromDate(lastSwipe!),
+      'active': active,
     };
   }
 
@@ -34,5 +44,11 @@ class UserModel {
     final DocumentSnapshot<Map<String, dynamic>> documentSnapshot = await db.collection('users').doc(uid).get();
 
     return documentSnapshot.data()!['swipes'] ?? 0;
+  }
+
+    Future<bool> isActive() async {
+    final DocumentSnapshot<Map<String, dynamic>> documentSnapshot = await db.collection('users').doc(uid).get();
+
+    return documentSnapshot.data()!['active'] ?? false;
   }
 }
