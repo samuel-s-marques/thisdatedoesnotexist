@@ -4,6 +4,7 @@ import 'package:mobx/mobx.dart';
 import 'package:thisdatedoesnotexist/app/core/enum/auth_status_enum.dart';
 import 'package:thisdatedoesnotexist/app/core/enum/database_status_enum.dart';
 import 'package:thisdatedoesnotexist/app/core/exceptions/auth_exception.dart';
+import 'package:thisdatedoesnotexist/app/core/models/user_model.dart';
 import 'package:thisdatedoesnotexist/app/core/services/auth_service.dart';
 import 'package:thisdatedoesnotexist/app/core/services/database_service.dart';
 import 'package:thisdatedoesnotexist/app/core/util.dart';
@@ -74,13 +75,24 @@ abstract class AuthStoreBase with Store {
     isLoading = true;
 
     final AuthStatus status = await authService.loginWithGoogle();
+    final DatabaseService databaseService = DatabaseService();
 
     if (status == AuthStatus.successful) {
       // TODO: Redirect to HomePage or Onboarding
       context.showSnackBarSuccess(message: 'Signed in with Google!');
 
       // TODO: move this line to the end of onboarding
-      if (await DatabaseService().createUser() == DatabaseStatus.successful) {
+      if (await databaseService.userExists() == false) {
+        if (await databaseService.createUser() == DatabaseStatus.successful) {
+          await Modular.to.pushReplacementNamed('/home');
+        }
+      }
+
+      final UserModel user = await databaseService.getUser();
+      if (user.active == false) {
+        // TODO: Redirect to Onboarding
+        await Modular.to.pushReplacementNamed('/home');
+      } else {
         await Modular.to.pushReplacementNamed('/home');
       }
     } else {
