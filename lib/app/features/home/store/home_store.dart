@@ -17,9 +17,21 @@ abstract class HomeStoreBase with Store {
   ];
 
   List<CharacterModel> cards = [
-    CharacterModel(name: "John", surname: "Doe", age: 18,),
-    CharacterModel(name: "Name", surname: "Surname", age: 18,),
-    CharacterModel(name: "Example 1", surname: "Example 2", age: 78,),
+    CharacterModel(
+      name: "John",
+      surname: "Doe",
+      age: 18,
+    ),
+    CharacterModel(
+      name: "Name",
+      surname: "Surname",
+      age: 18,
+    ),
+    CharacterModel(
+      name: "Example 1",
+      surname: "Example 2",
+      age: 78,
+    ),
   ];
 
   Map<String, List<Widget>> appbars = {
@@ -54,9 +66,12 @@ abstract class HomeStoreBase with Store {
     int? currentIndex,
     CardSwiperDirection direction,
   ) {
-    debugPrint(
-      'The card $previousIndex was swiped to the ${direction.name}. Now the card $currentIndex is on top',
-    );
+    if (direction.name == 'right') {
+      // TODO: Add like
+    } else {
+      // TODO: Add dislike
+    }
+
     return true;
   }
 
