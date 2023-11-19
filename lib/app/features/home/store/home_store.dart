@@ -96,7 +96,7 @@ abstract class HomeStoreBase with Store {
   @action
   Future<List<CharacterModel>> getTodayCards() async {
     final Response<dynamic> response = await Dio().get(
-      '$server/api/character?sex=female&minAge=18&maxAge=21',
+      '$server/api/character?sex=female&minAge=18&maxAge=21&user=${authService.getUser().uid}',
     );
 
     if (response.statusCode == 200) {
