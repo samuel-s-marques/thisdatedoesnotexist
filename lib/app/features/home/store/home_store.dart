@@ -57,6 +57,7 @@ abstract class HomeStoreBase with Store {
 
   CardSwiperController cardSwiperController = CardSwiperController();
 
+  @action
   Future<bool> onSwipe(
     int previousIndex,
     int? currentIndex,
@@ -93,15 +94,15 @@ abstract class HomeStoreBase with Store {
   }
 
   @action
-  Future<void> getTodayCards() async {
+  Future<List<CharacterModel>> getTodayCards() async {
     final Response<dynamic> response = await Dio().get(
       '$server/api/character?sex=female&minAge=18&maxAge=21',
     );
 
     if (response.statusCode == 200) {
-      cards = (response.data['data'] as List<dynamic>).map((e) => CharacterModel.fromMap(e)).toList();
+      return (response.data['data'] as List<dynamic>).map((e) => CharacterModel.fromMap(e)).toList();
     } else {
-      cards = [];
+      return [];
     }
   }
 
