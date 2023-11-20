@@ -38,9 +38,8 @@ abstract class AuthStoreBase with Store {
     );
 
     if (status == AuthStatus.successful) {
-      // TODO: Redirect to HomePage or Onboarding
       context.showSnackBarSuccess(message: 'Signed up with e-mail and password!');
-      await Modular.to.pushReplacementNamed('/home');
+      await Modular.to.pushReplacementNamed('/onboarding');
     } else {
       final String error = AuthExceptionHandler.generateErrorMessage(status);
       context.showSnackBarError(message: error);
@@ -59,9 +58,8 @@ abstract class AuthStoreBase with Store {
     );
 
     if (status == AuthStatus.successful) {
-      // TODO: Redirect to HomePage or Onboarding
       context.showSnackBarSuccess(message: 'Signed in with e-mail and password!');
-      await Modular.to.pushReplacementNamed('/home');
+      await Modular.to.pushReplacementNamed('/onboarding');
     } else {
       final String error = AuthExceptionHandler.generateErrorMessage(status);
       context.showSnackBarError(message: error);
@@ -91,7 +89,7 @@ abstract class AuthStoreBase with Store {
       final UserModel user = await databaseService.getUser();
       if (user.active == false) {
         // TODO: Redirect to Onboarding
-        await Modular.to.pushReplacementNamed('/home');
+        await Modular.to.pushReplacementNamed('/onboarding');
       } else {
         await Modular.to.pushReplacementNamed('/home');
       }
