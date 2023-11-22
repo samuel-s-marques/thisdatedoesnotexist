@@ -87,6 +87,13 @@ class OnboardingPage extends StatelessWidget {
       ],
       showNextButton: false,
       showDoneButton: false,
+      dotsDecorator: DotsDecorator(
+        size: const Size.square(10),
+        activeSize: const Size(20, 10),
+        activeColor: Theme.of(context).colorScheme.primary,
+        color: Colors.black26,
+        activeShape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
+      ),
     );
   }
 }
