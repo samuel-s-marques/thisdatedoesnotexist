@@ -1,8 +1,5 @@
-import 'dart:convert';
-
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:introduction_screen/introduction_screen.dart';
 import 'package:mobx/mobx.dart';
 import 'package:thisdatedoesnotexist/app/core/models/hobby_model.dart';
 import 'package:thisdatedoesnotexist/app/core/util.dart';
@@ -13,6 +10,7 @@ class OnboardingStore = OnboardingStoreBase with _$OnboardingStore;
 
 abstract class OnboardingStoreBase with Store {
   String server = const String.fromEnvironment('SERVER');
+  RangeValues ageValues = const RangeValues(18, 50);
 
   @observable
   ObservableList<Hobby> selectedHobbies = ObservableList();
