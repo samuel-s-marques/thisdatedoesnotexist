@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:introduction_screen/introduction_screen.dart';
@@ -14,6 +13,7 @@ class OnboardingPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return IntroductionScreen(
+      bodyPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 15),
       pages: [
         PageViewModel(
           title: 'Page one',
