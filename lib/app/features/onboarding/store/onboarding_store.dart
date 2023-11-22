@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:introduction_screen/introduction_screen.dart';
 import 'package:mobx/mobx.dart';
 import 'package:thisdatedoesnotexist/app/core/models/hobby_model.dart';
+import 'package:thisdatedoesnotexist/app/core/util.dart';
 
 part 'onboarding_store.g.dart';
 
@@ -17,7 +18,23 @@ abstract class OnboardingStoreBase with Store {
   ObservableList<Hobby> selectedHobbies = ObservableList();
 
   @action
-  void selectHobby() {}
+  void selectHobby({
+    required bool selected,
+    required Hobby hobby,
+    required BuildContext context,
+  }) {
+    if (selected) {
+      if (selectedHobbies.length < 4) {
+        selectedHobbies.add(hobby);
+      } else {
+        context.showSnackBarError(
+          message: 'You can only select up to 4 hobbies.',
+        );
+      }
+    } else {
+      selectedHobbies.remove(hobby);
+    }
+  }
 
   Future<Map<String, List<Hobby>>> getHobbies() async {
     final Dio dio = Dio();
