@@ -54,8 +54,16 @@ class OnboardingPage extends StatelessWidget {
                                 Wrap(
                                   spacing: 5,
                                   children: groupedHobbies[key]!.map((Hobby hobby) {
-                                    return ActionChip(
+                                    final bool isSelected = store.selectedHobbies.contains(hobby);
+
+                                    return FilterChip(
                                       label: Text(hobby.name),
+                                      selected: isSelected,
+                                      onSelected: (bool selected) => store.selectHobby(
+                                        selected: selected,
+                                        hobby: hobby,
+                                        context: context,
+                                      ),
                                     );
                                   }).toList(),
                                 ),
