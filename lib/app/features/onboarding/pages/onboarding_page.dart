@@ -5,9 +5,14 @@ import 'package:thisdatedoesnotexist/app/core/models/hobby_model.dart';
 import 'package:thisdatedoesnotexist/app/core/util.dart';
 import 'package:thisdatedoesnotexist/app/features/onboarding/store/onboarding_store.dart';
 
-class OnboardingPage extends StatelessWidget {
+class OnboardingPage extends StatefulWidget {
   OnboardingPage({super.key});
 
+  @override
+  State<OnboardingPage> createState() => _OnboardingPageState();
+}
+
+class _OnboardingPageState extends State<OnboardingPage> {
   final OnboardingStore store = OnboardingStore();
 
   @override
@@ -17,7 +22,7 @@ class OnboardingPage extends StatelessWidget {
       pages: [
         PageViewModel(
           title: 'Page one',
-          bodyWidget: Column(
+          bodyWidget: const Column(
             children: [
               Text("Page one"),
             ],
@@ -84,6 +89,54 @@ class OnboardingPage extends StatelessWidget {
             ],
           ),
         ),
+        PageViewModel(
+          title: 'Your Preferences',
+          bodyWidget: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text('Time to set your preferences. What are you looking for? The more we understand you, the better we can match you.'),
+              const SizedBox(height: 15),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text('Age range'),
+                  Text.rich(
+                    TextSpan(
+                      children: [
+                        TextSpan(
+                          text: store.ageValues.start.round().toString(),
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const TextSpan(
+                          text: ' - ',
+                        ),
+                        TextSpan(
+                          text: store.ageValues.end.round().toString(),
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 10),
+              RangeSlider(
+                min: 18,
+                max: 50,
+                values: store.ageValues,
+                onChanged: (RangeValues values) {
+                  setState(() {
+                    store.ageValues = values;
+                  });
+                },
+              ),
+            ],
+          ),
+        )
       ],
       showNextButton: false,
       showDoneButton: false,
