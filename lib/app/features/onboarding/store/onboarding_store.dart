@@ -31,9 +31,17 @@ abstract class OnboardingStoreBase with Store {
   @observable
   String selectedRelationshipGoal = '';
 
+  @observable
+  String selectedPoliticalView = '';
+
   @action
   void selectRelationshipGoal(String goal) {
     selectedRelationshipGoal = goal;
+  }
+
+  @action
+  void selectPoliticalView(String view) {
+    selectedPoliticalView = view;
   }
 
   @action
@@ -96,10 +104,31 @@ abstract class OnboardingStoreBase with Store {
         final String goal = data[index]['name'];
         goals.add(goal);
       }
+      goals.add('All');
 
       return goals;
     } else {
       return goals;
+    }
+  }
+
+  Future<List<String>> getPoliticalViews() async {
+    final List<String> views = [];
+
+    final Response response = await dio.get('$server/api/political-views');
+
+    if (response.statusCode == 200) {
+      final List<dynamic> data = response.data['data'];
+
+      for (int index = 0; index < data.length; index++) {
+        final String view = data[index]['name'];
+        views.add(view);
+      }
+      views.add('All');
+
+      return views;
+    } else {
+      return views;
     }
   }
 
