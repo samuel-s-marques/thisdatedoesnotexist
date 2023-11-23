@@ -19,11 +19,11 @@ abstract class OnboardingStoreBase with Store {
   ObservableList<Hobby> selectedHobbies = ObservableList();
 
   @observable
-  String selectedGoal = '';
+  String selectedRelationshipGoal = '';
 
   @action
-  void selectGoal(String goal) {
-    selectedGoal = goal;
+  void selectRelationshipGoal(String goal) {
+    selectedRelationshipGoal = goal;
   }
 
   @action

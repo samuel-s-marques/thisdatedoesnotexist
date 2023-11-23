@@ -147,12 +147,12 @@ class _OnboardingPageState extends State<OnboardingPage> {
                       builder: (_) => Wrap(
                         spacing: 5,
                         children: goals.map((String goal) {
-                          final bool isSelected = store.selectedGoal == goal;
+                          final bool isSelected = store.selectedRelationshipGoal == goal;
 
                           return ChoiceChip(
                             label: Text(goal.capitalize()),
                             selected: isSelected,
-                            onSelected: (_) => store.selectGoal(goal),
+                            onSelected: (_) => store.selectRelationshipGoal(goal),
                           );
                         }).toList(),
                       ),
