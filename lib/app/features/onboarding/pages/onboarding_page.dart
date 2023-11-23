@@ -91,10 +91,8 @@ class _OnboardingPageState extends State<OnboardingPage> {
                     );
                   }
 
-                  return Center(
-                    child: CircularProgressIndicator(
-                      color: Theme.of(context).primaryColor,
-                    ),
+                  return const Center(
+                    child: CircularProgressIndicator(),
                   );
                 },
               ),
@@ -171,10 +169,8 @@ class _OnboardingPageState extends State<OnboardingPage> {
                     );
                   }
 
-                  return Center(
-                    child: CircularProgressIndicator(
-                      color: Theme.of(context).primaryColor,
-                    ),
+                  return const Center(
+                    child: CircularProgressIndicator(),
                   );
                 },
               ),
@@ -196,7 +192,8 @@ class _OnboardingPageState extends State<OnboardingPage> {
         ),
       ],
       showNextButton: false,
-      showDoneButton: false,
+      done: const Text('Done'),
+      onDone: () async => store.onDone(context),
       dotsDecorator: DotsDecorator(
         size: const Size.square(10),
         activeSize: const Size(20, 10),
