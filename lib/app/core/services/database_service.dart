@@ -11,14 +11,9 @@ class DatabaseService {
   final AuthService authService = AuthService();
   FirebaseFirestore db = FirebaseFirestore.instance;
 
-  Future<DatabaseStatus> createUser() async {
+  Future<DatabaseStatus> createUser(UserModel user) async {
     DatabaseStatus status = DatabaseStatus.unknown;
     final User authenticatedUser = authService.getUser();
-    final UserModel user = UserModel(
-      uid: authenticatedUser.uid,
-      active: false,
-      swipes: 20,
-    );
 
     try {
       await FirebaseChatCore.instance.createUserInFirestore(
@@ -50,5 +45,15 @@ class DatabaseService {
     final DocumentSnapshot<Map<String, dynamic>> user = await db.collection('users').doc(authenticatedUser.uid).get();
 
     return user.exists;
+  }
+
+  Future<DatabaseStatus> updateUser(UserModel user) async {
+    try {
+      final User authenticatedUser = authService.getUser();
+      await db.collection('users').doc(authenticatedUser.uid).set(user.toMap(), SetOptions(merge: true));
+      return DatabaseStatus.successful;
+    } catch (e) {
+      return DatabaseStatus.failure;
+    }
   }
 }
