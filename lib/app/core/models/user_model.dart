@@ -7,6 +7,7 @@ class UserModel {
     this.lastSwipe,
     this.swipes,
     this.active,
+    this.relationshipGoal,
   });
 
   factory UserModel.fromFirebase(User user) {
@@ -21,6 +22,7 @@ class UserModel {
       lastSwipe: map['lastSwipe'] != null ? (map['lastSwipe'] as Timestamp).toDate() : null,
       active: map['active'],
       swipes: map['swipes'],
+      relationshipGoal: map['relationshipGoal'],
     );
   }
 
@@ -30,6 +32,7 @@ class UserModel {
   final int? swipes;
   final bool? active;
   final DateTime? lastSwipe;
+  final String? relationshipGoal;
 
   Map<String, dynamic> toMap() {
     return {
@@ -37,6 +40,7 @@ class UserModel {
       'swipes': swipes,
       'lastSwipe': Timestamp.fromDate(lastSwipe!),
       'active': active,
+      'relationshipGoal': relationshipGoal,
     };
   }
 
@@ -46,7 +50,7 @@ class UserModel {
     return documentSnapshot.data()!['swipes'] ?? 0;
   }
 
-    Future<bool> isActive() async {
+  Future<bool> isActive() async {
     final DocumentSnapshot<Map<String, dynamic>> documentSnapshot = await db.collection('users').doc(uid).get();
 
     return documentSnapshot.data()!['active'] ?? false;
