@@ -2,6 +2,8 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:mobx/mobx.dart';
 import 'package:thisdatedoesnotexist/app/core/models/hobby_model.dart';
+import 'package:thisdatedoesnotexist/app/core/models/user_model.dart';
+import 'package:thisdatedoesnotexist/app/core/services/auth_service.dart';
 import 'package:thisdatedoesnotexist/app/core/util.dart';
 
 part 'onboarding_store.g.dart';
@@ -9,8 +11,12 @@ part 'onboarding_store.g.dart';
 class OnboardingStore = OnboardingStoreBase with _$OnboardingStore;
 
 abstract class OnboardingStoreBase with Store {
+  AuthService authService = AuthService();
   String server = const String.fromEnvironment('SERVER');
   final Dio dio = Dio();
+
+  @observable
+  late UserModel user;
 
   @observable
   RangeValues ageValues = const RangeValues(18, 50);
