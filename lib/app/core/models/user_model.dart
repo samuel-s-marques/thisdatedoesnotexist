@@ -41,11 +41,11 @@ class UserModel {
   Map<String, dynamic> toMap() {
     return {
       'uid': uid,
-      'swipes': swipes,
-      'lastSwipe': Timestamp.fromDate(lastSwipe!),
-      'active': active,
-      'relationshipGoal': relationshipGoal,
-      'hobbies': hobbies,
+      'swipes': swipes ?? 20,
+      'lastSwipe': lastSwipe != null ? Timestamp.fromDate(lastSwipe!) : null,
+      'active': active ?? false,
+      'relationshipGoal': relationshipGoal ?? '',
+      'hobbies': hobbies != null ? hobbies!.map((Hobby hobby) => hobby.toMap()).toList() : null,
     };
   }
 
