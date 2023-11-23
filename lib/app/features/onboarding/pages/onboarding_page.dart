@@ -40,7 +40,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                 builder: (BuildContext context, AsyncSnapshot snapshot) {
                   if (snapshot.hasData) {
                     final Map<String, List<Hobby>> groupedHobbies = snapshot.data;
-              
+
                     return Observer(
                       builder: (_) {
                         return Column(
@@ -60,7 +60,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                                   spacing: 5,
                                   children: groupedHobbies[key]!.map((Hobby hobby) {
                                     final bool isSelected = store.selectedHobbies.contains(hobby);
-              
+
                                     return FilterChip(
                                       label: Text(hobby.name),
                                       selected: isSelected,
@@ -80,7 +80,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                       },
                     );
                   }
-              
+
                   return const Center(
                     child: CircularProgressIndicator(),
                   );
@@ -124,15 +124,13 @@ class _OnboardingPageState extends State<OnboardingPage> {
                 ],
               ),
               const SizedBox(height: 10),
-              RangeSlider(
-                min: 18,
-                max: 50,
-                values: store.ageValues,
-                onChanged: (RangeValues values) {
-                  setState(() {
-                    store.ageValues = values;
-                  });
-                },
+              Observer(
+                builder: (_) => RangeSlider(
+                  min: 18,
+                  max: 50,
+                  values: store.ageValues,
+                  onChanged: store.setAgeValues,
+                ),
               ),
               const SizedBox(height: 15),
               const Text('Relationship goals'),
@@ -142,21 +140,23 @@ class _OnboardingPageState extends State<OnboardingPage> {
                 builder: (BuildContext context, AsyncSnapshot snapshot) {
                   if (snapshot.hasData) {
                     final List<String> goals = snapshot.data;
-    
-                    return Wrap(
-                      spacing: 5,
-                      children: goals.map((String goal) {
-                        final bool isSelected = store.selectedGoal == goal;
-    
-                        return ChoiceChip(
-                          label: Text(goal.capitalize()),
-                          selected: isSelected,
-                          onSelected: (_) => store.selectGoal(goal),
-                        );
-                      }).toList(),
+
+                    return Observer(
+                      builder: (_) => Wrap(
+                        spacing: 5,
+                        children: goals.map((String goal) {
+                          final bool isSelected = store.selectedGoal == goal;
+
+                          return ChoiceChip(
+                            label: Text(goal.capitalize()),
+                            selected: isSelected,
+                            onSelected: (_) => store.selectGoal(goal),
+                          );
+                        }).toList(),
+                      ),
                     );
                   }
-    
+
                   return const Center(
                     child: CircularProgressIndicator(),
                   );
