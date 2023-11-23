@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:introduction_screen/introduction_screen.dart';
 import 'package:thisdatedoesnotexist/app/core/models/hobby_model.dart';
+import 'package:thisdatedoesnotexist/app/core/models/user_model.dart';
 import 'package:thisdatedoesnotexist/app/core/util.dart';
 import 'package:thisdatedoesnotexist/app/features/onboarding/store/onboarding_store.dart';
 
@@ -14,6 +15,15 @@ class OnboardingPage extends StatefulWidget {
 
 class _OnboardingPageState extends State<OnboardingPage> {
   final OnboardingStore store = OnboardingStore();
+
+  @override
+  void initState() {
+    super.initState();
+
+    store.user = UserModel(
+      uid: store.authService.getUser().uid,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -81,8 +91,10 @@ class _OnboardingPageState extends State<OnboardingPage> {
                     );
                   }
 
-                  return const Center(
-                    child: CircularProgressIndicator(),
+                  return Center(
+                    child: CircularProgressIndicator(
+                      color: Theme.of(context).primaryColor,
+                    ),
                   );
                 },
               ),
@@ -159,14 +171,29 @@ class _OnboardingPageState extends State<OnboardingPage> {
                     );
                   }
 
-                  return const Center(
-                    child: CircularProgressIndicator(),
+                  return Center(
+                    child: CircularProgressIndicator(
+                      color: Theme.of(context).primaryColor,
+                    ),
                   );
                 },
               ),
             ],
           ),
-        )
+        ),
+        PageViewModel(
+          title: 'Welcome!',
+          bodyWidget: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text("You're oficially a part of ThisDateDoesNotExist!"),
+              const SizedBox(height: 30),
+              Text(
+                "Congratulations, ${store.authService.getUser().displayName}! You're now part of a community that values connection and authenticity. Your personalized matches are just a heartbeat away. Swipe, chat, and discover the magic of ThisDateDoesNotExist!",
+              ),
+            ],
+          ),
+        ),
       ],
       showNextButton: false,
       showDoneButton: false,
