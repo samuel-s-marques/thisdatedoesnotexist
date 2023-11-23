@@ -157,12 +157,12 @@ class _OnboardingPageState extends State<OnboardingPage> {
                       builder: (_) => Wrap(
                         spacing: 5,
                         children: goals.map((String goal) {
-                          final bool isSelected = store.selectedRelationshipGoal == goal;
+                          final bool isSelected = store.selectedRelationshipGoalPreference == goal;
 
                           return ChoiceChip(
                             label: Text(goal.capitalize()),
                             selected: isSelected,
-                            onSelected: (_) => store.selectRelationshipGoal(goal),
+                            onSelected: (_) => store.selectRelationshipGoalPreference(goal),
                           );
                         }).toList(),
                       ),
@@ -187,12 +187,12 @@ class _OnboardingPageState extends State<OnboardingPage> {
                       builder: (_) => Wrap(
                         spacing: 5,
                         children: views.map((String view) {
-                          final bool isSelected = store.selectedPoliticalView == view;
+                          final bool isSelected = store.selectedPoliticalViewPreference == view;
 
                           return ChoiceChip(
                             label: Text(view.capitalize()),
                             selected: isSelected,
-                            onSelected: (_) => store.selectPoliticalView(view),
+                            onSelected: (_) => store.selectPoliticalViewPreference(view),
                           );
                         }).toList(),
                       ),
