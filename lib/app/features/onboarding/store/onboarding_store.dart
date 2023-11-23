@@ -32,6 +32,9 @@ abstract class OnboardingStoreBase with Store {
   String selectedRelationshipGoal = '';
 
   @observable
+  String selectedRelationshipGoalPreference = '';
+
+  @observable
   String selectedPoliticalView = '';
 
   @action
