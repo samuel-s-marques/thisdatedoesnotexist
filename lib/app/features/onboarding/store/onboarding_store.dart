@@ -21,7 +21,7 @@ abstract class OnboardingStoreBase with Store {
   final Dio dio = Dio();
 
   @observable
-  late UserModel user;
+  UserModel? user;
 
   @observable
   RangeValues ageValues = const RangeValues(18, 50);
@@ -163,11 +163,10 @@ abstract class OnboardingStoreBase with Store {
       uid: authService.getUser().uid,
       active: true,
       hobbies: selectedHobbies,
-      relationshipGoal: selectedRelationshipGoal,
       swipes: 20,
     );
 
-    if (await databaseService.createUser(user) == DatabaseStatus.successful) {
+    if (await databaseService.createUser(user!) == DatabaseStatus.successful) {
       await setPreferences();
       await Modular.to.pushReplacementNamed('/home/');
     } else {
