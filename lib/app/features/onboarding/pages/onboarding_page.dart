@@ -174,6 +174,36 @@ class _OnboardingPageState extends State<OnboardingPage> {
                   );
                 },
               ),
+              const SizedBox(height: 15),
+              const Text('Political Views'),
+              const SizedBox(height: 10),
+              FutureBuilder(
+                future: store.getPoliticalViews(),
+                builder: (BuildContext context, AsyncSnapshot snapshot) {
+                  if (snapshot.hasData) {
+                    final List<String> views = snapshot.data;
+
+                    return Observer(
+                      builder: (_) => Wrap(
+                        spacing: 5,
+                        children: views.map((String view) {
+                          final bool isSelected = store.selectedPoliticalView == view;
+
+                          return ChoiceChip(
+                            label: Text(view.capitalize()),
+                            selected: isSelected,
+                            onSelected: (_) => store.selectPoliticalView(view),
+                          );
+                        }).toList(),
+                      ),
+                    );
+                  }
+
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
+                },
+              ),
             ],
           ),
         ),
