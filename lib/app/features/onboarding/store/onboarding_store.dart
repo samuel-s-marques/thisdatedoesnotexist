@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:mobx/mobx.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:thisdatedoesnotexist/app/core/enum/database_status_enum.dart';
 import 'package:thisdatedoesnotexist/app/core/models/hobby_model.dart';
 import 'package:thisdatedoesnotexist/app/core/models/user_model.dart';
@@ -37,14 +38,27 @@ abstract class OnboardingStoreBase with Store {
   @observable
   String selectedPoliticalView = '';
 
+  @observable
+  String selectedPoliticalViewPreference = '';
+
   @action
   void selectRelationshipGoal(String goal) {
     selectedRelationshipGoal = goal;
   }
 
   @action
+  void selectRelationshipGoalPreference(String goal) {
+    selectedRelationshipGoalPreference = goal;
+  }
+
+  @action
   void selectPoliticalView(String view) {
     selectedPoliticalView = view;
+  }
+
+  @action
+  void selectPoliticalViewPreference(String view) {
+    selectedPoliticalViewPreference = view;
   }
 
   @action
@@ -135,6 +149,15 @@ abstract class OnboardingStoreBase with Store {
     }
   }
 
+  Future<void> setPreferences() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    await prefs.setInt('minAge', ageValues.start.toInt());
+    await prefs.setInt('maxAge', ageValues.end.toInt());
+    await prefs.setString('relationshipGoal', selectedRelationshipGoalPreference);
+    await prefs.setString('politicalView', selectedPoliticalViewPreference);
+  }
+
   Future<void> onDone(BuildContext context) async {
     user = UserModel(
       uid: authService.getUser().uid,
@@ -145,6 +168,7 @@ abstract class OnboardingStoreBase with Store {
     );
 
     if (await databaseService.createUser(user) == DatabaseStatus.successful) {
+      await setPreferences();
       await Modular.to.pushReplacementNamed('/home/');
     } else {
       context.showSnackBarError(
