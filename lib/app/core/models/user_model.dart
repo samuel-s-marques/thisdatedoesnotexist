@@ -25,7 +25,7 @@ class UserModel {
       active: map['active'],
       swipes: map['swipes'],
       relationshipGoal: map['relationshipGoal'],
-      hobbies: map['hobbies'] != null ? List<Hobby>.from(map['hobbies'].map(Hobby.fromMap)) : null,
+      hobbies: (map['hobbies'] as List<dynamic>?)?.map((hobbyMap) => Hobby.fromMap(hobbyMap as Map<String, dynamic>)).toList(),
     );
   }
 
