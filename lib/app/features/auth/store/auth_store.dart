@@ -39,7 +39,7 @@ abstract class AuthStoreBase with Store {
 
     if (status == AuthStatus.successful) {
       context.showSnackBarSuccess(message: 'Signed up with e-mail and password!');
-      await Modular.to.pushReplacementNamed('/onboarding');
+      await Modular.to.pushReplacementNamed('/onboarding/');
     } else {
       final String error = AuthExceptionHandler.generateErrorMessage(status);
       context.showSnackBarError(message: error);
@@ -56,10 +56,22 @@ abstract class AuthStoreBase with Store {
       email: emailController.text,
       password: passwordController.text,
     );
+    final DatabaseService databaseService = DatabaseService();
 
     if (status == AuthStatus.successful) {
+      if (await databaseService.userExists() == false) {
+        await Modular.to.pushReplacementNamed('/onboarding/');
+        return;
+      }
+
+      final UserModel user = await databaseService.getUser();
+      if (user.active == false) {
+        await Modular.to.pushReplacementNamed('/onboarding/');
+      } else {
+        await Modular.to.pushReplacementNamed('/home/');
+      }
+
       context.showSnackBarSuccess(message: 'Signed in with e-mail and password!');
-      await Modular.to.pushReplacementNamed('/onboarding');
     } else {
       final String error = AuthExceptionHandler.generateErrorMessage(status);
       context.showSnackBarError(message: error);
@@ -76,23 +88,19 @@ abstract class AuthStoreBase with Store {
     final DatabaseService databaseService = DatabaseService();
 
     if (status == AuthStatus.successful) {
-      // TODO: Redirect to HomePage or Onboarding
-      context.showSnackBarSuccess(message: 'Signed in with Google!');
-
-      // TODO: move this line to the end of onboarding
       if (await databaseService.userExists() == false) {
-        if (await databaseService.createUser() == DatabaseStatus.successful) {
-          await Modular.to.pushReplacementNamed('/home');
-        }
+        await Modular.to.pushReplacementNamed('/onboarding/');
+        return;
       }
 
       final UserModel user = await databaseService.getUser();
       if (user.active == false) {
-        // TODO: Redirect to Onboarding
-        await Modular.to.pushReplacementNamed('/onboarding');
+        await Modular.to.pushReplacementNamed('/onboarding/');
       } else {
-        await Modular.to.pushReplacementNamed('/home');
+        await Modular.to.pushReplacementNamed('/home/');
       }
+
+      context.showSnackBarSuccess(message: 'Signed in with Google!');
     } else {
       final String error = AuthExceptionHandler.generateErrorMessage(status);
       context.showSnackBarError(message: error);
