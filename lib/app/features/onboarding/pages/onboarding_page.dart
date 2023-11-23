@@ -100,25 +100,27 @@ class _OnboardingPageState extends State<OnboardingPage> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   const Text('Age range'),
-                  Text.rich(
-                    TextSpan(
-                      children: [
-                        TextSpan(
-                          text: store.ageValues.start.round().toString(),
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
+                  Observer(
+                    builder: (_) => Text.rich(
+                      TextSpan(
+                        children: [
+                          TextSpan(
+                            text: store.ageValues.start.round().toString(),
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
-                        ),
-                        const TextSpan(
-                          text: ' - ',
-                        ),
-                        TextSpan(
-                          text: store.ageValues.end.round().toString(),
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
+                          const TextSpan(
+                            text: ' - ',
                           ),
-                        ),
-                      ],
+                          TextSpan(
+                            text: store.ageValues.end.round().toString(),
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ],
