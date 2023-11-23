@@ -14,9 +14,6 @@ class AppWidget extends StatelessWidget {
         sliderTheme: SliderThemeData(
           overlayShape: SliderComponentShape.noOverlay,
         ),
-        progressIndicatorTheme: const ProgressIndicatorThemeData(
-          color: Colors.white,
-        ),
       ),
     );
   }
