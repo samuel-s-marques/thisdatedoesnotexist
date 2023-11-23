@@ -1,9 +1,12 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_modular/flutter_modular.dart';
 import 'package:mobx/mobx.dart';
+import 'package:thisdatedoesnotexist/app/core/enum/database_status_enum.dart';
 import 'package:thisdatedoesnotexist/app/core/models/hobby_model.dart';
 import 'package:thisdatedoesnotexist/app/core/models/user_model.dart';
 import 'package:thisdatedoesnotexist/app/core/services/auth_service.dart';
+import 'package:thisdatedoesnotexist/app/core/services/database_service.dart';
 import 'package:thisdatedoesnotexist/app/core/util.dart';
 
 part 'onboarding_store.g.dart';
@@ -12,6 +15,7 @@ class OnboardingStore = OnboardingStoreBase with _$OnboardingStore;
 
 abstract class OnboardingStoreBase with Store {
   AuthService authService = AuthService();
+  DatabaseService databaseService = DatabaseService();
   String server = const String.fromEnvironment('SERVER');
   final Dio dio = Dio();
 
@@ -96,6 +100,24 @@ abstract class OnboardingStoreBase with Store {
       return goals;
     } else {
       return goals;
+    }
+  }
+
+  Future<void> onDone(BuildContext context) async {
+    user = UserModel(
+      uid: authService.getUser().uid,
+      active: true,
+      hobbies: selectedHobbies,
+      relationshipGoal: selectedRelationshipGoal,
+      swipes: 20,
+    );
+
+    if (await databaseService.createUser(user) == DatabaseStatus.successful) {
+      await Modular.to.pushReplacementNamed('/home/');
+    } else {
+      context.showSnackBarError(
+        message: 'Something went wrong. Please try again.',
+      );
     }
   }
 }
