@@ -11,9 +11,18 @@ class OnboardingStore = OnboardingStoreBase with _$OnboardingStore;
 abstract class OnboardingStoreBase with Store {
   String server = const String.fromEnvironment('SERVER');
   RangeValues ageValues = const RangeValues(18, 50);
+  final Dio dio = Dio();
 
   @observable
   ObservableList<Hobby> selectedHobbies = ObservableList();
+
+  @observable
+  String selectedGoal = '';
+
+  @action
+  void selectGoal(String goal) {
+    selectedGoal = goal;
+  }
 
   @action
   void selectHobby({
@@ -35,7 +44,6 @@ abstract class OnboardingStoreBase with Store {
   }
 
   Future<Map<String, List<Hobby>>> getHobbies() async {
-    final Dio dio = Dio();
     final Map<String, List<Hobby>> groupedHobbies = {};
 
     final Response response = await dio.get('$server/api/hobbies');
@@ -56,6 +64,25 @@ abstract class OnboardingStoreBase with Store {
       return groupedHobbies;
     } else {
       return groupedHobbies;
+    }
+  }
+
+  Future<List<String>> getRelationshipGoals() async {
+    final List<String> goals = [];
+
+    final Response response = await dio.get('$server/api/relationship-goals');
+
+    if (response.statusCode == 200) {
+      final List<dynamic> data = response.data['data'];
+
+      for (int index = 0; index < data.length; index++) {
+        final String goal = data[index]['name'];
+        goals.add(goal);
+      }
+
+      return goals;
+    } else {
+      return goals;
     }
   }
 }
