@@ -10,8 +10,10 @@ class OnboardingStore = OnboardingStoreBase with _$OnboardingStore;
 
 abstract class OnboardingStoreBase with Store {
   String server = const String.fromEnvironment('SERVER');
-  RangeValues ageValues = const RangeValues(18, 50);
   final Dio dio = Dio();
+
+  @observable
+  RangeValues ageValues = const RangeValues(18, 50);
 
   @observable
   ObservableList<Hobby> selectedHobbies = ObservableList();
@@ -22,6 +24,11 @@ abstract class OnboardingStoreBase with Store {
   @action
   void selectGoal(String goal) {
     selectedGoal = goal;
+  }
+
+  @action
+  void setAgeValues(RangeValues values) {
+    ageValues = values;
   }
 
   @action
