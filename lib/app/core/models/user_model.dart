@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:thisdatedoesnotexist/app/core/models/hobby_model.dart';
 
 class UserModel {
   UserModel({
@@ -8,6 +9,7 @@ class UserModel {
     this.swipes,
     this.active,
     this.relationshipGoal,
+    this.hobbies,
   });
 
   factory UserModel.fromFirebase(User user) {
@@ -23,6 +25,7 @@ class UserModel {
       active: map['active'],
       swipes: map['swipes'],
       relationshipGoal: map['relationshipGoal'],
+      hobbies: map['hobbies'] != null ? List<Hobby>.from(map['hobbies'].map(Hobby.fromMap)) : null,
     );
   }
 
@@ -33,6 +36,7 @@ class UserModel {
   final bool? active;
   final DateTime? lastSwipe;
   final String? relationshipGoal;
+  final List<Hobby>? hobbies;
 
   Map<String, dynamic> toMap() {
     return {
@@ -41,6 +45,7 @@ class UserModel {
       'lastSwipe': Timestamp.fromDate(lastSwipe!),
       'active': active,
       'relationshipGoal': relationshipGoal,
+      'hobbies': hobbies,
     };
   }
 
