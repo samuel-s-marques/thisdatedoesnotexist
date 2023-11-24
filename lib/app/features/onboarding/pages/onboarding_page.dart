@@ -7,7 +7,7 @@ import 'package:thisdatedoesnotexist/app/core/util.dart';
 import 'package:thisdatedoesnotexist/app/features/onboarding/store/onboarding_store.dart';
 
 class OnboardingPage extends StatefulWidget {
-  OnboardingPage({super.key});
+  const OnboardingPage({super.key});
 
   @override
   State<OnboardingPage> createState() => _OnboardingPageState();
@@ -26,6 +26,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
     store.getHobbies();
     store.getPoliticalViews();
     store.getRelationshipGoals();
+    store.getBodyTypes();
   }
 
   @override
@@ -141,12 +142,15 @@ class _OnboardingPageState extends State<OnboardingPage> {
                 builder: (_) => Wrap(
                   spacing: 5,
                   children: store.relationshipGoals.map((String goal) {
-                    final bool isSelected = store.selectedRelationshipGoalPreference == goal;
+                    final bool isSelected = store.selectedRelationshipGoalPreferences.contains(goal);
 
-                    return ChoiceChip(
+                    return FilterChip(
                       label: Text(goal.capitalize()),
                       selected: isSelected,
-                      onSelected: (_) => store.selectRelationshipGoalPreference(goal),
+                      onSelected: (bool selected) => store.selectRelationshipGoalPreference(
+                        selected: selected,
+                        goal: goal,
+                      ),
                     );
                   }).toList(),
                 ),
@@ -158,12 +162,35 @@ class _OnboardingPageState extends State<OnboardingPage> {
                 builder: (_) => Wrap(
                   spacing: 5,
                   children: store.politicalViews.map((String view) {
-                    final bool isSelected = store.selectedPoliticalViewPreference == view;
+                    final bool isSelected = store.selectedPoliticalViewPreferences.contains(view);
 
-                    return ChoiceChip(
+                    return FilterChip(
                       label: Text(view.capitalize()),
                       selected: isSelected,
-                      onSelected: (_) => store.selectPoliticalViewPreference(view),
+                      onSelected: (bool selected) => store.selectPoliticalViewPreference(
+                        selected: selected,
+                        view: view,
+                      ),
+                    );
+                  }).toList(),
+                ),
+              ),
+              const SizedBox(height: 15),
+              const Text('Body Types'),
+              const SizedBox(height: 10),
+              Observer(
+                builder: (_) => Wrap(
+                  spacing: 5,
+                  children: store.bodyTypes.map((String bodyType) {
+                    final bool isSelected = store.selectedBodyTypePreferences.contains(bodyType);
+
+                    return FilterChip(
+                      label: Text(bodyType.capitalize()),
+                      selected: isSelected,
+                      onSelected: (bool selected) => store.selectBodyTypePreference(
+                        selected: selected,
+                        bodyType: bodyType,
+                      ),
                     );
                   }).toList(),
                 ),
