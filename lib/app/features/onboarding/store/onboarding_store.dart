@@ -39,6 +39,9 @@ abstract class OnboardingStoreBase with Store {
   ObservableList<Hobby> selectedHobbies = ObservableList();
 
   @observable
+  ObservableMap<String, List<String>> groupedBodyTypes = ObservableMap();
+
+  @observable
   String selectedRelationshipGoal = '';
 
   @observable
@@ -49,6 +52,9 @@ abstract class OnboardingStoreBase with Store {
 
   @observable
   String selectedPoliticalViewPreference = '';
+
+  @observable
+  String selectedBodyTypePreference = '';
 
   @action
   void selectRelationshipGoal(String goal) {
@@ -68,6 +74,11 @@ abstract class OnboardingStoreBase with Store {
   @action
   void selectPoliticalViewPreference(String view) {
     selectedPoliticalViewPreference = view;
+  }
+
+  @action
+  void selectBodyTypePreference(String bodyType) {
+    selectedBodyTypePreference = bodyType;
   }
 
   @action
@@ -140,6 +151,25 @@ abstract class OnboardingStoreBase with Store {
     }
   }
 
+  Future<void> getBodyTypes() async {
+    final Response response = await dio.get('$server/api/body-types');
+
+    if (response.statusCode == 200) {
+      final List<dynamic> data = response.data['data'];
+
+      for (int index = 0; index < data.length; index++) {
+        final String name = data[index]['name'];
+        final String type = data[index]['type'];
+
+        if (!groupedBodyTypes.containsKey(type)) {
+          groupedBodyTypes[type] = [];
+        }
+
+        groupedBodyTypes[type]!.add(name);
+      }
+    }
+  }
+
   Future<void> setPreferences() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
 
@@ -147,6 +177,7 @@ abstract class OnboardingStoreBase with Store {
     await prefs.setDouble('maxAge', ageValues.end);
     await prefs.setString('relationshipGoal', selectedRelationshipGoalPreference);
     await prefs.setString('politicalView', selectedPoliticalViewPreference);
+    await prefs.setString('bodyType', selectedPoliticalViewPreference);
   }
 
   Future<void> onDone(BuildContext context) async {
