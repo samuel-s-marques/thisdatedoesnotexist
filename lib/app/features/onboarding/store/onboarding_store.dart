@@ -27,6 +27,15 @@ abstract class OnboardingStoreBase with Store {
   RangeValues ageValues = const RangeValues(18, 50);
 
   @observable
+  ObservableMap<String, List<Hobby>> groupedHobbies = ObservableMap();
+
+  @observable
+  ObservableList<String> relationshipGoals = ObservableList();
+
+  @observable
+  ObservableList<String> politicalViews = ObservableList();
+
+  @observable
   ObservableList<Hobby> selectedHobbies = ObservableList();
 
   @observable
@@ -85,9 +94,7 @@ abstract class OnboardingStoreBase with Store {
     }
   }
 
-  Future<Map<String, List<Hobby>>> getHobbies() async {
-    final Map<String, List<Hobby>> groupedHobbies = {};
-
+  Future<void> getHobbies() async {
     final Response response = await dio.get('$server/api/hobbies');
 
     if (response.statusCode == 200) {
@@ -102,16 +109,10 @@ abstract class OnboardingStoreBase with Store {
 
         groupedHobbies[hobby.type]!.add(hobby);
       }
-
-      return groupedHobbies;
-    } else {
-      return groupedHobbies;
     }
   }
 
-  Future<List<String>> getRelationshipGoals() async {
-    final List<String> goals = [];
-
+  Future<void> getRelationshipGoals() async {
     final Response response = await dio.get('$server/api/relationship-goals');
 
     if (response.statusCode == 200) {
@@ -119,19 +120,13 @@ abstract class OnboardingStoreBase with Store {
 
       for (int index = 0; index < data.length; index++) {
         final String goal = data[index]['name'];
-        goals.add(goal);
+        relationshipGoals.add(goal);
       }
-      goals.add('All');
-
-      return goals;
-    } else {
-      return goals;
+      relationshipGoals.add('All');
     }
   }
 
-  Future<List<String>> getPoliticalViews() async {
-    final List<String> views = [];
-
+  Future<void> getPoliticalViews() async {
     final Response response = await dio.get('$server/api/political-views');
 
     if (response.statusCode == 200) {
@@ -139,13 +134,9 @@ abstract class OnboardingStoreBase with Store {
 
       for (int index = 0; index < data.length; index++) {
         final String view = data[index]['name'];
-        views.add(view);
+        politicalViews.add(view);
       }
-      views.add('All');
-
-      return views;
-    } else {
-      return views;
+      politicalViews.add('All');
     }
   }
 
