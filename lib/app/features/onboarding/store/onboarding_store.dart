@@ -39,31 +39,26 @@ abstract class OnboardingStoreBase with Store {
   ObservableList<Hobby> selectedHobbies = ObservableList();
 
   @observable
-  ObservableMap<String, List<String>> groupedBodyTypes = ObservableMap();
+  ObservableList<String> selectedPoliticalViewPreferences = ObservableList();
+
+  @observable
+  ObservableList<String> selectedBodyTypePreferences = ObservableList();
+
+  @observable
+  ObservableList<String> selectedRelationshipGoalPreferences = ObservableList();
+
+  @observable
+  ObservableList<String> bodyTypes = ObservableList();
 
   @observable
   String selectedRelationshipGoal = '';
 
   @observable
-  String selectedRelationshipGoalPreference = '';
-
-  @observable
   String selectedPoliticalView = '';
-
-  @observable
-  String selectedPoliticalViewPreference = '';
-
-  @observable
-  String selectedBodyTypePreference = '';
 
   @action
   void selectRelationshipGoal(String goal) {
     selectedRelationshipGoal = goal;
-  }
-
-  @action
-  void selectRelationshipGoalPreference(String goal) {
-    selectedRelationshipGoalPreference = goal;
   }
 
   @action
@@ -72,18 +67,44 @@ abstract class OnboardingStoreBase with Store {
   }
 
   @action
-  void selectPoliticalViewPreference(String view) {
-    selectedPoliticalViewPreference = view;
-  }
-
-  @action
-  void selectBodyTypePreference(String bodyType) {
-    selectedBodyTypePreference = bodyType;
-  }
-
-  @action
   void setAgeValues(RangeValues values) {
     ageValues = values;
+  }
+
+  @action
+  void selectPoliticalViewPreference({
+    required bool selected,
+    required String view,
+  }) {
+    if (selected) {
+      selectedPoliticalViewPreferences.add(view);
+    } else {
+      selectedPoliticalViewPreferences.remove(view);
+    }
+  }
+
+  @action
+  void selectBodyTypePreference({
+    required bool selected,
+    required String bodyType,
+  }) {
+    if (selected) {
+      selectedBodyTypePreferences.add(bodyType);
+    } else {
+      selectedBodyTypePreferences.remove(bodyType);
+    }
+  }
+
+  @action
+  void selectRelationshipGoalPreference({
+    required bool selected,
+    required String goal,
+  }) {
+    if (selected) {
+      selectedRelationshipGoalPreferences.add(goal);
+    } else {
+      selectedRelationshipGoalPreferences.remove(goal);
+    }
   }
 
   @action
@@ -133,7 +154,6 @@ abstract class OnboardingStoreBase with Store {
         final String goal = data[index]['name'];
         relationshipGoals.add(goal);
       }
-      relationshipGoals.add('All');
     }
   }
 
@@ -147,7 +167,6 @@ abstract class OnboardingStoreBase with Store {
         final String view = data[index]['name'];
         politicalViews.add(view);
       }
-      politicalViews.add('All');
     }
   }
 
@@ -158,14 +177,8 @@ abstract class OnboardingStoreBase with Store {
       final List<dynamic> data = response.data['data'];
 
       for (int index = 0; index < data.length; index++) {
-        final String name = data[index]['name'];
-        final String type = data[index]['type'];
-
-        if (!groupedBodyTypes.containsKey(type)) {
-          groupedBodyTypes[type] = [];
-        }
-
-        groupedBodyTypes[type]!.add(name);
+        final String bodyType = data[index]['name'];
+        bodyTypes.add(bodyType);
       }
     }
   }
@@ -175,9 +188,9 @@ abstract class OnboardingStoreBase with Store {
 
     await prefs.setDouble('minAge', ageValues.start);
     await prefs.setDouble('maxAge', ageValues.end);
-    await prefs.setString('relationshipGoal', selectedRelationshipGoalPreference);
-    await prefs.setString('politicalView', selectedPoliticalViewPreference);
-    await prefs.setString('bodyType', selectedPoliticalViewPreference);
+    await prefs.setStringList('relationshipGoals', selectedRelationshipGoalPreferences);
+    await prefs.setStringList('politicalViews', selectedPoliticalViewPreferences);
+    await prefs.setStringList('bodyTypes', selectedPoliticalViewPreferences);
   }
 
   Future<void> onDone(BuildContext context) async {
