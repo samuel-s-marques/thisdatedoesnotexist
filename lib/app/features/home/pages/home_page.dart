@@ -25,13 +25,13 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void initState() {
+    super.initState();
     UserModel(uid: store.authService.getUser().uid).getSwipes().then((swipes) => store.setSwipes(swipes));
     store.setIndex(0);
     SharedPreferences.getInstance().then((value) => store.prefs = value);
+    store.getPreferences();
     store.getPoliticalViews();
     store.getRelationshipGoals();
-    store.getPreferences();
-    super.initState();
   }
 
   @override
@@ -185,6 +185,12 @@ class _HomePageState extends State<HomePage> {
               builder: (BuildContext context, AsyncSnapshot snapshot) {
                 if (snapshot.hasData) {
                   store.cards = snapshot.data;
+
+                  if (store.cards.isEmpty) {
+                    return const Center(
+                      child: Text('No more cards for today!'),
+                    );
+                  }
 
                   return Column(
                     children: [
