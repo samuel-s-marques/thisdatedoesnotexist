@@ -27,6 +27,9 @@ abstract class OnboardingStoreBase with Store {
   RangeValues ageValues = const RangeValues(18, 50);
 
   @observable
+  ObservableList<Hobby> selectedHobbies = ObservableList();
+
+  @observable
   ObservableMap<String, List<Hobby>> groupedHobbies = ObservableMap();
 
   @observable
@@ -36,7 +39,7 @@ abstract class OnboardingStoreBase with Store {
   ObservableList<String> politicalViews = ObservableList();
 
   @observable
-  ObservableList<Hobby> selectedHobbies = ObservableList();
+  ObservableList<String> bodyTypes = ObservableList();
 
   @observable
   ObservableList<String> selectedPoliticalViewPreferences = ObservableList();
@@ -46,9 +49,6 @@ abstract class OnboardingStoreBase with Store {
 
   @observable
   ObservableList<String> selectedRelationshipGoalPreferences = ObservableList();
-
-  @observable
-  ObservableList<String> bodyTypes = ObservableList();
 
   @observable
   String selectedRelationshipGoal = '';
