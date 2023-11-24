@@ -23,6 +23,9 @@ class _OnboardingPageState extends State<OnboardingPage> {
     store.user = UserModel(
       uid: store.authService.getUser().uid,
     );
+    store.getHobbies();
+    store.getPoliticalViews();
+    store.getRelationshipGoals();
   }
 
   @override
@@ -45,54 +48,41 @@ class _OnboardingPageState extends State<OnboardingPage> {
             children: [
               const Text('Pick up to 4 things you do or you have interest in doing. It will help you match with characters with similar interests.'),
               const SizedBox(height: 15),
-              FutureBuilder(
-                future: store.getHobbies(),
-                builder: (BuildContext context, AsyncSnapshot snapshot) {
-                  if (snapshot.hasData) {
-                    final Map<String, List<Hobby>> groupedHobbies = snapshot.data;
+              Observer(
+                builder: (_) {
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: store.groupedHobbies.keys.map((String key) {
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            key.capitalize(),
+                            style: const TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Wrap(
+                            spacing: 5,
+                            children: store.groupedHobbies[key]!.map((Hobby hobby) {
+                              final bool isSelected = store.selectedHobbies.contains(hobby);
 
-                    return Observer(
-                      builder: (_) {
-                        return Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: groupedHobbies.keys.map((String key) {
-                            return Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  key.capitalize(),
-                                  style: const TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                              return FilterChip(
+                                label: Text(hobby.name),
+                                selected: isSelected,
+                                onSelected: (bool selected) => store.selectHobby(
+                                  selected: selected,
+                                  hobby: hobby,
+                                  context: context,
                                 ),
-                                Wrap(
-                                  spacing: 5,
-                                  children: groupedHobbies[key]!.map((Hobby hobby) {
-                                    final bool isSelected = store.selectedHobbies.contains(hobby);
-
-                                    return FilterChip(
-                                      label: Text(hobby.name),
-                                      selected: isSelected,
-                                      onSelected: (bool selected) => store.selectHobby(
-                                        selected: selected,
-                                        hobby: hobby,
-                                        context: context,
-                                      ),
-                                    );
-                                  }).toList(),
-                                ),
-                                const SizedBox(height: 15),
-                              ],
-                            );
-                          }).toList(),
-                        );
-                      },
-                    );
-                  }
-
-                  return const Center(
-                    child: CircularProgressIndicator(),
+                              );
+                            }).toList(),
+                          ),
+                          const SizedBox(height: 15),
+                        ],
+                      );
+                    }).toList(),
                   );
                 },
               ),
@@ -147,62 +137,36 @@ class _OnboardingPageState extends State<OnboardingPage> {
               const SizedBox(height: 15),
               const Text('Relationship goals'),
               const SizedBox(height: 10),
-              FutureBuilder(
-                future: store.getRelationshipGoals(),
-                builder: (BuildContext context, AsyncSnapshot snapshot) {
-                  if (snapshot.hasData) {
-                    final List<String> goals = snapshot.data;
+              Observer(
+                builder: (_) => Wrap(
+                  spacing: 5,
+                  children: store.relationshipGoals.map((String goal) {
+                    final bool isSelected = store.selectedRelationshipGoalPreference == goal;
 
-                    return Observer(
-                      builder: (_) => Wrap(
-                        spacing: 5,
-                        children: goals.map((String goal) {
-                          final bool isSelected = store.selectedRelationshipGoalPreference == goal;
-
-                          return ChoiceChip(
-                            label: Text(goal.capitalize()),
-                            selected: isSelected,
-                            onSelected: (_) => store.selectRelationshipGoalPreference(goal),
-                          );
-                        }).toList(),
-                      ),
+                    return ChoiceChip(
+                      label: Text(goal.capitalize()),
+                      selected: isSelected,
+                      onSelected: (_) => store.selectRelationshipGoalPreference(goal),
                     );
-                  }
-
-                  return const Center(
-                    child: CircularProgressIndicator(),
-                  );
-                },
+                  }).toList(),
+                ),
               ),
               const SizedBox(height: 15),
               const Text('Political Views'),
               const SizedBox(height: 10),
-              FutureBuilder(
-                future: store.getPoliticalViews(),
-                builder: (BuildContext context, AsyncSnapshot snapshot) {
-                  if (snapshot.hasData) {
-                    final List<String> views = snapshot.data;
+              Observer(
+                builder: (_) => Wrap(
+                  spacing: 5,
+                  children: store.politicalViews.map((String view) {
+                    final bool isSelected = store.selectedPoliticalViewPreference == view;
 
-                    return Observer(
-                      builder: (_) => Wrap(
-                        spacing: 5,
-                        children: views.map((String view) {
-                          final bool isSelected = store.selectedPoliticalViewPreference == view;
-
-                          return ChoiceChip(
-                            label: Text(view.capitalize()),
-                            selected: isSelected,
-                            onSelected: (_) => store.selectPoliticalViewPreference(view),
-                          );
-                        }).toList(),
-                      ),
+                    return ChoiceChip(
+                      label: Text(view.capitalize()),
+                      selected: isSelected,
+                      onSelected: (_) => store.selectPoliticalViewPreference(view),
                     );
-                  }
-
-                  return const Center(
-                    child: CircularProgressIndicator(),
-                  );
-                },
+                  }).toList(),
+                ),
               ),
             ],
           ),
