@@ -42,6 +42,10 @@ abstract class OnboardingStoreBase with Store {
   ObservableList<String> bodyTypes = ObservableList();
 
   @observable
+  ObservableList<String> sexes = ObservableList();
+  Map<String, String> sexesMap = {'male': 'Men', 'female': 'Women'};
+
+  @observable
   ObservableList<String> selectedPoliticalViewPreferences = ObservableList();
 
   @observable
@@ -49,6 +53,9 @@ abstract class OnboardingStoreBase with Store {
 
   @observable
   ObservableList<String> selectedRelationshipGoalPreferences = ObservableList();
+
+  @observable
+  ObservableList<String> selectedSexPreferences = ObservableList();
 
   @observable
   String selectedRelationshipGoal = '';
@@ -80,6 +87,18 @@ abstract class OnboardingStoreBase with Store {
       selectedPoliticalViewPreferences.add(view);
     } else {
       selectedPoliticalViewPreferences.remove(view);
+    }
+  }
+
+  @action
+  void selectSexPreference({
+    required bool selected,
+    required String sex,
+  }) {
+    if (selected) {
+      selectedSexPreferences.add(sex);
+    } else {
+      selectedSexPreferences.remove(sex);
     }
   }
 
@@ -166,6 +185,19 @@ abstract class OnboardingStoreBase with Store {
       for (int index = 0; index < data.length; index++) {
         final String view = data[index]['name'];
         politicalViews.add(view);
+      }
+    }
+  }
+
+  Future<void> getSexes() async {
+    final Response response = await dio.get('$server/api/sexes');
+
+    if (response.statusCode == 200) {
+      final List<dynamic> data = response.data['data'];
+
+      for (int index = 0; index < data.length; index++) {
+        final String view = data[index]['name'];
+        sexes.add(view);
       }
     }
   }
