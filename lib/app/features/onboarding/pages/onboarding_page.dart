@@ -27,6 +27,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
     store.getPoliticalViews();
     store.getRelationshipGoals();
     store.getBodyTypes();
+    store.getSexes();
   }
 
   @override
@@ -96,6 +97,26 @@ class _OnboardingPageState extends State<OnboardingPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Text('Time to set your preferences. What are you looking for? The more we understand you, the better we can match you.'),
+              const SizedBox(height: 15),
+              const Text('Who would you like to meet?'),
+              const SizedBox(height: 10),
+              Observer(
+                builder: (_) => Wrap(
+                  spacing: 5,
+                  children: store.sexes.map((String sex) {
+                    final bool isSelected = store.selectedSexPreferences.contains(sex);
+
+                    return FilterChip(
+                      label: Text(store.sexesMap[sex]!.capitalize()),
+                      selected: isSelected,
+                      onSelected: (bool selected) => store.selectSexPreference(
+                        selected: selected,
+                        sex: sex,
+                      ),
+                    );
+                  }).toList(),
+                ),
+              ),
               const SizedBox(height: 15),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
