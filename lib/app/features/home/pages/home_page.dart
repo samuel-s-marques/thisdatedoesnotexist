@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_card_swiper/flutter_card_swiper.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:thisdatedoesnotexist/app/core/models/user_model.dart';
+import 'package:thisdatedoesnotexist/app/core/util.dart';
 import 'package:thisdatedoesnotexist/app/features/home/store/home_store.dart';
 import 'package:thisdatedoesnotexist/app/features/home/widgets/card_widget.dart';
 
@@ -24,6 +26,11 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     UserModel(uid: store.authService.getUser().uid).getSwipes().then((swipes) => store.setSwipes(swipes));
+    store.setIndex(0);
+    SharedPreferences.getInstance().then((value) => store.prefs = value);
+    store.getPoliticalViews();
+    store.getRelationshipGoals();
+    store.getPreferences();
     super.initState();
   }
 
@@ -34,8 +41,138 @@ class _HomePageState extends State<HomePage> {
         preferredSize: const Size.fromHeight(kToolbarHeight),
         child: Observer(
           builder: (_) => AppBar(
-            title: Text(store.appbars.keys.elementAt(store.selectedIndex)),
-            actions: store.appbars.values.elementAt(store.selectedIndex),
+            title: Text(store.appbars.elementAt(store.selectedIndex)),
+            actions: [
+              Builder(builder: (BuildContext context) {
+                final String appbarName = store.appbars.elementAt(store.selectedIndex);
+
+                if (appbarName == 'Home') {
+                  return IconButton(
+                    onPressed: () {
+                      showModalBottomSheet(
+                        context: context,
+                        isScrollControlled: true,
+                        showDragHandle: true,
+                        useSafeArea: true,
+                        builder: (BuildContext context) {
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 15),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text(
+                                  'Filter',
+                                  style: TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                const SizedBox(height: 20),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    const Text('Age range'),
+                                    Observer(
+                                      builder: (_) => Text.rich(
+                                        TextSpan(
+                                          children: [
+                                            TextSpan(
+                                              text: store.ageValues.start.round().toString(),
+                                              style: const TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                            const TextSpan(
+                                              text: ' - ',
+                                            ),
+                                            TextSpan(
+                                              text: store.ageValues.end.round().toString(),
+                                              style: const TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 10),
+                                Observer(
+                                  builder: (_) => RangeSlider(
+                                    min: 18,
+                                    max: 50,
+                                    values: store.ageValues,
+                                    onChanged: store.setAgeValues,
+                                  ),
+                                ),
+                                const Divider(),
+                                const SizedBox(height: 10),
+                                const Text('Relationship Goals'),
+                                const SizedBox(height: 10),
+                                Observer(
+                                  builder: (_) => Wrap(
+                                    spacing: 5,
+                                    children: store.relationshipGoals.map((String goal) {
+                                      final bool isSelected = store.selectedRelationshipGoalPreference == goal;
+
+                                      return ChoiceChip(
+                                        label: Text(goal.capitalize()),
+                                        selected: isSelected,
+                                        onSelected: (_) => store.selectRelationshipGoalPreference(goal),
+                                      );
+                                    }).toList(),
+                                  ),
+                                ),
+                                const Divider(),
+                                const SizedBox(height: 10),
+                                const Text('Political Views'),
+                                const SizedBox(height: 10),
+                                Observer(
+                                  builder: (_) => Wrap(
+                                    spacing: 5,
+                                    children: store.politicalViews.map((String view) {
+                                      final bool isSelected = store.selectedPoliticalViewPreference == view;
+
+                                      return ChoiceChip(
+                                        label: Text(view.capitalize()),
+                                        selected: isSelected,
+                                        onSelected: (_) => store.selectPoliticalViewPreference(view),
+                                      );
+                                    }).toList(),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                      );
+                    },
+                    icon: const Icon(Icons.tune),
+                  );
+                } else if (appbarName == 'Chat') {
+                  return IconButton(
+                    onPressed: () {},
+                    icon: const Icon(Icons.search),
+                  );
+                } else if (appbarName == 'Profile') {
+                  return Row(
+                    children: [
+                      IconButton(
+                        onPressed: () {},
+                        icon: const Icon(Icons.edit),
+                      ),
+                      IconButton(
+                        onPressed: () => Navigator.pushNamed(context, '/settings/'),
+                        icon: const Icon(Icons.settings),
+                      ),
+                    ],
+                  );
+                } else {
+                  return const SizedBox();
+                }
+              })
+            ],
           ),
         ),
       ),
