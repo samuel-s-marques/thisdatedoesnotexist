@@ -152,8 +152,8 @@ abstract class OnboardingStoreBase with Store {
   Future<void> setPreferences() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
 
-    await prefs.setInt('minAge', ageValues.start.toInt());
-    await prefs.setInt('maxAge', ageValues.end.toInt());
+    await prefs.setDouble('minAge', ageValues.start);
+    await prefs.setDouble('maxAge', ageValues.end);
     await prefs.setString('relationshipGoal', selectedRelationshipGoalPreference);
     await prefs.setString('politicalView', selectedPoliticalViewPreference);
   }
