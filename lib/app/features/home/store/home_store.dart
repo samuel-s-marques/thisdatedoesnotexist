@@ -147,9 +147,17 @@ abstract class HomeStoreBase with Store {
 
   @action
   Future<List<CharacterModel>> getTodayCards() async {
-    final Response<dynamic> response = await Dio().get(
-      '$server/api/characters',
-    );
+    String url = '$server/api/characters?min_age=${ageValues.start.round()}&max_age=${ageValues.end.round()}';
+
+    if (selectedPoliticalViewPreference != 'All') {
+      url += '&political_view=$selectedPoliticalViewPreference';
+    }
+
+    if (selectedRelationshipGoalPreference != 'All') {
+      url += '&relationship_goal=$selectedRelationshipGoalPreference';
+    }
+
+    final Response<dynamic> response = await Dio().get(url);
 
     if (response.statusCode == 200) {
       return (response.data['data'] as List<dynamic>).map((e) => CharacterModel.fromMap(e)).toList();
