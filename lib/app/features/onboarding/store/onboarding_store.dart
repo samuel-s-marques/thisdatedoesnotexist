@@ -218,11 +218,12 @@ abstract class OnboardingStoreBase with Store {
   Future<void> setPreferences() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
 
+    await prefs.setStringList('sexesPreferences', selectedSexPreferences);
     await prefs.setDouble('minAge', ageValues.start);
     await prefs.setDouble('maxAge', ageValues.end);
     await prefs.setStringList('relationshipGoals', selectedRelationshipGoalPreferences);
     await prefs.setStringList('politicalViews', selectedPoliticalViewPreferences);
-    await prefs.setStringList('bodyTypes', selectedPoliticalViewPreferences);
+    await prefs.setStringList('bodyTypes', selectedBodyTypePreferences);
   }
 
   Future<void> onDone(BuildContext context) async {
