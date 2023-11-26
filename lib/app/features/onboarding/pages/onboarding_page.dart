@@ -96,9 +96,20 @@ class _OnboardingPageState extends State<OnboardingPage> {
           bodyWidget: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text('Time to set your preferences. What are you looking for? The more we understand you, the better we can match you.'),
+              const Text(
+                'Time to set your preferences. What are you looking for? The more we understand you, the better we can match you.',
+                style: TextStyle(
+                  fontSize: 18,
+                ),
+              ),
               const SizedBox(height: 15),
-              const Text('Who would you like to meet?'),
+              const Text(
+                'Who would you like to meet?',
+                style: TextStyle(
+                  fontSize: 17,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
               const SizedBox(height: 10),
               Observer(
                 builder: (_) => Wrap(
@@ -121,7 +132,13 @@ class _OnboardingPageState extends State<OnboardingPage> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text('Age range'),
+                  const Text(
+                    'Age range',
+                    style: TextStyle(
+                      fontSize: 17,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                   Observer(
                     builder: (_) => Text.rich(
                       TextSpan(
@@ -157,7 +174,13 @@ class _OnboardingPageState extends State<OnboardingPage> {
                 ),
               ),
               const SizedBox(height: 15),
-              const Text('Relationship goals'),
+              const Text(
+                'Relationship goals',
+                style: TextStyle(
+                  fontSize: 17,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
               const SizedBox(height: 10),
               Observer(
                 builder: (_) => Wrap(
@@ -177,7 +200,13 @@ class _OnboardingPageState extends State<OnboardingPage> {
                 ),
               ),
               const SizedBox(height: 15),
-              const Text('Political Views'),
+              const Text(
+                'Political Views',
+                style: TextStyle(
+                  fontSize: 17,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
               const SizedBox(height: 10),
               Observer(
                 builder: (_) => Wrap(
@@ -197,7 +226,13 @@ class _OnboardingPageState extends State<OnboardingPage> {
                 ),
               ),
               const SizedBox(height: 15),
-              const Text('Body Types'),
+              const Text(
+                'Body Types',
+                style: TextStyle(
+                  fontSize: 17,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
               const SizedBox(height: 10),
               Observer(
                 builder: (_) => Wrap(
