@@ -55,15 +55,13 @@ class _HomePageState extends State<HomePage> {
                     onPressed: () {
                       showModalBottomSheet(
                         context: context,
-                        isScrollControlled: false,
                         showDragHandle: true,
-                        useSafeArea: false,
+                        useSafeArea: true,
                         enableDrag: true,
                         builder: (BuildContext context) {
                           return Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 15),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                            child: ListView(
                               children: [
                                 const Text(
                                   'Filter',
