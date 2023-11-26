@@ -37,12 +37,6 @@ abstract class HomeStoreBase with Store {
   CardSwiperController cardSwiperController = CardSwiperController();
 
   @observable
-  String selectedRelationshipGoalPreference = '';
-
-  @observable
-  String selectedPoliticalViewPreference = '';
-
-  @observable
   RangeValues ageValues = const RangeValues(18, 50);
 
   @observable
@@ -51,23 +45,97 @@ abstract class HomeStoreBase with Store {
   @observable
   ObservableList<String> politicalViews = ObservableList();
 
+  @observable
+  ObservableList<String> bodyTypes = ObservableList();
+
+  @observable
+  ObservableList<String> sexes = ObservableList();
+  Map<String, String> sexesMap = {'male': 'Men', 'female': 'Women'};
+
+  @observable
+  ObservableList<String> selectedPoliticalViewPreferences = ObservableList();
+
+  @observable
+  ObservableList<String> selectedBodyTypePreferences = ObservableList();
+
+  @observable
+  ObservableList<String> selectedRelationshipGoalPreferences = ObservableList();
+
+  @observable
+  ObservableList<String> selectedSexPreferences = ObservableList();
+
   @action
-  Future<void> setAgeValues(RangeValues values) async {
+  Future<void> selectPoliticalViewPreference({
+    required bool selected,
+    required String view,
+  }) async {
+    if (selected) {
+      selectedPoliticalViewPreferences.add(view);
+    } else {
+      selectedPoliticalViewPreferences.remove(view);
+    }
+
+    await prefs!.setStringList('politicalViews', selectedPoliticalViewPreferences);
+  }
+
+  @action
+  Future<void> selectSexPreference({
+    required bool selected,
+    required String sex,
+  }) async {
+    if (selected) {
+      selectedSexPreferences.add(sex);
+    } else {
+      selectedSexPreferences.remove(sex);
+    }
+
+    await prefs!.setStringList('sexesPreferences', selectedSexPreferences);
+  }
+
+  @action
+  Future<void> selectBodyTypePreference({
+    required bool selected,
+    required String bodyType,
+  }) async {
+    if (selected) {
+      selectedBodyTypePreferences.add(bodyType);
+    } else {
+      selectedBodyTypePreferences.remove(bodyType);
+    }
+
+    await prefs!.setStringList('bodyTypes', selectedBodyTypePreferences);
+  }
+
+  @action
+  Future<void> selectRelationshipGoalPreference({
+    required bool selected,
+    required String goal,
+  }) async {
+    if (selected) {
+      selectedRelationshipGoalPreferences.add(goal);
+    } else {
+      selectedRelationshipGoalPreferences.remove(goal);
+    }
+
+    await prefs!.setStringList('relationshipGoals', selectedRelationshipGoalPreferences);
+  }
+
+  @action
+  void setAgeValues(RangeValues values) {
     ageValues = values;
-    await prefs!.setDouble('minAge', ageValues.start);
-    await prefs!.setDouble('maxAge', ageValues.end);
   }
 
-  @action
-  Future<void> selectPoliticalViewPreference(String view) async {
-    selectedPoliticalViewPreference = view;
-    await prefs!.setString('politicalView', selectedPoliticalViewPreference);
-  }
+  Future<void> getPreferences() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
 
-  @action
-  Future<void> selectRelationshipGoalPreference(String goal) async {
-    selectedRelationshipGoalPreference = goal;
-    await prefs!.setString('relationshipGoal', selectedRelationshipGoalPreference);
+    selectedSexPreferences = ObservableList.of(prefs.getStringList('sexesPreferences') ?? []);
+    ageValues = RangeValues(
+      prefs.getDouble('minAge') ?? 18,
+      prefs.getDouble('maxAge') ?? 50,
+    );
+    selectedPoliticalViewPreferences = ObservableList.of(prefs.getStringList('politicalViews') ?? []);
+    selectedBodyTypePreferences = ObservableList.of(prefs.getStringList('bodyTypes') ?? []);
+    selectedRelationshipGoalPreferences = ObservableList.of(prefs.getStringList('relationshipGoals') ?? []);
   }
 
   Future<void> getRelationshipGoals() async {
@@ -80,7 +148,19 @@ abstract class HomeStoreBase with Store {
         final String goal = data[index]['name'];
         relationshipGoals.add(goal);
       }
-      relationshipGoals.add('All');
+    }
+  }
+
+  Future<void> getSexes() async {
+    final Response response = await dio.get('$server/api/sexes');
+
+    if (response.statusCode == 200) {
+      final List<dynamic> data = response.data['data'];
+
+      for (int index = 0; index < data.length; index++) {
+        final String view = data[index]['name'];
+        sexes.add(view);
+      }
     }
   }
 
@@ -94,19 +174,20 @@ abstract class HomeStoreBase with Store {
         final String view = data[index]['name'];
         politicalViews.add(view);
       }
-      politicalViews.add('All');
     }
   }
 
-  Future<void> getPreferences() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
+  Future<void> getBodyTypes() async {
+    final Response response = await dio.get('$server/api/body-types');
 
-    ageValues = RangeValues(
-      prefs.getDouble('minAge') ?? 18,
-      prefs.getDouble('maxAge') ?? 50,
-    );
-    selectedPoliticalViewPreference = prefs.getString('politicalView') ?? 'All';
-    selectedRelationshipGoalPreference = prefs.getString('relationshipGoal') ?? 'All';
+    if (response.statusCode == 200) {
+      final List<dynamic> data = response.data['data'];
+
+      for (int index = 0; index < data.length; index++) {
+        final String bodyType = data[index]['name'];
+        bodyTypes.add(bodyType);
+      }
+    }
   }
 
   @action
@@ -149,13 +230,23 @@ abstract class HomeStoreBase with Store {
   Future<List<CharacterModel>> getTodayCards() async {
     String url = '$server/api/characters?min_age=${ageValues.start.round()}&max_age=${ageValues.end.round()}';
 
-    if (selectedPoliticalViewPreference != 'All') {
-      url += '&political_view=$selectedPoliticalViewPreference';
+    if (selectedPoliticalViewPreferences.isNotEmpty) {
+      url += '&political_view=${selectedPoliticalViewPreferences.join(',')}';
     }
 
-    if (selectedRelationshipGoalPreference != 'All') {
-      url += '&relationship_goal=$selectedRelationshipGoalPreference';
+    if (selectedRelationshipGoalPreferences.isNotEmpty) {
+      url += '&relationship_goal=${selectedRelationshipGoalPreferences.join(',')}';
     }
+
+    if (selectedBodyTypePreferences.isNotEmpty) {
+      url += '&body_type=${selectedBodyTypePreferences.join(',')}';
+    }
+
+    if (selectedSexPreferences.isNotEmpty) {
+      url += '&sex=${selectedSexPreferences.join(',')}';
+    }
+
+    print(url);
 
     final Response<dynamic> response = await Dio().get(url);
 
