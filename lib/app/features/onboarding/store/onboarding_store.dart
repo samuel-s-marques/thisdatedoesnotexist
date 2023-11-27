@@ -5,6 +5,7 @@ import 'package:mobx/mobx.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:thisdatedoesnotexist/app/core/enum/database_status_enum.dart';
 import 'package:thisdatedoesnotexist/app/core/models/hobby_model.dart';
+import 'package:thisdatedoesnotexist/app/core/models/preferences_model.dart';
 import 'package:thisdatedoesnotexist/app/core/models/user_model.dart';
 import 'package:thisdatedoesnotexist/app/core/services/auth_service.dart';
 import 'package:thisdatedoesnotexist/app/core/services/database_service.dart';
@@ -215,27 +216,23 @@ abstract class OnboardingStoreBase with Store {
     }
   }
 
-  Future<void> setPreferences() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-
-    await prefs.setStringList('sexesPreferences', selectedSexPreferences);
-    await prefs.setDouble('minAge', ageValues.start);
-    await prefs.setDouble('maxAge', ageValues.end);
-    await prefs.setStringList('relationshipGoals', selectedRelationshipGoalPreferences);
-    await prefs.setStringList('politicalViews', selectedPoliticalViewPreferences);
-    await prefs.setStringList('bodyTypes', selectedBodyTypePreferences);
-  }
-
   Future<void> onDone(BuildContext context) async {
     user = UserModel(
       uid: authService.getUser().uid,
       active: true,
       hobbies: selectedHobbies,
       swipes: 20,
+      preferences: Preferences(
+        sexes: selectedSexPreferences,
+        relationshipGoals: selectedRelationshipGoalPreferences,
+        politicalViews: selectedPoliticalViewPreferences,
+        bodyTypes: selectedBodyTypePreferences,
+        minAge: ageValues.start,
+        maxAge: ageValues.end,
+      ),
     );
 
     if (await databaseService.createUser(user!) == DatabaseStatus.successful) {
-      await setPreferences();
       await Modular.to.pushReplacementNamed('/home/');
     } else {
       context.showSnackBarError(
