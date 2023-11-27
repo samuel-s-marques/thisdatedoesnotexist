@@ -36,10 +36,12 @@ class _OnboardingPageState extends State<OnboardingPage> {
       bodyPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 15),
       pages: [
         PageViewModel(
-          title: 'Page one',
+          title: 'Discover Your Perfect Match!',
           bodyWidget: const Column(
             children: [
-              Text("Page one"),
+              Text(
+                "Welcome to This Date Does Not Exist, where we believe in the power of genuine connections. Whether you're looking for a soulmate, a new friend, or just someone to share common interests with, you're in the right place. Let's get started on your journey to meaningful connections!",
+              ),
             ],
           ),
         ),
