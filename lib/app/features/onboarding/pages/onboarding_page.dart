@@ -46,6 +46,94 @@ class _OnboardingPageState extends State<OnboardingPage> {
           ),
         ),
         PageViewModel(
+          title: 'Show yourself',
+          bodyWidget: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text('Upload up to 4 photos of yourself!'),
+              const SizedBox(height: 15),
+              GridView.count(
+                crossAxisCount: 2,
+                shrinkWrap: true,
+                padding: EdgeInsets.zero,
+                crossAxisSpacing: 10,
+                mainAxisSpacing: 10,
+                childAspectRatio: 0.6,
+                children: [
+                  Material(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(24),
+                      side: const BorderSide(
+                        width: 0.5,
+                        color: Colors.black26,
+                      ),
+                    ),
+                    child: InkWell(
+                      onTap: () {},
+                      borderRadius: BorderRadius.circular(24),
+                      child: const Icon(
+                        Icons.add,
+                        color: Colors.black26,
+                      ),
+                    ),
+                  ),
+                  Material(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(24),
+                      side: const BorderSide(
+                        width: 0.5,
+                        color: Colors.black26,
+                      ),
+                    ),
+                    child: InkWell(
+                      onTap: () {},
+                      borderRadius: BorderRadius.circular(24),
+                      child: const Icon(
+                        Icons.add,
+                        color: Colors.black26,
+                      ),
+                    ),
+                  ),
+                  Material(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(24),
+                      side: const BorderSide(
+                        width: 0.5,
+                        color: Colors.black26,
+                      ),
+                    ),
+                    child: InkWell(
+                      onTap: () {},
+                      borderRadius: BorderRadius.circular(24),
+                      child: const Icon(
+                        Icons.add,
+                        color: Colors.black26,
+                      ),
+                    ),
+                  ),
+                  Material(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(24),
+                      side: const BorderSide(
+                        width: 0.5,
+                        color: Colors.black26,
+                      ),
+                    ),
+                    child: InkWell(
+                      onTap: () {},
+                      borderRadius: BorderRadius.circular(24),
+                      child: const Icon(
+                        Icons.add,
+                        color: Colors.black26,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+        PageViewModel(
           title: 'Hobbies & Interests',
           bodyWidget: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
