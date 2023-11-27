@@ -1,5 +1,5 @@
+import 'package:appinio_swiper/appinio_swiper.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_card_swiper/flutter_card_swiper.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:thisdatedoesnotexist/app/core/models/user_model.dart';
@@ -256,19 +256,17 @@ class _HomePageState extends State<HomePage> {
                   return Column(
                     children: [
                       Flexible(
-                        child: CardSwiper(
-                          padding: EdgeInsets.zero,
-                          cardsCount: store.cards.length,
-                          controller: store.cardSwiperController,
-                          allowedSwipeDirection: AllowedSwipeDirection.only(left: true, right: true),
-                          isLoop: false,
-                          onSwipe: store.onSwipe,
-                          cardBuilder: (
-                            BuildContext context,
-                            int index,
-                            int percentThresholdX,
-                            int percentThresholdY,
-                          ) {
+                        child: AppinioSwiper(
+                          cardCount: store.cards.length,
+                          swipeOptions: const SwipeOptions.only(
+                            left: true,
+                            right: true,
+                          ),
+                          allowUnSwipe: false,
+                          allowUnlimitedUnSwipe: false,
+                          backgroundCardCount: 2,
+                          onSwipeEnd: store.onSwipe,
+                          cardBuilder: (BuildContext context, int index) {
                             return CardWidget(character: store.cards[index]);
                           },
                         ),
