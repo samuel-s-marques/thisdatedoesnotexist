@@ -1,11 +1,13 @@
+import 'package:appinio_swiper/appinio_swiper.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_card_swiper/flutter_card_swiper.dart';
 import 'package:mobx/mobx.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:thisdatedoesnotexist/app/core/models/user_model.dart';
 import 'package:thisdatedoesnotexist/app/core/services/auth_service.dart';
+import 'package:thisdatedoesnotexist/app/core/services/database_service.dart';
 import 'package:thisdatedoesnotexist/app/features/chat/chat_module.dart';
 import 'package:thisdatedoesnotexist/app/features/home/models/character_model.dart';
 import 'package:thisdatedoesnotexist/app/features/profile/profile_module.dart';
@@ -34,7 +36,7 @@ abstract class HomeStoreBase with Store {
 
   List<String> appbars = ['Home', 'Chat', 'Profile'];
 
-  CardSwiperController cardSwiperController = CardSwiperController();
+  AppinioSwiperController cardSwiperController = AppinioSwiperController();
 
   @observable
   RangeValues ageValues = const RangeValues(18, 50);
@@ -126,16 +128,16 @@ abstract class HomeStoreBase with Store {
   }
 
   Future<void> getPreferences() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final DatabaseService databaseService = DatabaseService();
+    final UserModel user = await databaseService.getUser();
 
-    selectedSexPreferences = ObservableList.of(prefs.getStringList('sexesPreferences') ?? []);
-    ageValues = RangeValues(
-      prefs.getDouble('minAge') ?? 18,
-      prefs.getDouble('maxAge') ?? 50,
-    );
-    selectedPoliticalViewPreferences = ObservableList.of(prefs.getStringList('politicalViews') ?? []);
-    selectedBodyTypePreferences = ObservableList.of(prefs.getStringList('bodyTypes') ?? []);
-    selectedRelationshipGoalPreferences = ObservableList.of(prefs.getStringList('relationshipGoals') ?? []);
+    if (user.preferences != null) {
+      selectedSexPreferences = ObservableList.of(user.preferences?.sexes ?? []);
+      selectedPoliticalViewPreferences = ObservableList.of(user.preferences?.politicalViews ?? []);
+      selectedBodyTypePreferences = ObservableList.of(user.preferences?.bodyTypes ?? []);
+      selectedRelationshipGoalPreferences = ObservableList.of(user.preferences?.relationshipGoals ?? []);
+      ageValues = RangeValues(user.preferences?.minAge ?? 18, user.preferences?.maxAge ?? 50);
+    }
   }
 
   Future<void> getRelationshipGoals() async {
@@ -191,38 +193,54 @@ abstract class HomeStoreBase with Store {
   }
 
   @action
-  Future<bool> onSwipe(
+  Future<void> shakeCards() async {
+    const double distance = 30;
+
+    await cardSwiperController.animateTo(
+      const Offset(-distance, 0),
+      duration: const Duration(milliseconds: 200),
+      curve: Curves.easeInOut,
+    );
+    await cardSwiperController.animateTo(
+      const Offset(distance, 0),
+      duration: const Duration(milliseconds: 400),
+      curve: Curves.easeInOut,
+    );
+
+    await cardSwiperController.animateTo(
+      const Offset(0, 0),
+      duration: const Duration(milliseconds: 200),
+      curve: Curves.easeInOut,
+    );
+  }
+
+  @action
+  Future<void> onSwipe(
     int previousIndex,
     int? currentIndex,
-    CardSwiperDirection direction,
+    SwiperActivity activity,
   ) async {
-    try {
-      if (swipes == 0) {
-        return false;
+    if (activity.direction == AxisDirection.right || activity.direction == AxisDirection.left) {
+      try {
+        await db.collection('swipes').add({
+          'targetId': cards[previousIndex].uuid,
+          'userId': authService.getUser().uid,
+          'direction': activity.direction == AxisDirection.right ? 'right' : 'left',
+          'createdAt': Timestamp.fromDate(DateTime.now()),
+        });
+
+        swipes--;
+
+        await db.collection('users').doc(authService.getUser().uid).set({
+          'swipes': swipes,
+          'lastSwipe': Timestamp.fromDate(DateTime.now()),
+        }, SetOptions(merge: true));
+      } catch (exception, stackTrace) {
+        await Sentry.captureException(
+          exception,
+          stackTrace: stackTrace,
+        );
       }
-
-      await db.collection('swipes').add({
-        'targetId': cards[previousIndex].uuid,
-        'userId': authService.getUser().uid,
-        'direction': direction.name,
-        'createdAt': Timestamp.fromDate(DateTime.now()),
-      });
-
-      swipes--;
-
-      await db.collection('users').doc(authService.getUser().uid).set({
-        'swipes': swipes,
-        'lastSwipe': Timestamp.fromDate(DateTime.now()),
-      }, SetOptions(merge: true));
-
-      return true;
-    } catch (exception, stackTrace) {
-      await Sentry.captureException(
-        exception,
-        stackTrace: stackTrace,
-      );
-
-      return false;
     }
   }
 
