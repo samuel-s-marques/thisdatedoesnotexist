@@ -1,6 +1,7 @@
 import 'package:appinio_swiper/appinio_swiper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:mobx/mobx.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:thisdatedoesnotexist/app/core/models/user_model.dart';
 import 'package:thisdatedoesnotexist/app/core/util.dart';
@@ -28,10 +29,8 @@ class _HomePageState extends State<HomePage> {
     super.initState();
 
     UserModel(uid: store.authService.getUser().uid).getSwipes().then((swipes) => store.setSwipes(swipes));
-    SharedPreferences.getInstance().then((value) => store.prefs = value);
 
     store.setIndex(0);
-    store.getPreferences();
     store.getPoliticalViews();
     store.getRelationshipGoals();
     store.getBodyTypes();
@@ -245,13 +244,7 @@ class _HomePageState extends State<HomePage> {
               future: store.getTodayCards(),
               builder: (BuildContext context, AsyncSnapshot snapshot) {
                 if (snapshot.hasData) {
-                  store.cards = snapshot.data;
-
-                  if (store.cards.isEmpty) {
-                    return const Center(
-                      child: Text('No more cards for today!'),
-                    );
-                  }
+                  print(snapshot.data);
 
                   return Column(
                     children: [
@@ -266,6 +259,7 @@ class _HomePageState extends State<HomePage> {
                           allowUnlimitedUnSwipe: false,
                           backgroundCardCount: 2,
                           onSwipeEnd: store.onSwipe,
+                          controller: store.cardSwiperController,
                           cardBuilder: (BuildContext context, int index) {
                             return CardWidget(character: store.cards[index]);
                           },
