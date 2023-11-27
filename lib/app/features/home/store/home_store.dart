@@ -32,7 +32,7 @@ abstract class HomeStoreBase with Store {
   ];
 
   @observable
-  List<CharacterModel> cards = [];
+  ObservableList<CharacterModel> cards = ObservableList();
 
   List<String> appbars = ['Home', 'Chat', 'Profile'];
 
@@ -127,7 +127,7 @@ abstract class HomeStoreBase with Store {
     ageValues = values;
   }
 
-  Future<void> getPreferences() async {
+  Future<bool> getPreferences() async {
     final DatabaseService databaseService = DatabaseService();
     final UserModel user = await databaseService.getUser();
 
@@ -137,7 +137,11 @@ abstract class HomeStoreBase with Store {
       selectedBodyTypePreferences = ObservableList.of(user.preferences?.bodyTypes ?? []);
       selectedRelationshipGoalPreferences = ObservableList.of(user.preferences?.relationshipGoals ?? []);
       ageValues = RangeValues(user.preferences?.minAge ?? 18, user.preferences?.maxAge ?? 50);
+
+      return true;
     }
+
+    return false;
   }
 
   Future<void> getRelationshipGoals() async {
@@ -245,34 +249,46 @@ abstract class HomeStoreBase with Store {
   }
 
   @action
-  Future<List<CharacterModel>> getTodayCards() async {
-    String url = '$server/api/characters?min_age=${ageValues.start.round()}&max_age=${ageValues.end.round()}';
+  Future<bool?> getTodayCards() async {
+    if (await getPreferences()) {
+      String url = '$server/api/characters?min_age=${ageValues.start.round()}&max_age=${ageValues.end.round()}';
 
-    if (selectedPoliticalViewPreferences.isNotEmpty) {
-      url += '&political_view=${selectedPoliticalViewPreferences.join(',')}';
+      if (selectedPoliticalViewPreferences.isNotEmpty) {
+        url += '&political_view=${selectedPoliticalViewPreferences.join(',')}';
+      }
+
+      if (selectedRelationshipGoalPreferences.isNotEmpty) {
+        url += '&relationship_goal=${selectedRelationshipGoalPreferences.join(',')}';
+      }
+
+      if (selectedBodyTypePreferences.isNotEmpty) {
+        url += '&body_type=${selectedBodyTypePreferences.join(',')}';
+      }
+
+      if (selectedSexPreferences.isNotEmpty) {
+        url += '&sex=${selectedSexPreferences.join(',')}';
+      }
+
+      final Response<dynamic> response = await Dio().get(url);
+
+      if (response.statusCode == 200) {
+        cards = ObservableList.of((response.data['data'] as List<dynamic>).map((e) => CharacterModel.fromMap(e)).toList());
+
+        /*
+        await Future.delayed(const Duration(seconds: 1)).then((_) {
+          shakeCards();
+        });
+        */
+
+        return true;
+      } else {
+        cards = ObservableList.of([]);
+
+        return null;
+      }
     }
 
-    if (selectedRelationshipGoalPreferences.isNotEmpty) {
-      url += '&relationship_goal=${selectedRelationshipGoalPreferences.join(',')}';
-    }
-
-    if (selectedBodyTypePreferences.isNotEmpty) {
-      url += '&body_type=${selectedBodyTypePreferences.join(',')}';
-    }
-
-    if (selectedSexPreferences.isNotEmpty) {
-      url += '&sex=${selectedSexPreferences.join(',')}';
-    }
-
-    print(url);
-
-    final Response<dynamic> response = await Dio().get(url);
-
-    if (response.statusCode == 200) {
-      return (response.data['data'] as List<dynamic>).map((e) => CharacterModel.fromMap(e)).toList();
-    } else {
-      return [];
-    }
+    return null;
   }
 
   @observable
