@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:thisdatedoesnotexist/app/core/models/hobby_model.dart';
+import 'package:thisdatedoesnotexist/app/core/models/preferences_model.dart';
 
 class UserModel {
   UserModel({
@@ -10,6 +11,7 @@ class UserModel {
     this.active,
     this.relationshipGoal,
     this.hobbies,
+    this.preferences,
   });
 
   factory UserModel.fromFirebase(User user) {
@@ -24,8 +26,9 @@ class UserModel {
       lastSwipe: map['lastSwipe'] != null ? (map['lastSwipe'] as Timestamp).toDate() : null,
       active: map['active'],
       swipes: map['swipes'],
-      relationshipGoal: map['relationshipGoal'],
+      relationshipGoal: map['relationshipGoal'] ?? [],
       hobbies: (map['hobbies'] as List<dynamic>?)?.map((hobbyMap) => Hobby.fromMap(hobbyMap as Map<String, dynamic>)).toList(),
+      preferences: map['preferences'] != null ? Preferences.fromMap(map['preferences'] as Map<String, dynamic>) : null,
     );
   }
 
@@ -37,6 +40,7 @@ class UserModel {
   final DateTime? lastSwipe;
   final String? relationshipGoal;
   final List<Hobby>? hobbies;
+  final Preferences? preferences;
 
   Map<String, dynamic> toMap() {
     return {
@@ -45,7 +49,8 @@ class UserModel {
       'lastSwipe': lastSwipe != null ? Timestamp.fromDate(lastSwipe!) : null,
       'active': active ?? false,
       'relationshipGoal': relationshipGoal ?? '',
-      'hobbies': hobbies != null ? hobbies!.map((Hobby hobby) => hobby.toMap()).toList() : null,
+      'hobbies': hobbies?.map((Hobby hobby) => hobby.toMap()).toList(),
+      'preferences': preferences?.toMap(),
     };
   }
 
