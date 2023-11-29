@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 // ignore: depend_on_referenced_packages
@@ -10,7 +9,6 @@ import 'package:thisdatedoesnotexist/app/core/services/auth_service.dart';
 
 class DatabaseService {
   final AuthService authService = AuthService();
-  FirebaseFirestore db = FirebaseFirestore.instance;
   String server = const String.fromEnvironment('SERVER');
   final Dio dio = Dio();
 
@@ -27,14 +25,13 @@ class DatabaseService {
         ),
       );
 
-
       await dio.post(
         '$server/api/users',
         data: user.toMap(),
         options: Options(
           headers: {
             'Authorization': 'Bearer ${await authenticatedUser.getIdToken()}',
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
           },
         ),
       );
@@ -47,24 +44,50 @@ class DatabaseService {
     return status;
   }
 
-  Future<UserModel> getUser() async {
+  Future<UserModel?> getUser() async {
     final User authenticatedUser = authService.getUser();
-    final DocumentSnapshot<Map<String, dynamic>> user = await db.collection('users').doc(authenticatedUser.uid).get();
 
-    return UserModel.fromMap(user.data()!);
+    try {
+      final Response response = await dio.get(
+        '$server/api/users/${authenticatedUser.uid}',
+        options: Options(
+          headers: {'Authorization': 'Bearer ${await authenticatedUser.getIdToken()}', 'Content-Type': 'application/json'},
+        ),
+      );
+
+      if (response.statusCode == 200) {
+        final UserModel user = UserModel.fromMap(response.data);
+
+        return user;
+      }
+    } catch (e) {
+      return null;
+    }
+
+    return null;
   }
 
   Future<bool> userExists() async {
     final User authenticatedUser = authService.getUser();
-    final DocumentSnapshot<Map<String, dynamic>> user = await db.collection('users').doc(authenticatedUser.uid).get();
 
-    return user.exists;
+    final Response response = await dio.get(
+      '$server/api/users/${authenticatedUser.uid}',
+      options: Options(
+        headers: {'Authorization': 'Bearer ${await authenticatedUser.getIdToken()}', 'Content-Type': 'application/json'},
+      ),
+    );
+
+    if (response.statusCode == 200) {
+      return true;
+    }
+
+    return false;
   }
 
+  // TODO: Implement updateUser
   Future<DatabaseStatus> updateUser(UserModel user) async {
     try {
       final User authenticatedUser = authService.getUser();
-      await db.collection('users').doc(authenticatedUser.uid).set(user.toMap(), SetOptions(merge: true));
       return DatabaseStatus.successful;
     } catch (e) {
       return DatabaseStatus.failure;
