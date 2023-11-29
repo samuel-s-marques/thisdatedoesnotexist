@@ -129,7 +129,11 @@ abstract class HomeStoreBase with Store {
 
   Future<bool> getPreferences() async {
     final DatabaseService databaseService = DatabaseService();
-    final UserModel user = await databaseService.getUser();
+    final UserModel? user = await databaseService.getUser();
+
+    if (user == null) {
+      return false;
+    }
 
     if (user.preferences != null) {
       selectedSexPreferences = ObservableList.of(user.preferences?.sexes ?? []);
