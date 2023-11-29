@@ -58,13 +58,8 @@ abstract class AuthStoreBase with Store {
     final DatabaseService databaseService = DatabaseService();
 
     if (status == AuthStatus.successful) {
-      if (await databaseService.userExists() == false) {
-        await Modular.to.pushReplacementNamed('/onboarding/');
-        return;
-      }
-
-      final UserModel user = await databaseService.getUser();
-      if (user.active == false) {
+      final UserModel? user = await databaseService.getUser();
+      if (user == null || user.active == false) {
         await Modular.to.pushReplacementNamed('/onboarding/');
       } else {
         await Modular.to.pushReplacementNamed('/home/');
@@ -87,14 +82,8 @@ abstract class AuthStoreBase with Store {
     final DatabaseService databaseService = DatabaseService();
 
     if (status == AuthStatus.successful) {
-      if (await databaseService.userExists() == false) {
-        await Modular.to.pushReplacementNamed('/onboarding/');
-        return;
-      }
-
-      final UserModel user = await databaseService.getUser();
-      
-      if (user.active == false) {
+      final UserModel? user = await databaseService.getUser();
+      if (user == null || user.active == false) {
         await Modular.to.pushReplacementNamed('/onboarding/');
       } else {
         await Modular.to.pushReplacementNamed('/home/');
