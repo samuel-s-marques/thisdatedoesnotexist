@@ -23,10 +23,10 @@ class UserModel {
   factory UserModel.fromMap(Map<String, dynamic> map) {
     return UserModel(
       uid: map['uid'],
-      lastSwipe: map['lastSwipe'] != null ? (map['lastSwipe'] as Timestamp).toDate() : null,
+      lastSwipe: map['last_swipe'] != null ? (map['lastSwipe'] as Timestamp).toDate() : null,
       active: map['active'],
       swipes: map['swipes'],
-      relationshipGoal: map['relationshipGoal'] ?? [],
+      relationshipGoal: map['relationship_goal'] ?? [],
       hobbies: (map['hobbies'] as List<dynamic>?)?.map((hobbyMap) => Hobby.fromMap(hobbyMap as Map<String, dynamic>)).toList(),
       preferences: map['preferences'] != null ? Preferences.fromMap(map['preferences'] as Map<String, dynamic>) : null,
     );
@@ -46,9 +46,9 @@ class UserModel {
     return {
       'uid': uid,
       'swipes': swipes ?? 20,
-      'lastSwipe': lastSwipe != null ? Timestamp.fromDate(lastSwipe!) : null,
+      'last_swipe': lastSwipe != null ? Timestamp.fromDate(lastSwipe!) : null,
       'active': active ?? false,
-      'relationshipGoal': relationshipGoal ?? '',
+      'relationship_goal': relationshipGoal ?? '',
       'hobbies': hobbies?.map((Hobby hobby) => hobby.toMap()).toList(),
       'preferences': preferences?.toMap(),
     };
