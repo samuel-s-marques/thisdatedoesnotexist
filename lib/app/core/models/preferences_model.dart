@@ -11,22 +11,22 @@ class Preferences {
   factory Preferences.fromMap(Map<String, dynamic> map) {
     return Preferences(
       sexes: List<String>.from(map['sexes'] ?? []),
-      relationshipGoals: List<String>.from(map['relationshipGoals'] ?? []),
-      politicalViews: List<String>.from(map['politicalViews'] ?? []),
-      bodyTypes: List<String>.from(map['bodyTypes'] ?? []),
-      minAge: (map['minAge'] ?? 18) as double,
-      maxAge: (map['maxAge'] ?? 50) as double,
+      relationshipGoals: List<String>.from(map['relationship_goals'] ?? []),
+      politicalViews: List<String>.from(map['political_views'] ?? []),
+      bodyTypes: List<String>.from(map['body_types'] ?? []),
+      minAge: (map['min_age'] ?? 18) as double,
+      maxAge: (map['max_age'] ?? 50) as double,
     );
   }
 
   Map<String, dynamic> toMap() {
     return {
       'sexes': sexes,
-      'relationshipGoals': relationshipGoals,
-      'politicalViews': politicalViews,
-      'bodyTypes': bodyTypes,
-      'minAge': minAge,
-      'maxAge': maxAge,
+      'relationship_goals': relationshipGoals,
+      'political_views': politicalViews,
+      'body_types': bodyTypes,
+      'min_age': minAge,
+      'max_age': maxAge,
     };
   }
 
