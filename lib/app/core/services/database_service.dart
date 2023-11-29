@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 // ignore: depend_on_referenced_packages
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
@@ -10,6 +11,8 @@ import 'package:thisdatedoesnotexist/app/core/services/auth_service.dart';
 class DatabaseService {
   final AuthService authService = AuthService();
   FirebaseFirestore db = FirebaseFirestore.instance;
+  String server = const String.fromEnvironment('SERVER');
+  final Dio dio = Dio();
 
   Future<DatabaseStatus> createUser(UserModel user) async {
     DatabaseStatus status = DatabaseStatus.unknown;
@@ -23,7 +26,18 @@ class DatabaseService {
           imageUrl: authenticatedUser.photoURL,
         ),
       );
-      await db.collection('users').doc(authenticatedUser.uid).set(user.toMap(), SetOptions(merge: true));
+
+
+      await dio.post(
+        '$server/api/users',
+        data: user.toMap(),
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer ${await authenticatedUser.getIdToken()}',
+            'Content-Type': 'application/json'
+          },
+        ),
+      );
 
       status = DatabaseStatus.successful;
     } catch (error) {
