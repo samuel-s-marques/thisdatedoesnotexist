@@ -1,8 +1,6 @@
 import 'package:appinio_swiper/appinio_swiper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:mobx/mobx.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:thisdatedoesnotexist/app/core/models/user_model.dart';
 import 'package:thisdatedoesnotexist/app/core/util.dart';
 import 'package:thisdatedoesnotexist/app/features/home/store/home_store.dart';
@@ -17,6 +15,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   HomeStore store = HomeStore();
+  Future<bool?>? _future;
 
   @override
   void dispose() {
@@ -29,6 +28,8 @@ class _HomePageState extends State<HomePage> {
     super.initState();
 
     UserModel(uid: store.authService.getUser().uid).getSwipes().then((swipes) => store.setSwipes(swipes));
+
+    _future = store.getTodayCards();
 
     store.setIndex(0);
     store.getPoliticalViews();
@@ -241,11 +242,9 @@ class _HomePageState extends State<HomePage> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 15),
             child: FutureBuilder(
-              future: store.getTodayCards(),
+              future: _future,
               builder: (BuildContext context, AsyncSnapshot snapshot) {
                 if (snapshot.hasData) {
-                  print(snapshot.data);
-
                   return Column(
                     children: [
                       Flexible(
