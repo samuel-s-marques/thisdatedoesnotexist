@@ -1,6 +1,6 @@
 import 'package:appinio_swiper/appinio_swiper.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dio/dio.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:mobx/mobx.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
@@ -17,8 +17,8 @@ part 'home_store.g.dart';
 class HomeStore = HomeStoreBase with _$HomeStore;
 
 abstract class HomeStoreBase with Store {
-  FirebaseFirestore db = FirebaseFirestore.instance;
   AuthService authService = AuthService();
+  User? authenticatedUser;
   final Dio dio = Dio();
   String server = const String.fromEnvironment('SERVER');
   SharedPreferences? prefs;
@@ -228,21 +228,42 @@ abstract class HomeStoreBase with Store {
     int? currentIndex,
     SwiperActivity activity,
   ) async {
+    authenticatedUser ??= authService.getUser();
+
     if (activity.direction == AxisDirection.right || activity.direction == AxisDirection.left) {
       try {
-        await db.collection('swipes').add({
-          'targetId': cards[previousIndex].uuid,
-          'userId': authService.getUser().uid,
-          'direction': activity.direction == AxisDirection.right ? 'right' : 'left',
-          'createdAt': Timestamp.fromDate(DateTime.now()),
-        });
+        final String direction = activity.direction == AxisDirection.right ? 'right' : 'left';
+
+        await dio.post(
+          '$server/api/swipes',
+          data: {
+            'target_id': cards[previousIndex].uuid,
+            'swiper_id': authenticatedUser!.uid,
+            'direction': direction,
+          },
+          options: Options(
+            headers: {
+              'Authorization': 'Bearer ${await authenticatedUser!.getIdToken()}',
+              'Content-Type': 'application/json',
+            },
+          ),
+        );
 
         swipes--;
 
-        await db.collection('users').doc(authService.getUser().uid).set({
-          'swipes': swipes,
-          'lastSwipe': Timestamp.fromDate(DateTime.now()),
-        }, SetOptions(merge: true));
+        await dio.put(
+          '$server/api/users',
+          data: {
+            'swipes': swipes,
+            'last_swipe': DateTime.now().toIso8601String(),
+          },
+          options: Options(
+            headers: {
+              'Authorization': 'Bearer ${await authenticatedUser!.getIdToken()}',
+              'Content-Type': 'application/json',
+            },
+          ),
+        );
       } catch (exception, stackTrace) {
         await Sentry.captureException(
           exception,
