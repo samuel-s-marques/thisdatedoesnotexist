@@ -36,6 +36,7 @@ class _HomePageState extends State<HomePage> {
     store.getRelationshipGoals();
     store.getBodyTypes();
     store.getSexes();
+    store.authenticatedUser = store.authService.getUser();
   }
 
   @override
