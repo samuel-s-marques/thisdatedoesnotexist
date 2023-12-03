@@ -5,9 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:mobx/mobx.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:thisdatedoesnotexist/app/core/models/user_model.dart';
+import 'package:thisdatedoesnotexist/app/core/models/body_type_model.dart';
+import 'package:thisdatedoesnotexist/app/core/models/political_view_model.dart';
+import 'package:thisdatedoesnotexist/app/core/models/relationship_goal_model.dart';
+import 'package:thisdatedoesnotexist/app/core/models/sex_model.dart';
 import 'package:thisdatedoesnotexist/app/core/services/auth_service.dart';
-import 'package:thisdatedoesnotexist/app/core/services/database_service.dart';
 import 'package:thisdatedoesnotexist/app/features/chat/chat_module.dart';
 import 'package:thisdatedoesnotexist/app/features/home/models/character_model.dart';
 import 'package:thisdatedoesnotexist/app/features/profile/profile_module.dart';
@@ -42,84 +44,76 @@ abstract class HomeStoreBase with Store {
   RangeValues ageValues = const RangeValues(18, 50);
 
   @observable
-  ObservableList<String> relationshipGoals = ObservableList();
+  ObservableList<RelationshipGoal> relationshipGoals = ObservableList();
 
   @observable
-  ObservableList<String> politicalViews = ObservableList();
+  ObservableList<PoliticalView> politicalViews = ObservableList();
 
   @observable
-  ObservableList<String> bodyTypes = ObservableList();
+  ObservableList<BodyType> bodyTypes = ObservableList();
 
   @observable
-  ObservableList<String> sexes = ObservableList();
+  ObservableList<Sex> sexes = ObservableList();
   Map<String, String> sexesMap = {'male': 'Men', 'female': 'Women'};
 
   @observable
-  ObservableList<String> selectedPoliticalViewPreferences = ObservableList();
+  ObservableList<PoliticalView> selectedPoliticalViewPreferences = ObservableList();
 
   @observable
-  ObservableList<String> selectedBodyTypePreferences = ObservableList();
+  ObservableList<BodyType> selectedBodyTypePreferences = ObservableList();
 
   @observable
-  ObservableList<String> selectedRelationshipGoalPreferences = ObservableList();
+  ObservableList<RelationshipGoal> selectedRelationshipGoalPreferences = ObservableList();
 
   @observable
-  ObservableList<String> selectedSexPreferences = ObservableList();
+  ObservableList<Sex> selectedSexPreferences = ObservableList();
 
   @action
   Future<void> selectPoliticalViewPreference({
     required bool selected,
-    required String view,
+    required PoliticalView view,
   }) async {
     if (selected) {
       selectedPoliticalViewPreferences.add(view);
     } else {
       selectedPoliticalViewPreferences.remove(view);
     }
-
-    await prefs!.setStringList('politicalViews', selectedPoliticalViewPreferences);
   }
 
   @action
   Future<void> selectSexPreference({
     required bool selected,
-    required String sex,
+    required Sex sex,
   }) async {
     if (selected) {
       selectedSexPreferences.add(sex);
     } else {
       selectedSexPreferences.remove(sex);
     }
-
-    await prefs!.setStringList('sexesPreferences', selectedSexPreferences);
   }
 
   @action
   Future<void> selectBodyTypePreference({
     required bool selected,
-    required String bodyType,
+    required BodyType bodyType,
   }) async {
     if (selected) {
       selectedBodyTypePreferences.add(bodyType);
     } else {
       selectedBodyTypePreferences.remove(bodyType);
     }
-
-    await prefs!.setStringList('bodyTypes', selectedBodyTypePreferences);
   }
 
   @action
   Future<void> selectRelationshipGoalPreference({
     required bool selected,
-    required String goal,
+    required RelationshipGoal goal,
   }) async {
     if (selected) {
       selectedRelationshipGoalPreferences.add(goal);
     } else {
       selectedRelationshipGoalPreferences.remove(goal);
     }
-
-    await prefs!.setStringList('relationshipGoals', selectedRelationshipGoalPreferences);
   }
 
   @action
@@ -128,19 +122,22 @@ abstract class HomeStoreBase with Store {
   }
 
   Future<bool> getPreferences() async {
-    final DatabaseService databaseService = DatabaseService();
-    final UserModel? user = await databaseService.getUser();
+    authenticatedUser ??= authService.getUser();
+    final Response response = await dio.get('$server/api/preferences/${authenticatedUser?.uid}');
 
-    if (user == null) {
-      return false;
-    }
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> data = response.data;
 
-    if (user.preferences != null) {
-      selectedSexPreferences = ObservableList.of(user.preferences?.sexes ?? []);
-      selectedPoliticalViewPreferences = ObservableList.of(user.preferences?.politicalViews ?? []);
-      selectedBodyTypePreferences = ObservableList.of(user.preferences?.bodyTypes ?? []);
-      selectedRelationshipGoalPreferences = ObservableList.of(user.preferences?.relationshipGoals ?? []);
-      ageValues = RangeValues(user.preferences?.minAge ?? 18, user.preferences?.maxAge ?? 50);
+      final List<dynamic> sexes = data['sexes'] ?? [];
+      final List<dynamic> relationshipGoals = data['relationship_goals'] ?? [];
+      final List<dynamic> politicalViews = data['political_views'] ?? [];
+      final List<dynamic> bodyTypes = data['body_types'] ?? [];
+
+      selectedRelationshipGoalPreferences = ObservableList.of(relationshipGoals.map((goal) => RelationshipGoal.fromMap(goal)).toList());
+      selectedBodyTypePreferences = ObservableList.of(bodyTypes.map((type) => BodyType.fromMap(type)).toList());
+      selectedPoliticalViewPreferences = ObservableList.of(politicalViews.map((view) => PoliticalView.fromMap(view)).toList());
+      selectedSexPreferences = ObservableList.of(sexes.map((sex) => Sex.fromMap(sex)).toList());
+      ageValues = RangeValues(data['min_age'] ?? 18, data['max_age'] ?? 50);
 
       return true;
     }
@@ -155,7 +152,7 @@ abstract class HomeStoreBase with Store {
       final List<dynamic> data = response.data['data'];
 
       for (int index = 0; index < data.length; index++) {
-        final String goal = data[index]['name'];
+        final RelationshipGoal goal = RelationshipGoal.fromMap(data[index]);
         relationshipGoals.add(goal);
       }
     }
@@ -168,8 +165,8 @@ abstract class HomeStoreBase with Store {
       final List<dynamic> data = response.data['data'];
 
       for (int index = 0; index < data.length; index++) {
-        final String view = data[index]['name'];
-        sexes.add(view);
+        final Sex sex = Sex.fromMap(data[index]);
+        sexes.add(sex);
       }
     }
   }
@@ -181,7 +178,7 @@ abstract class HomeStoreBase with Store {
       final List<dynamic> data = response.data['data'];
 
       for (int index = 0; index < data.length; index++) {
-        final String view = data[index]['name'];
+        final PoliticalView view = PoliticalView.fromMap(data[index]);
         politicalViews.add(view);
       }
     }
@@ -194,7 +191,7 @@ abstract class HomeStoreBase with Store {
       final List<dynamic> data = response.data['data'];
 
       for (int index = 0; index < data.length; index++) {
-        final String bodyType = data[index]['name'];
+        final BodyType bodyType = BodyType.fromMap(data[index]);
         bodyTypes.add(bodyType);
       }
     }
