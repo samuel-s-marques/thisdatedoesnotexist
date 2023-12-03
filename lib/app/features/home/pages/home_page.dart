@@ -249,6 +249,12 @@ class _HomePageState extends State<HomePage> {
               future: _future,
               builder: (BuildContext context, AsyncSnapshot snapshot) {
                 if (snapshot.hasData) {
+                  if (snapshot.data == false) {
+                    return const Center(
+                      child: Text('No more cards for today!'),
+                    );
+                  }
+
                   return Column(
                     children: [
                       Flexible(
@@ -260,6 +266,7 @@ class _HomePageState extends State<HomePage> {
                           ),
                           allowUnSwipe: false,
                           allowUnlimitedUnSwipe: false,
+                          backgroundCardCount: 2,
                           onSwipeEnd: store.onSwipe,
                           controller: store.cardSwiperController,
                           cardBuilder: (BuildContext context, int index) {
