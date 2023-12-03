@@ -18,6 +18,22 @@ class BodyType {
     };
   }
 
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+
+    if (other.runtimeType != runtimeType) {
+      return false;
+    }
+
+    return other is BodyType && other.id == id && other.name == name;
+  }
+
+  @override
+  int get hashCode => Object.hash(id, name);
+
   final int? id;
   final String? name;
 }
