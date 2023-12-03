@@ -7,9 +7,11 @@ import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:thisdatedoesnotexist/app/core/models/body_type_model.dart';
 import 'package:thisdatedoesnotexist/app/core/models/political_view_model.dart';
+import 'package:thisdatedoesnotexist/app/core/models/preferences_model.dart';
 import 'package:thisdatedoesnotexist/app/core/models/relationship_goal_model.dart';
 import 'package:thisdatedoesnotexist/app/core/models/sex_model.dart';
 import 'package:thisdatedoesnotexist/app/core/services/auth_service.dart';
+import 'package:thisdatedoesnotexist/app/core/util.dart';
 import 'package:thisdatedoesnotexist/app/features/chat/chat_module.dart';
 import 'package:thisdatedoesnotexist/app/features/home/models/character_model.dart';
 import 'package:thisdatedoesnotexist/app/features/profile/profile_module.dart';
@@ -132,12 +134,14 @@ abstract class HomeStoreBase with Store {
       final List<dynamic> relationshipGoals = data['relationship_goals'] ?? [];
       final List<dynamic> politicalViews = data['political_views'] ?? [];
       final List<dynamic> bodyTypes = data['body_types'] ?? [];
+      final double minAge = checkDouble(data['min_age'] ?? 18);
+      final double maxAge = checkDouble(data['max_age'] ?? 50);
 
       selectedRelationshipGoalPreferences = ObservableList.of(relationshipGoals.map((goal) => RelationshipGoal.fromMap(goal)).toList());
       selectedBodyTypePreferences = ObservableList.of(bodyTypes.map((type) => BodyType.fromMap(type)).toList());
       selectedPoliticalViewPreferences = ObservableList.of(politicalViews.map((view) => PoliticalView.fromMap(view)).toList());
       selectedSexPreferences = ObservableList.of(sexes.map((sex) => Sex.fromMap(sex)).toList());
-      ageValues = RangeValues(data['min_age'] ?? 18, data['max_age'] ?? 50);
+      ageValues = RangeValues(minAge, maxAge);
 
       return true;
     }
@@ -227,7 +231,7 @@ abstract class HomeStoreBase with Store {
   ) async {
     authenticatedUser ??= authService.getUser();
 
-    if (activity.direction == AxisDirection.right || activity.direction == AxisDirection.left) {
+    if (activity.direction == AxisDirection.right || activity.direction == AxisDirection.left && swipes > 0) {
       try {
         final String direction = activity.direction == AxisDirection.right ? 'right' : 'left';
 
@@ -268,6 +272,29 @@ abstract class HomeStoreBase with Store {
         );
       }
     }
+  }
+
+  @action
+  Future<void> savePreferences() async {
+    final Preferences preferences = Preferences(
+      sexes: selectedSexPreferences,
+      relationshipGoals: selectedRelationshipGoalPreferences,
+      politicalViews: selectedPoliticalViewPreferences,
+      bodyTypes: selectedBodyTypePreferences,
+      minAge: ageValues.start,
+      maxAge: ageValues.end,
+    );
+
+    await dio.put(
+      '$server/api/preferences/${authenticatedUser?.uid}',
+      data: preferences.toMap(),
+      options: Options(
+        headers: {
+          'Authorization': 'Bearer ${await authenticatedUser!.getIdToken()}',
+          'Content-Type': 'application/json',
+        },
+      ),
+    );
   }
 
   @action
