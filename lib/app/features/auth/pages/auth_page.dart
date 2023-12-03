@@ -20,6 +20,7 @@ class _AuthPageState extends State<AuthPage> {
     store.emailController = TextEditingController();
     store.passwordController = TextEditingController();
     store.repeatPasswordController = TextEditingController();
+    store.checkLogin();
 
     super.initState();
   }
