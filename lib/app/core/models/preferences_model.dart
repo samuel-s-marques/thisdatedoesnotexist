@@ -2,6 +2,7 @@ import 'package:thisdatedoesnotexist/app/core/models/body_type_model.dart';
 import 'package:thisdatedoesnotexist/app/core/models/political_view_model.dart';
 import 'package:thisdatedoesnotexist/app/core/models/relationship_goal_model.dart';
 import 'package:thisdatedoesnotexist/app/core/models/sex_model.dart';
+import 'package:thisdatedoesnotexist/app/core/util.dart';
 
 class Preferences {
   Preferences({
@@ -18,14 +19,16 @@ class Preferences {
     final List<dynamic> relationshipGoals = map['relationship_goals'] ?? [];
     final List<dynamic> politicalViews = map['political_views'] ?? [];
     final List<dynamic> bodyTypes = map['body_types'] ?? [];
+    final double minAge = checkDouble(map['min_age'] ?? 18);
+    final double maxAge = checkDouble(map['max_age'] ?? 50);
 
     return Preferences(
       sexes: sexes.map((sex) => Sex.fromMap(sex)).toList(),
       relationshipGoals: relationshipGoals.map((goal) => RelationshipGoal.fromMap(goal)).toList(),
       politicalViews: politicalViews.map((view) => PoliticalView.fromMap(view)).toList(),
       bodyTypes: bodyTypes.map((type) => BodyType.fromMap(type)).toList(),
-      minAge: (map['min_age'] ?? 18) as double,
-      maxAge: (map['max_age'] ?? 50) as double,
+      minAge: minAge,
+      maxAge: maxAge,
     );
   }
 
