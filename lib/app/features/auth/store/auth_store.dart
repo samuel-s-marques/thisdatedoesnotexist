@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:mobx/mobx.dart';
@@ -115,5 +116,14 @@ abstract class AuthStoreBase with Store {
     }
 
     isLoading = false;
+  }
+
+  Future<void> checkLogin() async {
+    final DatabaseService databaseService = DatabaseService();
+    final UserModel? user = await databaseService.getUser();
+
+    if (user != null && user.active!) {
+      await Modular.to.pushReplacementNamed('/home/');
+    }
   }
 }
