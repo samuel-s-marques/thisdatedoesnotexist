@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:thisdatedoesnotexist/app/core/models/hobby_model.dart';
@@ -49,7 +48,7 @@ class UserModel {
       birthdayDate: map['birthday_date'] != null ? DateTime.parse(map['birthday_date']) : null,
       lastSwipe: map['last_swipe'] != null ? DateTime.parse(map['last_swipe']) : null,
       swipes: map['swipes'],
-      active: map['active'],
+      active: map['active'] != 0,
       relationshipGoal: map['relationship_goal'],
       hobbies: (map['hobbies'] as List<dynamic>?)?.map((hobbyMap) => Hobby.fromMap(hobbyMap as Map<String, dynamic>)).toList(),
       preferences: map['preferences'] != null ? Preferences.fromMap(map['preferences'] as Map<String, dynamic>) : null,
