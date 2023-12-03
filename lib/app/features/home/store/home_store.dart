@@ -276,19 +276,23 @@ abstract class HomeStoreBase with Store {
       String url = '$server/api/characters?min_age=${ageValues.start.round()}&max_age=${ageValues.end.round()}';
 
       if (selectedPoliticalViewPreferences.isNotEmpty) {
-        url += '&political_view=${selectedPoliticalViewPreferences.join(',')}';
+        final List<String?> politicalViews = selectedPoliticalViewPreferences.map((e) => e.name).toList();
+        url += '&political_view=${politicalViews.join(',')}';
       }
 
       if (selectedRelationshipGoalPreferences.isNotEmpty) {
-        url += '&relationship_goal=${selectedRelationshipGoalPreferences.join(',')}';
+        final List<String?> relationshipGoals = selectedRelationshipGoalPreferences.map((e) => e.name).toList();
+        url += '&relationship_goal=${relationshipGoals.join(',')}';
       }
 
       if (selectedBodyTypePreferences.isNotEmpty) {
-        url += '&body_type=${selectedBodyTypePreferences.join(',')}';
+        final List<String?> bodytypes = selectedBodyTypePreferences.map((e) => e.name).toList();
+        url += '&body_type=${bodytypes.join(',')}';
       }
 
       if (selectedSexPreferences.isNotEmpty) {
-        url += '&sex=${selectedSexPreferences.join(',')}';
+        final List<String?> sexes = selectedSexPreferences.map((e) => e.name).toList();
+        url += '&sex=${sexes.join(',')}';
       }
 
       final Response<dynamic> response = await Dio().get(url);
@@ -296,11 +300,13 @@ abstract class HomeStoreBase with Store {
       if (response.statusCode == 200) {
         cards = ObservableList.of((response.data['data'] as List<dynamic>).map((e) => CharacterModel.fromMap(e)).toList());
 
-        /*
+        if (cards.isEmpty) {
+          return false;
+        }
+
         await Future.delayed(const Duration(seconds: 1)).then((_) {
           shakeCards();
         });
-        */
 
         return true;
       } else {
