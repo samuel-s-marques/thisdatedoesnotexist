@@ -79,7 +79,10 @@ class _HomePageState extends State<HomePage> {
                                     ),
                                     TextButton(
                                       onPressed: () {
-                                        _future = store.getTodayCards();
+                                        store.savePreferences().then((_) {
+                                          _future = store.getTodayCards();
+                                          Navigator.pop(context);
+                                        });
                                       },
                                       style: TextButton.styleFrom(
                                         shape: RoundedRectangleBorder(
