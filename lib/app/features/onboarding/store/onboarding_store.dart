@@ -3,8 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:mobx/mobx.dart';
 import 'package:thisdatedoesnotexist/app/core/enum/database_status_enum.dart';
+import 'package:thisdatedoesnotexist/app/core/models/body_type_model.dart';
 import 'package:thisdatedoesnotexist/app/core/models/hobby_model.dart';
+import 'package:thisdatedoesnotexist/app/core/models/political_view_model.dart';
 import 'package:thisdatedoesnotexist/app/core/models/preferences_model.dart';
+import 'package:thisdatedoesnotexist/app/core/models/relationship_goal_model.dart';
+import 'package:thisdatedoesnotexist/app/core/models/sex_model.dart';
 import 'package:thisdatedoesnotexist/app/core/models/user_model.dart';
 import 'package:thisdatedoesnotexist/app/core/services/auth_service.dart';
 import 'package:thisdatedoesnotexist/app/core/services/database_service.dart';
@@ -33,29 +37,29 @@ abstract class OnboardingStoreBase with Store {
   ObservableMap<String, List<Hobby>> groupedHobbies = ObservableMap();
 
   @observable
-  ObservableList<String> relationshipGoals = ObservableList();
+  ObservableList<RelationshipGoal> relationshipGoals = ObservableList();
 
   @observable
-  ObservableList<String> politicalViews = ObservableList();
+  ObservableList<PoliticalView> politicalViews = ObservableList();
 
   @observable
-  ObservableList<String> bodyTypes = ObservableList();
+  ObservableList<BodyType> bodyTypes = ObservableList();
 
   @observable
-  ObservableList<String> sexes = ObservableList();
+  ObservableList<Sex> sexes = ObservableList();
   Map<String, String> sexesMap = {'male': 'Men', 'female': 'Women'};
 
   @observable
-  ObservableList<String> selectedPoliticalViewPreferences = ObservableList();
+  ObservableList<PoliticalView> selectedPoliticalViewPreferences = ObservableList();
 
   @observable
-  ObservableList<String> selectedBodyTypePreferences = ObservableList();
+  ObservableList<BodyType> selectedBodyTypePreferences = ObservableList();
 
   @observable
-  ObservableList<String> selectedRelationshipGoalPreferences = ObservableList();
+  ObservableList<RelationshipGoal> selectedRelationshipGoalPreferences = ObservableList();
 
   @observable
-  ObservableList<String> selectedSexPreferences = ObservableList();
+  ObservableList<Sex> selectedSexPreferences = ObservableList();
 
   @observable
   String selectedRelationshipGoal = '';
@@ -81,7 +85,7 @@ abstract class OnboardingStoreBase with Store {
   @action
   void selectPoliticalViewPreference({
     required bool selected,
-    required String view,
+    required PoliticalView view,
   }) {
     if (selected) {
       selectedPoliticalViewPreferences.add(view);
@@ -93,7 +97,7 @@ abstract class OnboardingStoreBase with Store {
   @action
   void selectSexPreference({
     required bool selected,
-    required String sex,
+    required Sex sex,
   }) {
     if (selected) {
       selectedSexPreferences.add(sex);
@@ -105,7 +109,7 @@ abstract class OnboardingStoreBase with Store {
   @action
   void selectBodyTypePreference({
     required bool selected,
-    required String bodyType,
+    required BodyType bodyType,
   }) {
     if (selected) {
       selectedBodyTypePreferences.add(bodyType);
@@ -117,7 +121,7 @@ abstract class OnboardingStoreBase with Store {
   @action
   void selectRelationshipGoalPreference({
     required bool selected,
-    required String goal,
+    required RelationshipGoal goal,
   }) {
     if (selected) {
       selectedRelationshipGoalPreferences.add(goal);
@@ -170,7 +174,7 @@ abstract class OnboardingStoreBase with Store {
       final List<dynamic> data = response.data['data'];
 
       for (int index = 0; index < data.length; index++) {
-        final String goal = data[index]['name'];
+        final RelationshipGoal goal = RelationshipGoal.fromMap(data[index]);
         relationshipGoals.add(goal);
       }
     }
@@ -183,7 +187,7 @@ abstract class OnboardingStoreBase with Store {
       final List<dynamic> data = response.data['data'];
 
       for (int index = 0; index < data.length; index++) {
-        final String view = data[index]['name'];
+        final PoliticalView view = PoliticalView.fromMap(data[index]);
         politicalViews.add(view);
       }
     }
@@ -196,8 +200,8 @@ abstract class OnboardingStoreBase with Store {
       final List<dynamic> data = response.data['data'];
 
       for (int index = 0; index < data.length; index++) {
-        final String view = data[index]['name'];
-        sexes.add(view);
+        final Sex sex = Sex.fromMap(data[index]);
+        sexes.add(sex);
       }
     }
   }
@@ -209,7 +213,7 @@ abstract class OnboardingStoreBase with Store {
       final List<dynamic> data = response.data['data'];
 
       for (int index = 0; index < data.length; index++) {
-        final String bodyType = data[index]['name'];
+        final BodyType bodyType = BodyType.fromMap(data[index]);
         bodyTypes.add(bodyType);
       }
     }
