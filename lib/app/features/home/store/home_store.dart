@@ -231,45 +231,47 @@ abstract class HomeStoreBase with Store {
   ) async {
     authenticatedUser ??= authService.getUser();
 
-    if (activity.direction == AxisDirection.right || activity.direction == AxisDirection.left && swipes > 0) {
-      try {
-        final String direction = activity.direction == AxisDirection.right ? 'right' : 'left';
+    if (swipes > 0) {
+      if (activity.direction == AxisDirection.right || activity.direction == AxisDirection.left) {
+        try {
+          final String direction = activity.direction == AxisDirection.right ? 'right' : 'left';
 
-        await dio.post(
-          '$server/api/swipes',
-          data: {
-            'target_id': cards[previousIndex].uuid,
-            'swiper_id': authenticatedUser!.uid,
-            'direction': direction,
-          },
-          options: Options(
-            headers: {
-              'Authorization': 'Bearer ${await authenticatedUser!.getIdToken()}',
-              'Content-Type': 'application/json',
+          await dio.post(
+            '$server/api/swipes',
+            data: {
+              'target_id': cards[previousIndex].uuid,
+              'swiper_id': authenticatedUser!.uid,
+              'direction': direction,
             },
-          ),
-        );
+            options: Options(
+              headers: {
+                'Authorization': 'Bearer ${await authenticatedUser!.getIdToken()}',
+                'Content-Type': 'application/json',
+              },
+            ),
+          );
 
-        swipes--;
+          swipes--;
 
-        await dio.put(
-          '$server/api/users',
-          data: {
-            'swipes': swipes,
-            'last_swipe': DateTime.now().toIso8601String(),
-          },
-          options: Options(
-            headers: {
-              'Authorization': 'Bearer ${await authenticatedUser!.getIdToken()}',
-              'Content-Type': 'application/json',
+          await dio.put(
+            '$server/api/users',
+            data: {
+              'swipes': swipes,
+              'last_swipe': DateTime.now().toIso8601String(),
             },
-          ),
-        );
-      } catch (exception, stackTrace) {
-        await Sentry.captureException(
-          exception,
-          stackTrace: stackTrace,
-        );
+            options: Options(
+              headers: {
+                'Authorization': 'Bearer ${await authenticatedUser!.getIdToken()}',
+                'Content-Type': 'application/json',
+              },
+            ),
+          );
+        } catch (exception, stackTrace) {
+          await Sentry.captureException(
+            exception,
+            stackTrace: stackTrace,
+          );
+        }
       }
     }
   }
