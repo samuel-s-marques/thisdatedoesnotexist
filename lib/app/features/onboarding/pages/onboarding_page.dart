@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:introduction_screen/introduction_screen.dart';
+import 'package:thisdatedoesnotexist/app/core/models/body_type_model.dart';
 import 'package:thisdatedoesnotexist/app/core/models/hobby_model.dart';
+import 'package:thisdatedoesnotexist/app/core/models/political_view_model.dart';
+import 'package:thisdatedoesnotexist/app/core/models/relationship_goal_model.dart';
+import 'package:thisdatedoesnotexist/app/core/models/sex_model.dart';
 import 'package:thisdatedoesnotexist/app/core/models/user_model.dart';
 import 'package:thisdatedoesnotexist/app/core/util.dart';
 import 'package:thisdatedoesnotexist/app/features/onboarding/store/onboarding_store.dart';
@@ -204,11 +208,11 @@ class _OnboardingPageState extends State<OnboardingPage> {
               Observer(
                 builder: (_) => Wrap(
                   spacing: 5,
-                  children: store.sexes.map((String sex) {
+                  children: store.sexes.map((Sex sex) {
                     final bool isSelected = store.selectedSexPreferences.contains(sex);
 
                     return FilterChip(
-                      label: Text(store.sexesMap[sex]!.capitalize()),
+                      label: Text(store.sexesMap[sex.name]!.capitalize()),
                       selected: isSelected,
                       onSelected: (bool selected) => store.selectSexPreference(
                         selected: selected,
@@ -275,11 +279,11 @@ class _OnboardingPageState extends State<OnboardingPage> {
               Observer(
                 builder: (_) => Wrap(
                   spacing: 5,
-                  children: store.relationshipGoals.map((String goal) {
+                  children: store.relationshipGoals.map((RelationshipGoal goal) {
                     final bool isSelected = store.selectedRelationshipGoalPreferences.contains(goal);
 
                     return FilterChip(
-                      label: Text(goal.capitalize()),
+                      label: Text(goal.name!.capitalize()),
                       selected: isSelected,
                       onSelected: (bool selected) => store.selectRelationshipGoalPreference(
                         selected: selected,
@@ -301,11 +305,11 @@ class _OnboardingPageState extends State<OnboardingPage> {
               Observer(
                 builder: (_) => Wrap(
                   spacing: 5,
-                  children: store.politicalViews.map((String view) {
+                  children: store.politicalViews.map((PoliticalView view) {
                     final bool isSelected = store.selectedPoliticalViewPreferences.contains(view);
 
                     return FilterChip(
-                      label: Text(view.capitalize()),
+                      label: Text(view.name!.capitalize()),
                       selected: isSelected,
                       onSelected: (bool selected) => store.selectPoliticalViewPreference(
                         selected: selected,
@@ -327,11 +331,11 @@ class _OnboardingPageState extends State<OnboardingPage> {
               Observer(
                 builder: (_) => Wrap(
                   spacing: 5,
-                  children: store.bodyTypes.map((String bodyType) {
+                  children: store.bodyTypes.map((BodyType bodyType) {
                     final bool isSelected = store.selectedBodyTypePreferences.contains(bodyType);
 
                     return FilterChip(
-                      label: Text(bodyType.capitalize()),
+                      label: Text(bodyType.name!.capitalize()),
                       selected: isSelected,
                       onSelected: (bool selected) => store.selectBodyTypePreference(
                         selected: selected,
