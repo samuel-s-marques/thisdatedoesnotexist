@@ -1,3 +1,4 @@
+import 'package:country_code_picker/country_code_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:introduction_screen/introduction_screen.dart';
@@ -19,6 +20,7 @@ class OnboardingPage extends StatefulWidget {
 
 class _OnboardingPageState extends State<OnboardingPage> {
   final OnboardingStore store = OnboardingStore();
+  final GlobalKey formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
@@ -133,6 +135,53 @@ class _OnboardingPageState extends State<OnboardingPage> {
                     ),
                   ),
                 ],
+              ),
+            ],
+          ),
+        ),
+        PageViewModel(
+          title: 'Tell us about yourself',
+          bodyWidget: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text('Tell us about yourself.'),
+              const SizedBox(height: 15),
+              Form(
+                key: formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text('Enter your name'),
+                    TextFormField(
+                      controller: store.nameController,
+                      decoration: const InputDecoration(
+                        hintText: 'Your name',
+                      ),
+                    ),
+                    const SizedBox(height: 15),
+                    const Text('Enter your bio'),
+                    TextFormField(
+                      controller: store.bioController,
+                      maxLength: 500,
+                      maxLines: null,
+                      decoration: const InputDecoration(
+                        hintText: 'Your bio',
+                      ),
+                    ),
+                    const SizedBox(height: 15),
+                    const Text('Enter your country'),
+                    CountryCodePicker(
+                      onChanged: (CountryCode countryCode) => store.selectCountry(countryCode.name!),
+                      showCountryOnly: true,
+                      padding: EdgeInsets.zero,
+                      initialSelection: 'US',
+                      showOnlyCountryWhenClosed: true,
+                      showFlagMain: true,
+                      showFlagDialog: true,
+                      alignLeft: true,
+                    ),
+                  ],
+                ),
               ),
             ],
           ),
@@ -365,6 +414,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
       showNextButton: false,
       done: const Text('Done'),
       onDone: () async => store.onDone(context),
+      dotsFlex: 2,
       dotsDecorator: DotsDecorator(
         size: const Size.square(10),
         activeSize: const Size(20, 10),
