@@ -22,6 +22,8 @@ abstract class OnboardingStoreBase with Store {
   AuthService authService = AuthService();
   DatabaseService databaseService = DatabaseService();
   String server = const String.fromEnvironment('SERVER');
+  TextEditingController nameController = TextEditingController();
+  TextEditingController bioController = TextEditingController();
   final Dio dio = Dio();
 
   @observable
@@ -66,6 +68,14 @@ abstract class OnboardingStoreBase with Store {
 
   @observable
   String selectedPoliticalView = '';
+
+  @observable
+  String selectedCountry = '';
+
+  @action
+  void selectCountry(String country) {
+    selectedCountry = country;
+  }
 
   @action
   void selectRelationshipGoal(String goal) {
