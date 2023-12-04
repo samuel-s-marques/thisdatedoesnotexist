@@ -217,7 +217,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
 
                           return DropdownMenuItem(
                             value: religion,
-                            child: Text(name),
+                            child: Text(name.capitalize()),
                           );
                         }).toList(),
                         onChanged: (religion) => store.selectReligion(religion!),
