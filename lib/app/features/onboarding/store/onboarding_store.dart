@@ -10,6 +10,7 @@ import 'package:thisdatedoesnotexist/app/core/models/hobby_model.dart';
 import 'package:thisdatedoesnotexist/app/core/models/political_view_model.dart';
 import 'package:thisdatedoesnotexist/app/core/models/preferences_model.dart';
 import 'package:thisdatedoesnotexist/app/core/models/relationship_goal_model.dart';
+import 'package:thisdatedoesnotexist/app/core/models/religion_model.dart';
 import 'package:thisdatedoesnotexist/app/core/models/sex_model.dart';
 import 'package:thisdatedoesnotexist/app/core/models/user_model.dart';
 import 'package:thisdatedoesnotexist/app/core/services/auth_service.dart';
@@ -89,6 +90,12 @@ abstract class OnboardingStoreBase with Store {
   ObservableList<BodyType> bodyTypes = ObservableList();
 
   @observable
+  ObservableList<Religion> religions = ObservableList();
+
+  @observable
+  Religion? religion;
+
+  @observable
   ObservableList<Sex> sexes = ObservableList();
   Map<String, String> pluralSexesMap = {'male': 'Men', 'female': 'Women'};
   Map<String, String> singularSexesMap = {'male': 'Man', 'female': 'Woman'};
@@ -162,8 +169,8 @@ abstract class OnboardingStoreBase with Store {
   }
 
   @action
-  void selectSex(Sex sex) {
-    sex = sex;
+  void selectSex(Sex selectedSex) {
+    sex = selectedSex;
   }
 
   @action
@@ -207,6 +214,11 @@ abstract class OnboardingStoreBase with Store {
     } else {
       selectedHobbies.remove(hobby);
     }
+  }
+
+  @action
+  void selectReligion(Religion selectedReligion) {
+    religion = selectedReligion;
   }
 
   Future<void> getHobbies() async {
@@ -275,6 +287,20 @@ abstract class OnboardingStoreBase with Store {
       for (int index = 0; index < data.length; index++) {
         final BodyType bodyType = BodyType.fromMap(data[index]);
         bodyTypes.add(bodyType);
+      }
+    }
+  }
+
+  @action
+  Future<void> getReligions() async {
+    final Response response = await dio.get('$server/api/religions');
+
+    if (response.statusCode == 200) {
+      final List<dynamic> data = response.data['data'];
+
+      for (int index = 0; index < data.length; index++) {
+        final Religion religion = Religion.fromMap(data[index]);
+        religions.add(religion);
       }
     }
   }
