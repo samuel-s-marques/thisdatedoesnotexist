@@ -4,6 +4,7 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:thisdatedoesnotexist/app/core/models/body_type_model.dart';
 import 'package:thisdatedoesnotexist/app/core/models/political_view_model.dart';
 import 'package:thisdatedoesnotexist/app/core/models/relationship_goal_model.dart';
+import 'package:thisdatedoesnotexist/app/core/models/religion_model.dart';
 import 'package:thisdatedoesnotexist/app/core/models/sex_model.dart';
 import 'package:thisdatedoesnotexist/app/core/models/user_model.dart';
 import 'package:thisdatedoesnotexist/app/core/util.dart';
@@ -36,6 +37,7 @@ class _HomePageState extends State<HomePage> {
     _future = store.getTodayCards();
 
     store.setIndex(0);
+    store.getReligions();
     store.getPoliticalViews();
     store.getRelationshipGoals();
     store.getBodyTypes();
@@ -208,6 +210,27 @@ class _HomePageState extends State<HomePage> {
                                   ),
                                 ),
                                 const SizedBox(height: 15),
+                                const Divider(),
+                                const SizedBox(height: 15),
+                                const Text('Religions'),
+                                const SizedBox(height: 10),
+                                Observer(
+                                  builder: (_) => Wrap(
+                                    spacing: 5,
+                                    children: store.religions.map((Religion religion) {
+                                      final bool isSelected = store.selectedReligionPreferences.contains(religion);
+
+                                      return FilterChip(
+                                        label: Text(religion.name!.capitalize()),
+                                        selected: isSelected,
+                                        onSelected: (bool selected) => store.selectReligionPreference(
+                                          selected: selected,
+                                          religion: religion,
+                                        ),
+                                      );
+                                    }).toList(),
+                                  ),
+                                ),
                                 const Divider(),
                                 const SizedBox(height: 15),
                                 const Text('Body Types'),
