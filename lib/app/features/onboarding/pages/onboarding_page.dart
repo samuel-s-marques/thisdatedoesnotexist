@@ -91,6 +91,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
               const SizedBox(height: 15),
               Form(
                 key: formKey,
+                autovalidateMode: AutovalidateMode.onUserInteraction,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -129,6 +130,54 @@ class _OnboardingPageState extends State<OnboardingPage> {
                       showFlagMain: true,
                       showFlagDialog: true,
                       alignLeft: true,
+                    ),
+                    const SizedBox(height: 15),
+                    const Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text('Your height'),
+                        Text('Your weight'),
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: TextFormField(
+                            controller: store.heightController,
+                            keyboardType: TextInputType.number,
+                            decoration: const InputDecoration(
+                              suffixText: 'm',
+                            ),
+                            inputFormatters: [store.heightMask],
+                            validator: (value) {
+                              if (value!.isEmpty) {
+                                return 'Please enter your height.';
+                              }
+
+                              return null;
+                            },
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: TextFormField(
+                            controller: store.weightController,
+                            keyboardType: TextInputType.number,
+                            decoration: const InputDecoration(
+                              suffixText: 'kg',
+                            ),
+                            inputFormatters: [store.weightMask],
+                            validator: (value) {
+                              if (value!.isEmpty) {
+                                return 'Please enter your weight.';
+                              }
+
+                              return null;
+                            },
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
