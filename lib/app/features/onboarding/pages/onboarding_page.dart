@@ -6,6 +6,7 @@ import 'package:thisdatedoesnotexist/app/core/models/body_type_model.dart';
 import 'package:thisdatedoesnotexist/app/core/models/hobby_model.dart';
 import 'package:thisdatedoesnotexist/app/core/models/political_view_model.dart';
 import 'package:thisdatedoesnotexist/app/core/models/relationship_goal_model.dart';
+import 'package:thisdatedoesnotexist/app/core/models/religion_model.dart';
 import 'package:thisdatedoesnotexist/app/core/models/sex_model.dart';
 import 'package:thisdatedoesnotexist/app/core/models/user_model.dart';
 import 'package:thisdatedoesnotexist/app/core/util.dart';
@@ -417,6 +418,32 @@ class _OnboardingPageState extends State<OnboardingPage> {
                       onSelected: (bool selected) => store.selectPoliticalViewPreference(
                         selected: selected,
                         view: view,
+                      ),
+                    );
+                  }).toList(),
+                ),
+              ),
+              const SizedBox(height: 15),
+              const Text(
+                'Religions',
+                style: TextStyle(
+                  fontSize: 17,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 10),
+              Observer(
+                builder: (_) => Wrap(
+                  spacing: 5,
+                  children: store.religions.map((Religion religion) {
+                    final bool isSelected = store.selectedReligionPreferences.contains(religion);
+
+                    return FilterChip(
+                      label: Text(religion.name!.capitalize()),
+                      selected: isSelected,
+                      onSelected: (bool selected) => store.selectReligionPreference(
+                        selected: selected,
+                        religion: religion,
                       ),
                     );
                   }).toList(),
