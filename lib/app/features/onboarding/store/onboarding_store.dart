@@ -113,10 +113,10 @@ abstract class OnboardingStoreBase with Store {
   ObservableList<Sex> selectedSexPreferences = ObservableList();
 
   @observable
-  String selectedRelationshipGoal = '';
+  RelationshipGoal? selectedRelationshipGoal;
 
   @observable
-  String selectedPoliticalView = '';
+  PoliticalView? selectedPoliticalView;
 
   @observable
   String selectedCountry = '';
@@ -133,12 +133,12 @@ abstract class OnboardingStoreBase with Store {
   }
 
   @action
-  void selectRelationshipGoal(String goal) {
+  void selectRelationshipGoal(RelationshipGoal goal) {
     selectedRelationshipGoal = goal;
   }
 
   @action
-  void selectPoliticalView(String view) {
+  void selectPoliticalView(PoliticalView view) {
     selectedPoliticalView = view;
   }
 
