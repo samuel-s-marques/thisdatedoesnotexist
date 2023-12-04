@@ -24,6 +24,8 @@ abstract class OnboardingStoreBase with Store {
   String server = const String.fromEnvironment('SERVER');
   TextEditingController nameController = TextEditingController();
   TextEditingController bioController = TextEditingController();
+  TextEditingController heightController = TextEditingController();
+  TextEditingController weightController = TextEditingController();
   final Dio dio = Dio();
 
   @observable
