@@ -110,6 +110,15 @@ class _OnboardingPageState extends State<OnboardingPage> {
                       ),
                     ),
                     const SizedBox(height: 15),
+                    const Text('Your birthday'),
+                    Observer(
+                      builder: (_) => TextField(
+                        readOnly: true,
+                        controller: store.birthdayController,
+                        onTap: () => store.selectBirthday(context),
+                      ),
+                    ),
+                    const SizedBox(height: 15),
                     const Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
