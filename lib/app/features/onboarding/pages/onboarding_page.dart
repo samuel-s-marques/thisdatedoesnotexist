@@ -177,6 +177,19 @@ class _OnboardingPageState extends State<OnboardingPage> {
                       ),
                     ),
                     const SizedBox(height: 15),
+                    const Text('Enter your sex'),
+                    DropdownButtonFormField(
+                      items: store.sexes.map((sex) {
+                        final String name = store.singularSexesMap[sex.name]!;
+
+                        return DropdownMenuItem(
+                          value: sex,
+                          child: Text(name),
+                        );
+                      }).toList(),
+                      onChanged: (sex) => store.selectSex(sex!),
+                    ),
+                    const SizedBox(height: 15),
                     const Text('Enter your country'),
                     CountryCodePicker(
                       onChanged: (CountryCode countryCode) => store.selectCountry(countryCode.name!),
@@ -269,7 +282,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                     final bool isSelected = store.selectedSexPreferences.contains(sex);
 
                     return FilterChip(
-                      label: Text(store.sexesMap[sex.name]!.capitalize()),
+                      label: Text(store.pluralSexesMap[sex.name]!),
                       selected: isSelected,
                       onSelected: (bool selected) => store.selectSexPreference(
                         selected: selected,
