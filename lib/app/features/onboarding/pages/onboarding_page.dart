@@ -224,6 +224,36 @@ class _OnboardingPageState extends State<OnboardingPage> {
                       ),
                     ),
                     const SizedBox(height: 15),
+                    const Text('Enter your relationship goal'),
+                    Observer(
+                      builder: (_) => DropdownButtonFormField(
+                        items: store.relationshipGoals.map((goal) {
+                          final String name = goal.name!;
+
+                          return DropdownMenuItem(
+                            value: goal,
+                            child: Text(name.capitalize()),
+                          );
+                        }).toList(),
+                        onChanged: (goal) => store.selectRelationshipGoal(goal!),
+                      ),
+                    ),
+                    const SizedBox(height: 15),
+                    const Text('Enter your political view'),
+                    Observer(
+                      builder: (_) => DropdownButtonFormField(
+                        items: store.politicalViews.map((view) {
+                          final String name = view.name!;
+
+                          return DropdownMenuItem(
+                            value: view,
+                            child: Text(name.capitalize()),
+                          );
+                        }).toList(),
+                        onChanged: (view) => store.selectPoliticalView(view!),
+                      ),
+                    ),
+                    const SizedBox(height: 15),
                     const Text('Enter your country'),
                     CountryCodePicker(
                       onChanged: (CountryCode countryCode) => store.selectCountry(countryCode.name!),
