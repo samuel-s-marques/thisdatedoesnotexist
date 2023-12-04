@@ -205,6 +205,13 @@ class _OnboardingPageState extends State<OnboardingPage> {
                             child: Text(name),
                           );
                         }).toList(),
+                        validator: (value) {
+                          if (value == null) {
+                            return 'Please enter your sex.';
+                          }
+
+                          return null;
+                        },
                         onChanged: (sex) => store.selectSex(sex!),
                       ),
                     ),
@@ -220,6 +227,13 @@ class _OnboardingPageState extends State<OnboardingPage> {
                             child: Text(name.capitalize()),
                           );
                         }).toList(),
+                        validator: (value) {
+                          if (value == null) {
+                            return 'Please enter your religion.';
+                          }
+
+                          return null;
+                        },
                         onChanged: (religion) => store.selectReligion(religion!),
                       ),
                     ),
@@ -235,6 +249,13 @@ class _OnboardingPageState extends State<OnboardingPage> {
                             child: Text(name.capitalize()),
                           );
                         }).toList(),
+                        validator: (value) {
+                          if (value == null) {
+                            return 'Please enter your relationship goal.';
+                          }
+
+                          return null;
+                        },
                         onChanged: (goal) => store.selectRelationshipGoal(goal!),
                       ),
                     ),
@@ -250,6 +271,13 @@ class _OnboardingPageState extends State<OnboardingPage> {
                             child: Text(name.capitalize()),
                           );
                         }).toList(),
+                        validator: (value) {
+                          if (value == null) {
+                            return 'Please enter your political view.';
+                          }
+
+                          return null;
+                        },
                         onChanged: (view) => store.selectPoliticalView(view!),
                       ),
                     ),
