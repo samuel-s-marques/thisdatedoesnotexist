@@ -321,11 +321,26 @@ abstract class OnboardingStoreBase with Store {
   }
 
   Future<void> onDone(BuildContext context) async {
+    final double height = double.parse(heightController.text.replaceAll(',', '.'));
+    final double weight = double.parse(weightController.text.replaceAll(',', '.'));
+
     user = UserModel(
       uid: authService.getUser().uid,
-      active: true,
+      name: nameController.text.trim(),
+      surname: surnameController.text.trim(),
+      height: height,
+      weight: weight,
+      religion: religion!.name,
+      politicalView: selectedPoliticalView!.name,
+      relationshipGoal: selectedRelationshipGoal!.name,
+      sex: sex!.name,
+      country: selectedCountry,
+      bio: bioController.text.trim(),
+      age: DateTime.now().year - birthDay!.year,
+      birthdayDate: birthDay,
       hobbies: selectedHobbies,
       swipes: 20,
+      active: true,
       preferences: Preferences(
         sexes: selectedSexPreferences,
         relationshipGoals: selectedRelationshipGoalPreferences,
