@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
+import 'package:intl/intl.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:mobx/mobx.dart';
 import 'package:thisdatedoesnotexist/app/core/enum/database_status_enum.dart';
@@ -40,6 +41,30 @@ abstract class OnboardingStoreBase with Store {
       '#': RegExp('[0-9]'),
     },
   );
+
+  @observable
+  TextEditingController birthdayController = TextEditingController();
+
+  @observable
+  DateTime? birthDay;
+
+  @action
+  Future<void> selectBirthday(BuildContext context) async {
+    final DateTime minDate = DateTime(DateTime.now().year - 18);
+    final DateTime maxDate = DateTime(DateTime.now().year - 50);
+    final DateFormat format = DateFormat('dd/MM/yyyy');
+
+    final DateTime? pickedDate = await showDatePicker(
+      context: context,
+      firstDate: maxDate,
+      lastDate: minDate,
+    );
+
+    if (pickedDate != null && pickedDate != birthDay) {
+      birthDay = pickedDate;
+      birthdayController.text = format.format(birthDay!);
+    }
+  }
 
   @observable
   UserModel? user;
