@@ -154,6 +154,13 @@ class _OnboardingPageState extends State<OnboardingPage> {
                     const Text('Enter your name'),
                     TextFormField(
                       controller: store.nameController,
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return 'Please enter your name.';
+                        }
+
+                        return null;
+                      },
                       decoration: const InputDecoration(
                         hintText: 'Your name',
                       ),
