@@ -89,7 +89,8 @@ abstract class OnboardingStoreBase with Store {
 
   @observable
   ObservableList<Sex> sexes = ObservableList();
-  Map<String, String> sexesMap = {'male': 'Men', 'female': 'Women'};
+  Map<String, String> pluralSexesMap = {'male': 'Men', 'female': 'Women'};
+  Map<String, String> singularSexesMap = {'male': 'Man', 'female': 'Woman'};
 
   @observable
   ObservableList<PoliticalView> selectedPoliticalViewPreferences = ObservableList();
@@ -111,6 +112,9 @@ abstract class OnboardingStoreBase with Store {
 
   @observable
   String selectedCountry = '';
+
+  @observable
+  Sex? sex;
 
   @action
   void selectCountry(String country) {
@@ -154,6 +158,11 @@ abstract class OnboardingStoreBase with Store {
     } else {
       selectedSexPreferences.remove(sex);
     }
+  }
+
+  @action
+  void selectSex(Sex sex) {
+    sex = sex;
   }
 
   @action
