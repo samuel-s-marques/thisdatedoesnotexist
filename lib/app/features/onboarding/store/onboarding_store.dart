@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
+import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:mobx/mobx.dart';
 import 'package:thisdatedoesnotexist/app/core/enum/database_status_enum.dart';
 import 'package:thisdatedoesnotexist/app/core/models/body_type_model.dart';
@@ -27,6 +28,18 @@ abstract class OnboardingStoreBase with Store {
   TextEditingController heightController = TextEditingController();
   TextEditingController weightController = TextEditingController();
   final Dio dio = Dio();
+  final MaskTextInputFormatter heightMask = MaskTextInputFormatter(
+    mask: '#,##',
+    filter: {
+      '#': RegExp('[0-9]'),
+    },
+  );
+  final MaskTextInputFormatter weightMask = MaskTextInputFormatter(
+    mask: '###,#',
+    filter: {
+      '#': RegExp('[0-9]'),
+    },
+  );
 
   @observable
   UserModel? user;
