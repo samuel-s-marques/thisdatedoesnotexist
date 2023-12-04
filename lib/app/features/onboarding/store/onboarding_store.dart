@@ -124,6 +124,9 @@ abstract class OnboardingStoreBase with Store {
   @observable
   Sex? sex;
 
+  @observable
+  ObservableList<Religion> selectedReligionPreferences = ObservableList();
+
   @action
   void selectCountry(String country) {
     selectedCountry = country;
@@ -182,6 +185,18 @@ abstract class OnboardingStoreBase with Store {
       selectedBodyTypePreferences.add(bodyType);
     } else {
       selectedBodyTypePreferences.remove(bodyType);
+    }
+  }
+
+  @action
+  void selectReligionPreference({
+    required bool selected,
+    required Religion religion,
+  }) {
+    if (selected) {
+      selectedReligionPreferences.add(religion);
+    } else {
+      selectedReligionPreferences.remove(religion);
     }
   }
 
@@ -316,6 +331,7 @@ abstract class OnboardingStoreBase with Store {
         relationshipGoals: selectedRelationshipGoalPreferences,
         politicalViews: selectedPoliticalViewPreferences,
         bodyTypes: selectedBodyTypePreferences,
+        religions: selectedReligionPreferences,
         minAge: ageValues.start,
         maxAge: ageValues.end,
       ),
