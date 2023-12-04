@@ -29,6 +29,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
     store.user = UserModel(
       uid: store.authService.getUser().uid,
     );
+    store.getReligions();
     store.getHobbies();
     store.getPoliticalViews();
     store.getRelationshipGoals();
@@ -193,16 +194,33 @@ class _OnboardingPageState extends State<OnboardingPage> {
                     ),
                     const SizedBox(height: 15),
                     const Text('Enter your sex'),
-                    DropdownButtonFormField(
-                      items: store.sexes.map((sex) {
-                        final String name = store.singularSexesMap[sex.name]!;
+                    Observer(
+                      builder: (_) => DropdownButtonFormField(
+                        items: store.sexes.map((sex) {
+                          final String name = store.singularSexesMap[sex.name]!;
 
-                        return DropdownMenuItem(
-                          value: sex,
-                          child: Text(name),
-                        );
-                      }).toList(),
-                      onChanged: (sex) => store.selectSex(sex!),
+                          return DropdownMenuItem(
+                            value: sex,
+                            child: Text(name),
+                          );
+                        }).toList(),
+                        onChanged: (sex) => store.selectSex(sex!),
+                      ),
+                    ),
+                    const SizedBox(height: 15),
+                    const Text('Enter your religion'),
+                    Observer(
+                      builder: (_) => DropdownButtonFormField(
+                        items: store.religions.map((religion) {
+                          final String name = religion.name!;
+
+                          return DropdownMenuItem(
+                            value: religion,
+                            child: Text(name),
+                          );
+                        }).toList(),
+                        onChanged: (religion) => store.selectReligion(religion!),
+                      ),
                     ),
                     const SizedBox(height: 15),
                     const Text('Enter your country'),
