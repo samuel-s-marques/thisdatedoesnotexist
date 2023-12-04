@@ -110,6 +110,21 @@ class _OnboardingPageState extends State<OnboardingPage> {
                       ),
                     ),
                     const SizedBox(height: 15),
+                    const Text('Enter your surname'),
+                    TextFormField(
+                      controller: store.surnameController,
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return 'Please enter your surname.';
+                        }
+
+                        return null;
+                      },
+                      decoration: const InputDecoration(
+                        hintText: 'Your surname',
+                      ),
+                    ),
+                    const SizedBox(height: 15),
                     const Text('Your birthday'),
                     Observer(
                       builder: (_) => TextField(
