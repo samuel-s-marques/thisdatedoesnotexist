@@ -25,6 +25,7 @@ abstract class OnboardingStoreBase with Store {
   DatabaseService databaseService = DatabaseService();
   String server = const String.fromEnvironment('SERVER');
   TextEditingController nameController = TextEditingController();
+  TextEditingController surnameController = TextEditingController();
   TextEditingController bioController = TextEditingController();
   TextEditingController heightController = TextEditingController();
   TextEditingController weightController = TextEditingController();
