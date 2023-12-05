@@ -11,8 +11,8 @@ class AppWidget extends StatelessWidget {
       routeInformationParser: Modular.routeInformationParser,
       routerDelegate: Modular.routerDelegate,
       theme: ThemeData(
-        progressIndicatorTheme: const ProgressIndicatorThemeData(
-          color: Colors.white,
+        sliderTheme: SliderThemeData(
+          overlayShape: SliderComponentShape.noOverlay,
         ),
       ),
     );

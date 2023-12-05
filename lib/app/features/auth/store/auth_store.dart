@@ -1,8 +1,8 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:mobx/mobx.dart';
 import 'package:thisdatedoesnotexist/app/core/enum/auth_status_enum.dart';
-import 'package:thisdatedoesnotexist/app/core/enum/database_status_enum.dart';
 import 'package:thisdatedoesnotexist/app/core/exceptions/auth_exception.dart';
 import 'package:thisdatedoesnotexist/app/core/models/user_model.dart';
 import 'package:thisdatedoesnotexist/app/core/services/auth_service.dart';
@@ -38,9 +38,8 @@ abstract class AuthStoreBase with Store {
     );
 
     if (status == AuthStatus.successful) {
-      // TODO: Redirect to HomePage or Onboarding
       context.showSnackBarSuccess(message: 'Signed up with e-mail and password!');
-      await Modular.to.pushReplacementNamed('/home');
+      await Modular.to.pushReplacementNamed('/onboarding/');
     } else {
       final String error = AuthExceptionHandler.generateErrorMessage(status);
       context.showSnackBarError(message: error);
@@ -57,11 +56,17 @@ abstract class AuthStoreBase with Store {
       email: emailController.text,
       password: passwordController.text,
     );
+    final DatabaseService databaseService = DatabaseService();
 
     if (status == AuthStatus.successful) {
-      // TODO: Redirect to HomePage or Onboarding
+      final UserModel? user = await databaseService.getUser();
+      if (user == null || user.active == false) {
+        await Modular.to.pushReplacementNamed('/onboarding/');
+      } else {
+        await Modular.to.pushReplacementNamed('/home/');
+      }
+
       context.showSnackBarSuccess(message: 'Signed in with e-mail and password!');
-      await Modular.to.pushReplacementNamed('/home');
     } else {
       final String error = AuthExceptionHandler.generateErrorMessage(status);
       context.showSnackBarError(message: error);
@@ -78,23 +83,14 @@ abstract class AuthStoreBase with Store {
     final DatabaseService databaseService = DatabaseService();
 
     if (status == AuthStatus.successful) {
-      // TODO: Redirect to HomePage or Onboarding
-      context.showSnackBarSuccess(message: 'Signed in with Google!');
-
-      // TODO: move this line to the end of onboarding
-      if (await databaseService.userExists() == false) {
-        if (await databaseService.createUser() == DatabaseStatus.successful) {
-          await Modular.to.pushReplacementNamed('/home');
-        }
-      }
-
-      final UserModel user = await databaseService.getUser();
-      if (user.active == false) {
-        // TODO: Redirect to Onboarding
-        await Modular.to.pushReplacementNamed('/home');
+      final UserModel? user = await databaseService.getUser();
+      if (user == null || user.active == false) {
+        await Modular.to.pushReplacementNamed('/onboarding/');
       } else {
-        await Modular.to.pushReplacementNamed('/home');
+        await Modular.to.pushReplacementNamed('/home/');
       }
+
+      context.showSnackBarSuccess(message: 'Signed in with Google!');
     } else {
       final String error = AuthExceptionHandler.generateErrorMessage(status);
       context.showSnackBarError(message: error);
@@ -120,5 +116,14 @@ abstract class AuthStoreBase with Store {
     }
 
     isLoading = false;
+  }
+
+  Future<void> checkLogin() async {
+    final DatabaseService databaseService = DatabaseService();
+    final UserModel? user = await databaseService.getUser();
+
+    if (user != null && user.active!) {
+      await Modular.to.pushReplacementNamed('/home/');
+    }
   }
 }

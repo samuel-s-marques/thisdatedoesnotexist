@@ -83,7 +83,10 @@ class _SettingsPageState extends State<SettingsPage> {
                           child: const Text('No'),
                         ),
                         TextButton(
-                          onPressed: () => store.logOut(context),
+                          onPressed: () {
+                            Navigator.pop(context);
+                            store.logOut(context);
+                          },
                           child: const Text('Yes'),
                         ),
                       ],

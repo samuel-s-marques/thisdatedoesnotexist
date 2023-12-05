@@ -1,9 +1,23 @@
 import 'package:flutter/material.dart';
 
+double checkDouble(dynamic value) {
+  if (value is String) {
+    return double.parse(value);
+  } else {
+    return value.toDouble();
+  }
+}
+
 extension UserExtension on String {
   String toUsername() {
     final List<String> splittedEmail = split('@');
     return splittedEmail[0];
+  }
+}
+
+extension StringExtension on String {
+  String capitalize() {
+    return '${this[0].toUpperCase()}${substring(1)}';
   }
 }
 

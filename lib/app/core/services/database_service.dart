@@ -1,24 +1,21 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 // ignore: depend_on_referenced_packages
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_firebase_chat_core/flutter_firebase_chat_core.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:thisdatedoesnotexist/app/core/enum/database_status_enum.dart';
 import 'package:thisdatedoesnotexist/app/core/models/user_model.dart';
 import 'package:thisdatedoesnotexist/app/core/services/auth_service.dart';
 
 class DatabaseService {
   final AuthService authService = AuthService();
-  FirebaseFirestore db = FirebaseFirestore.instance;
+  String server = const String.fromEnvironment('SERVER');
+  final Dio dio = Dio();
 
-  Future<DatabaseStatus> createUser() async {
+  Future<DatabaseStatus> createUser(UserModel user) async {
     DatabaseStatus status = DatabaseStatus.unknown;
     final User authenticatedUser = authService.getUser();
-    final UserModel user = UserModel(
-      uid: authenticatedUser.uid,
-      active: false,
-      swipes: 20,
-    );
 
     try {
       await FirebaseChatCore.instance.createUserInFirestore(
@@ -28,27 +25,95 @@ class DatabaseService {
           imageUrl: authenticatedUser.photoURL,
         ),
       );
-      await db.collection('users').doc(authenticatedUser.uid).set(user.toMap(), SetOptions(merge: true));
+
+      if (user.imageUrl == null) {
+        return DatabaseStatus.failure;
+      }
+
+      final String fileName = user.imageUrl!.split('/').last;
+      final FormData formData = FormData.fromMap({
+        'profile_image': await MultipartFile.fromFile(
+          user.imageUrl!,
+          filename: fileName,
+        ),
+        ...user.toMap(),
+      });
+
+      await dio.post(
+        '$server/api/users',
+        data: formData,
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer ${await authenticatedUser.getIdToken()}',
+            'Content-Type': 'multipart/form-data',
+          },
+        ),
+      );
 
       status = DatabaseStatus.successful;
-    } catch (error) {
+    } catch (exception, stackTrace) {
       status = DatabaseStatus.failure;
+      await Sentry.captureException(
+        exception,
+        stackTrace: stackTrace,
+      );
     }
 
     return status;
   }
 
-  Future<UserModel> getUser() async {
+  Future<UserModel?> getUser() async {
     final User authenticatedUser = authService.getUser();
-    final DocumentSnapshot<Map<String, dynamic>> user = await db.collection('users').doc(authenticatedUser.uid).get();
 
-    return UserModel.fromMap(user.data()!);
+    try {
+      final Response response = await dio.get(
+        '$server/api/users/${authenticatedUser.uid}',
+        options: Options(
+          headers: {'Authorization': 'Bearer ${await authenticatedUser.getIdToken()}', 'Content-Type': 'application/json'},
+        ),
+      );
+
+      if (response.statusCode == 200) {
+        final UserModel user = UserModel.fromMap(response.data);
+
+        return user;
+      }
+    } catch (exception, stackTrace) {
+      await Sentry.captureException(
+        exception,
+        stackTrace: stackTrace,
+      );
+
+      return null;
+    }
+
+    return null;
   }
 
   Future<bool> userExists() async {
     final User authenticatedUser = authService.getUser();
-    final DocumentSnapshot<Map<String, dynamic>> user = await db.collection('users').doc(authenticatedUser.uid).get();
 
-    return user.exists;
+    final Response response = await dio.get(
+      '$server/api/users/${authenticatedUser.uid}',
+      options: Options(
+        headers: {'Authorization': 'Bearer ${await authenticatedUser.getIdToken()}', 'Content-Type': 'application/json'},
+      ),
+    );
+
+    if (response.statusCode == 200) {
+      return true;
+    }
+
+    return false;
+  }
+
+  // TODO: Implement updateUser
+  Future<DatabaseStatus> updateUser(UserModel user) async {
+    try {
+      final User authenticatedUser = authService.getUser();
+      return DatabaseStatus.successful;
+    } catch (e) {
+      return DatabaseStatus.failure;
+    }
   }
 }
