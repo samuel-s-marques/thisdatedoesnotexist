@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:thisdatedoesnotexist/app/core/models/hobby_model.dart';
 import 'package:thisdatedoesnotexist/app/core/models/preferences_model.dart';
 import 'package:thisdatedoesnotexist/app/core/services/auth_service.dart';
+import 'package:thisdatedoesnotexist/app/core/util.dart';
 
 class UserModel {
   UserModel({
@@ -33,6 +34,9 @@ class UserModel {
   }
 
   factory UserModel.fromMap(Map<String, dynamic> map) {
+    final double height = checkDouble(map['height'] ?? 1.6);
+    final double weight = checkDouble(map['weight'] ?? 60);
+
     return UserModel(
       uid: map['uid'],
       name: map['name'],
@@ -43,8 +47,8 @@ class UserModel {
       religion: map['religion'],
       country: map['country'],
       politicalView: map['political_view'],
-      height: map['height'],
-      weight: map['weight'],
+      height: height,
+      weight: weight,
       birthdayDate: map['birthday_date'] != null ? DateTime.parse(map['birthday_date']) : null,
       lastSwipe: map['last_swipe'] != null ? DateTime.parse(map['last_swipe']) : null,
       swipes: map['swipes'],
