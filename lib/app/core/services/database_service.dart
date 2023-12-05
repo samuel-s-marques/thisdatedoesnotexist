@@ -26,13 +26,26 @@ class DatabaseService {
         ),
       );
 
+      if (user.imageUrl == null) {
+        return DatabaseStatus.failure;
+      }
+
+      final String fileName = user.imageUrl!.split('/').last;
+      final FormData formData = FormData.fromMap({
+        'profile_image': await MultipartFile.fromFile(
+          user.imageUrl!,
+          filename: fileName,
+        ),
+        ...user.toMap(),
+      });
+
       await dio.post(
         '$server/api/users',
-        data: user.toMap(),
+        data: formData,
         options: Options(
           headers: {
             'Authorization': 'Bearer ${await authenticatedUser.getIdToken()}',
-            'Content-Type': 'application/json',
+            'Content-Type': 'multipart/form-data',
           },
         ),
       );
