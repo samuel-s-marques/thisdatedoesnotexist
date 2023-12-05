@@ -31,7 +31,7 @@ class CardWidget extends StatelessWidget {
         children: [
           Flexible(
             child: Container(
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 image: DecorationImage(
                   image: NetworkImage(
                     'https://placehold.co/256x256/png',
