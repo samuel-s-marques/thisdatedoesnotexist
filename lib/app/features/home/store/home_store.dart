@@ -337,7 +337,7 @@ abstract class HomeStoreBase with Store {
   @action
   Future<bool?> getTodayCards() async {
     if (await getPreferences()) {
-      String url = '$server/api/characters?uid=${authenticatedUser?.uid}min_age=${ageValues.start.round()}&max_age=${ageValues.end.round()}';
+      String url = '$server/api/characters?uid=${authenticatedUser?.uid}&min_age=${ageValues.start.round()}&max_age=${ageValues.end.round()}';
 
       if (selectedPoliticalViewPreferences.isNotEmpty) {
         final List<String?> politicalViews = selectedPoliticalViewPreferences.map((e) => e.name).toList();
