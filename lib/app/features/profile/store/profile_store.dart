@@ -14,12 +14,11 @@ abstract class ProfileStoreBase with Store {
   DatabaseService databaseService = DatabaseService();
   AuthService authService = AuthService();
   User? authenticatedUser;
-  UserModel? user;
   final Dio dio = Dio();
 
   @action
-  Future<void> getUser() async {
+  Future<UserModel?> getUser() async {
     authenticatedUser = authService.getUser();
-    user = await databaseService.getUser();
+    return databaseService.getUser();
   }
 }
