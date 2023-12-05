@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:mobx/mobx.dart';
@@ -30,6 +31,7 @@ abstract class OnboardingStoreBase with Store {
   TextEditingController bioController = TextEditingController();
   TextEditingController heightController = TextEditingController();
   TextEditingController weightController = TextEditingController();
+  final ImagePicker imagePicker = ImagePicker();
   final Dio dio = Dio();
   final MaskTextInputFormatter heightMask = MaskTextInputFormatter(
     mask: '#,##',
@@ -126,6 +128,9 @@ abstract class OnboardingStoreBase with Store {
 
   @observable
   ObservableList<Religion> selectedReligionPreferences = ObservableList();
+
+  @observable
+  XFile? profileImage;
 
   @action
   void selectCountry(String country) {
@@ -320,6 +325,14 @@ abstract class OnboardingStoreBase with Store {
     }
   }
 
+  @action
+  Future<void> pickProfileImage() async {
+    profileImage = await imagePicker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 70,
+    );
+  }
+
   Future<void> onDone(BuildContext context) async {
     final double height = double.parse(heightController.text.replaceAll(',', '.'));
     final double weight = double.parse(weightController.text.replaceAll(',', '.'));
@@ -334,6 +347,7 @@ abstract class OnboardingStoreBase with Store {
       politicalView: selectedPoliticalView!.name,
       relationshipGoal: selectedRelationshipGoal!.name,
       sex: sex!.name,
+      imageUrl: profileImage?.path,
       country: selectedCountry,
       bio: bioController.text.trim(),
       age: DateTime.now().year - birthDay!.year,
