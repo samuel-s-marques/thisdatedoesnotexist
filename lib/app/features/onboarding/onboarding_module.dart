@@ -10,6 +10,6 @@ class OnboardingModule extends Module {
 
   @override
   void routes(r) {
-    r.child('/', child: (context) => OnboardingPage());
+    r.child('/', child: (context) => const OnboardingPage());
   }
 }
