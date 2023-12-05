@@ -117,6 +117,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                     const Text('Enter your name'),
                     TextFormField(
                       controller: store.nameController,
+                      textCapitalization: TextCapitalization.words,
                       validator: (value) {
                         if (value!.isEmpty) {
                           return 'Please enter your name.';
@@ -132,6 +133,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                     const Text('Enter your surname'),
                     TextFormField(
                       controller: store.surnameController,
+                      textCapitalization: TextCapitalization.words,
                       validator: (value) {
                         if (value!.isEmpty) {
                           return 'Please enter your surname.';
@@ -206,6 +208,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                       controller: store.bioController,
                       maxLength: 500,
                       maxLines: null,
+                      textCapitalization: TextCapitalization.sentences,
                       decoration: const InputDecoration(
                         hintText: 'Your bio',
                       ),
