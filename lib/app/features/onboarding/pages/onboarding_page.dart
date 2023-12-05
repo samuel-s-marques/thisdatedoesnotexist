@@ -63,7 +63,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
             bodyWidget: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('Upload up to 4 photos of yourself!'),
+                const Text('Upload a photo of yourself!'),
                 const SizedBox(height: 15),
                 SizedBox(
                   height: MediaQuery.of(context).size.height / 1.7,
@@ -108,7 +108,8 @@ class _OnboardingPageState extends State<OnboardingPage> {
             bodyWidget: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('Tell us about yourself.'),
+                const Text(
+                    "Hey there! We're thrilled to have you join our community. To make your experience personalized and enjoyable, we'd love to learn a bit more about you. Just a few quick details, and you'll be all set!"),
                 const SizedBox(height: 15),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
