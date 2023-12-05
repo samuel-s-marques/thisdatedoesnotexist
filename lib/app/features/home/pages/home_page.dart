@@ -292,7 +292,7 @@ class _HomePageState extends State<HomePage> {
             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 15),
             child: FutureBuilder(
               future: _future,
-              builder: (BuildContext context, AsyncSnapshot snapshot) {
+              builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
                 if (snapshot.hasData) {
                   if (snapshot.data == false) {
                     return const Center(
