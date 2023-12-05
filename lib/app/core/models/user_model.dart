@@ -18,6 +18,7 @@ class UserModel {
     this.politicalView,
     this.height,
     this.weight,
+    this.imageUrl,
     this.birthdayDate,
     this.lastSwipe,
     this.swipes,
@@ -49,6 +50,7 @@ class UserModel {
       politicalView: map['political_view'],
       height: height,
       weight: weight,
+      imageUrl: map['image_url'],
       birthdayDate: map['birthday_date'] != null ? DateTime.parse(map['birthday_date']) : null,
       lastSwipe: map['last_swipe'] != null ? DateTime.parse(map['last_swipe']) : null,
       swipes: map['swipes'],
@@ -74,6 +76,7 @@ class UserModel {
   final String? politicalView;
   final double? height;
   final double? weight;
+  final String? imageUrl;
   final DateTime? birthdayDate;
   final int? swipes;
   final bool? active;
