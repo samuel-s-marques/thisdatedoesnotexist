@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:thisdatedoesnotexist/app/core/models/user_model.dart';
+import 'package:thisdatedoesnotexist/app/core/util.dart';
 import 'package:thisdatedoesnotexist/app/features/profile/store/profile_store.dart';
 import 'package:thisdatedoesnotexist/app/features/profile/widgets/section_widget.dart';
 
@@ -33,8 +35,10 @@ class _ProfilePageState extends State<ProfilePage> {
           builder: (_) => FutureBuilder(
             future: _future,
             builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
-              if (snapshot.connectionState == ConnectionState.done) {
-                return const Column(
+              if (snapshot.connectionState == ConnectionState.done && snapshot.hasData) {
+                final UserModel user = snapshot.data;
+
+                return Column(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -43,22 +47,37 @@ class _ProfilePageState extends State<ProfilePage> {
                       fallbackWidth: double.infinity,
                     ),
                     // TODO: Add profile name
-                    Text('Name Surname'),
+                    Text('${user.name} ${user.surname}'),
                     SectionWidget(
                       title: 'Bio',
-                      content: Text('data'),
-                    ),
-                    SectionWidget(
-                      title: 'Interests',
-                      content: Text('data'),
+                      content: Text(user.bio ?? ''),
                     ),
                     SectionWidget(
                       title: 'Hobbies',
-                      content: Text('data'),
+                      content: Wrap(
+                        spacing: 5,
+                        children: user.hobbies!
+                            .map(
+                              (hobby) => Chip(
+                                label: Text(
+                                  hobby.name.capitalize(),
+                                ),
+                              ),
+                            )
+                            .toList(),
+                      ),
                     ),
                     SectionWidget(
-                      title: 'Relationship Goals',
-                      content: Text('data'),
+                      title: 'Relationship Goal',
+                      content: Text(user.relationshipGoal ?? ''),
+                    ),
+                    SectionWidget(
+                      title: 'Political View',
+                      content: Text(user.politicalView ?? ''),
+                    ),
+                    SectionWidget(
+                      title: 'Religion',
+                      content: Text(user.religion ?? ''),
                     ),
                   ],
                 );
