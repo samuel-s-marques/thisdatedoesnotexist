@@ -109,7 +109,7 @@ class UserModel {
   }
 
   Future<int> getSwipes() async {
-    final Response response = await dio.get(
+    final Response<dynamic> response = await dio.get(
       '$server/api/users/$uid',
       options: Options(
         headers: {'Authorization': 'Bearer ${await authenticatedUser.getIdToken()}', 'Content-Type': 'application/json'},
@@ -126,7 +126,7 @@ class UserModel {
   }
 
   Future<bool> isActive() async {
-    final Response response = await dio.get(
+    final Response<dynamic> response = await dio.get(
       '$server/api/users/$uid',
       options: Options(
         headers: {'Authorization': 'Bearer ${await authenticatedUser.getIdToken()}', 'Content-Type': 'application/json'},
