@@ -144,7 +144,7 @@ abstract class HomeStoreBase with Store {
 
   Future<bool> getPreferences() async {
     authenticatedUser ??= authService.getUser();
-    final Response response = await dio.get('$server/api/preferences/${authenticatedUser?.uid}');
+    final Response<dynamic> response = await dio.get('$server/api/preferences/${authenticatedUser?.uid}');
 
     if (response.statusCode == 200) {
       final Map<String, dynamic> data = response.data;
@@ -171,7 +171,7 @@ abstract class HomeStoreBase with Store {
   }
 
   Future<void> getRelationshipGoals() async {
-    final Response response = await dio.get('$server/api/relationship-goals');
+    final Response<dynamic> response = await dio.get('$server/api/relationship-goals');
 
     if (response.statusCode == 200) {
       final List<dynamic> data = response.data['data'];
@@ -184,7 +184,7 @@ abstract class HomeStoreBase with Store {
   }
 
   Future<void> getSexes() async {
-    final Response response = await dio.get('$server/api/sexes');
+    final Response<dynamic> response = await dio.get('$server/api/sexes');
 
     if (response.statusCode == 200) {
       final List<dynamic> data = response.data['data'];
@@ -197,7 +197,7 @@ abstract class HomeStoreBase with Store {
   }
 
   Future<void> getPoliticalViews() async {
-    final Response response = await dio.get('$server/api/political-views');
+    final Response<dynamic> response = await dio.get('$server/api/political-views');
 
     if (response.statusCode == 200) {
       final List<dynamic> data = response.data['data'];
@@ -210,7 +210,7 @@ abstract class HomeStoreBase with Store {
   }
 
   Future<void> getBodyTypes() async {
-    final Response response = await dio.get('$server/api/body-types');
+    final Response<dynamic> response = await dio.get('$server/api/body-types');
 
     if (response.statusCode == 200) {
       final List<dynamic> data = response.data['data'];
@@ -223,7 +223,7 @@ abstract class HomeStoreBase with Store {
   }
 
   Future<void> getReligions() async {
-    final Response response = await dio.get('$server/api/religions');
+    final Response<dynamic> response = await dio.get('$server/api/religions');
 
     if (response.statusCode == 200) {
       final List<dynamic> data = response.data['data'];
