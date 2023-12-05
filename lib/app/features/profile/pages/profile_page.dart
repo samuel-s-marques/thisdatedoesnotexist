@@ -32,7 +32,7 @@ class _ProfilePageState extends State<ProfilePage> {
         child: Observer(
           builder: (_) => FutureBuilder(
             future: _future,
-            builder: (BuildContext context, AsyncSnapshot snapshot) {
+            builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
               if (snapshot.connectionState == ConnectionState.done) {
                 return const Column(
                   mainAxisSize: MainAxisSize.min,
