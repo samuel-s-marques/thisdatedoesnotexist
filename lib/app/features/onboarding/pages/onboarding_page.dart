@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:country_code_picker/country_code_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
@@ -75,11 +77,25 @@ class _OnboardingPageState extends State<OnboardingPage> {
                       ),
                     ),
                     child: InkWell(
-                      onTap: () {},
+                      onTap: () async => store.pickProfileImage(),
                       borderRadius: BorderRadius.circular(24),
-                      child: const Icon(
-                        Icons.add,
-                        color: Colors.black26,
+                      child: Observer(
+                        builder: (_) {
+                          if (store.profileImage != null) {
+                            return ClipRRect(
+                              borderRadius: BorderRadius.circular(24),
+                              child: Image.file(
+                                File(store.profileImage!.path),
+                                fit: BoxFit.cover,
+                              ),
+                            );
+                          } else {
+                            return const Icon(
+                              Icons.add,
+                              color: Colors.black26,
+                            );
+                          }
+                        },
                       ),
                     ),
                   ),
