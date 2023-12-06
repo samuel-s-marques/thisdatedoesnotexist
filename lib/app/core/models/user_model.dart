@@ -18,6 +18,7 @@ class UserModel {
     this.politicalView,
     this.height,
     this.weight,
+    this.occupation,
     this.imageUrl,
     this.birthdayDate,
     this.lastSwipe,
@@ -48,6 +49,7 @@ class UserModel {
       religion: map['religion'],
       country: map['country'],
       politicalView: map['political_view'],
+      occupation: map['occupation'],
       height: height,
       weight: weight,
       imageUrl: map['image_url'],
@@ -72,6 +74,7 @@ class UserModel {
   final String? sex;
   final String? bio;
   final String? religion;
+  final String? occupation;
   final String? country;
   final String? politicalView;
   final double? height;
@@ -96,6 +99,7 @@ class UserModel {
       'religion': religion,
       'country': country,
       'political_view': politicalView,
+      'occupation': occupation,
       'height': height,
       'weight': weight,
       'birthday_date': birthdayDate?.toIso8601String(),
