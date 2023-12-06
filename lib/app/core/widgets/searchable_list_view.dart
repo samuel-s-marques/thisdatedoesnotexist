@@ -56,7 +56,10 @@ class _SearchableListViewState extends State<SearchableListView> {
             itemBuilder: (context, index) {
               return ListTile(
                 title: Text(filteredItems[index].name!),
-                onTap: () => widget.onSelectedItem(filteredItems[index]),
+                onTap: () {
+                  widget.onSelectedItem(filteredItems[index]);
+                  Navigator.pop(context);
+                },
               );
             },
           ),
