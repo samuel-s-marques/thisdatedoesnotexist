@@ -67,35 +67,46 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                   ),
                   Text('${user.name} ${user.surname}, $age'),
+                  const SizedBox(height: 10),
                   Wrap(
+                    runSpacing: 5,
                     children: [
                       Row(
                         children: [
                           Icon(store.genders[user.sex]),
+                          const SizedBox(width: 5),
                           Text(store.genderMap[user.sex]!.capitalize()),
                         ],
                       ),
                       Row(
                         children: [
-                          const Icon(Icons.straighten),
+                          const Icon(Icons.straighten_outlined),
+                          const SizedBox(width: 5),
                           Text('${user.height} cm, ${user.weight} kg'),
                         ],
                       ),
                       Row(
                         children: [
-                          const Icon(Icons.home),
-                          Text('Lives in ${country.name}'),
-                          Image.file(
-                            File(country.flagUri!),
-                          ),
+                          const Icon(Icons.work_outline),
+                          const SizedBox(width: 5),
+                          Text(user.occupation!.capitalize()),
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          const Icon(Icons.home_outlined),
+                          const SizedBox(width: 5),
+                          Text('Lives in ${country.name} ${countryCodeToEmoji(country.code!)}'),
                         ],
                       ),
                     ],
                   ),
+                  const SizedBox(height: 10),
                   SectionWidget(
                     title: 'About me',
                     content: Text(user.bio ?? ''),
                   ),
+                  const SizedBox(height: 10),
                   SectionWidget(
                     title: 'Hobbies & Interests',
                     content: Wrap(
@@ -111,14 +122,17 @@ class _ProfilePageState extends State<ProfilePage> {
                           .toList(),
                     ),
                   ),
+                  const SizedBox(height: 10),
                   SectionWidget(
                     title: 'Relationship Goal',
                     content: Text(user.relationshipGoal ?? ''),
                   ),
+                  const SizedBox(height: 10),
                   SectionWidget(
                     title: 'Political View',
                     content: Text(user.politicalView ?? ''),
                   ),
+                  const SizedBox(height: 10),
                   SectionWidget(
                     title: 'Religion',
                     content: Text(user.religion ?? ''),
