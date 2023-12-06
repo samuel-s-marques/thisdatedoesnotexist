@@ -47,7 +47,7 @@ class _SearchableListViewState extends State<SearchableListView> {
           controller: searchController,
           decoration: const InputDecoration(
             hintText: 'Search',
-            prefix: Icon(Icons.search),
+            prefixIcon: Icon(Icons.search),
           ),
         ),
         Expanded(
