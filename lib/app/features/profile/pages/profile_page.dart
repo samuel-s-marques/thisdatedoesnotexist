@@ -40,6 +40,7 @@ class _ProfilePageState extends State<ProfilePage> {
             builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
               if (snapshot.connectionState == ConnectionState.done && snapshot.hasData) {
                 final UserModel user = snapshot.data;
+                final int age = DateTime.now().year - user.birthdayDate!.year;
 
                 return Column(
                   mainAxisSize: MainAxisSize.min,
@@ -66,7 +67,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       ),
                     ),
                     // TODO: Add profile name
-                    Text('${user.name} ${user.surname}'),
+                    Text('${user.name} ${user.surname}, $age'),
                     SectionWidget(
                       title: 'Bio',
                       content: Text(user.bio ?? ''),
