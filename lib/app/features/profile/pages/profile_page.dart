@@ -34,89 +34,93 @@ class _ProfilePageState extends State<ProfilePage> {
           horizontal: 24,
           vertical: 12,
         ),
-        child: Observer(
-          builder: (_) => FutureBuilder(
-            future: _future,
-            builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
-              if (snapshot.connectionState == ConnectionState.done && snapshot.hasData) {
-                final UserModel user = snapshot.data;
-                final int age = DateTime.now().year - user.birthdayDate!.year;
-
-                return Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SizedBox(
-                      height: MediaQuery.of(context).size.height / 1.7,
-                      width: MediaQuery.of(context).size.width,
-                      child: Material(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(24),
-                          side: const BorderSide(
-                            width: 0.5,
-                            color: Colors.black26,
-                          ),
+        child: FutureBuilder(
+          future: _future,
+          builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+            if (snapshot.connectionState == ConnectionState.done && snapshot.hasData) {
+              final UserModel user = snapshot.data;
+              final int age = DateTime.now().year - user.birthdayDate!.year;
+        
+              return Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height / 1.7,
+                    width: MediaQuery.of(context).size.width,
+                    child: Material(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(24),
+                        side: const BorderSide(
+                          width: 0.5,
+                          color: Colors.black26,
                         ),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(24),
-                          child: CachedNetworkImage(
-                            imageUrl: user.imageUrl != null ? '${store.server}${user.imageUrl}' : '',
-                            fit: BoxFit.cover,
-                          ),
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(24),
+                        child: CachedNetworkImage(
+                          imageUrl: user.imageUrl != null ? '${store.server}${user.imageUrl}' : '',
+                          fit: BoxFit.cover,
                         ),
                       ),
                     ),
-                    Text('${user.name} ${user.surname}, $age'),
-                    Wrap(
-                      children: [
-                        Row(
-                          children: [
-                            Icon(store.genders[user.sex]),
-                            Text(store.genderMap[user.sex]!.capitalize()),
-                          ],
-                        ),
-                      ],
-                    ),
-                    SectionWidget(
-                      title: 'About me',
-                      content: Text(user.bio ?? ''),
-                    ),
-                    SectionWidget(
-                      title: 'Hobbies & Interests',
-                      content: Wrap(
-                        spacing: 5,
-                        children: user.hobbies!
-                            .map(
-                              (hobby) => Chip(
-                                label: Text(
-                                  hobby.name.capitalize(),
-                                ),
+                  ),
+                  Text('${user.name} ${user.surname}, $age'),
+                  Wrap(
+                    children: [
+                      Row(
+                        children: [
+                          Icon(store.genders[user.sex]),
+                          Text(store.genderMap[user.sex]!.capitalize()),
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          const Icon(Icons.straighten),
+                          Text('${user.height} cm, ${user.weight} kg'),
+                        ],
+                      ),
+                    ],
+                  ),
+                  SectionWidget(
+                    title: 'About me',
+                    content: Text(user.bio ?? ''),
+                  ),
+                  SectionWidget(
+                    title: 'Hobbies & Interests',
+                    content: Wrap(
+                      spacing: 5,
+                      children: user.hobbies!
+                          .map(
+                            (hobby) => Chip(
+                              label: Text(
+                                hobby.name.capitalize(),
                               ),
-                            )
-                            .toList(),
-                      ),
+                            ),
+                          )
+                          .toList(),
                     ),
-                    SectionWidget(
-                      title: 'Relationship Goal',
-                      content: Text(user.relationshipGoal ?? ''),
-                    ),
-                    SectionWidget(
-                      title: 'Political View',
-                      content: Text(user.politicalView ?? ''),
-                    ),
-                    SectionWidget(
-                      title: 'Religion',
-                      content: Text(user.religion ?? ''),
-                    ),
-                  ],
-                );
-              }
-
-              return const Center(
-                child: CircularProgressIndicator(),
+                  ),
+                  SectionWidget(
+                    title: 'Relationship Goal',
+                    content: Text(user.relationshipGoal ?? ''),
+                  ),
+                  SectionWidget(
+                    title: 'Political View',
+                    content: Text(user.politicalView ?? ''),
+                  ),
+                  SectionWidget(
+                    title: 'Religion',
+                    content: Text(user.religion ?? ''),
+                  ),
+                ],
               );
-            },
-          ),
+            }
+        
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          },
         ),
       ),
     );
