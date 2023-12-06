@@ -251,7 +251,7 @@ abstract class OnboardingStoreBase with Store {
     occupation = selectedOccupation;
 
     if (occupation != null) {
-      occupationController.text = occupation!.name!;
+      occupationController.text = occupation!.name!.capitalize();
     }
   }
 
