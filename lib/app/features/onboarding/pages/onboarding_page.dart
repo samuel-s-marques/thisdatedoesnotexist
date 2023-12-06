@@ -304,6 +304,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                     Observer(
                       builder: (_) => TextFormField(
                         readOnly: true,
+                        controller: store.occupationController,
                         onTap: () {
                           showDialog(
                             context: context,
@@ -314,7 +315,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                                 child: SearchableListView(
                                   items: store.occupations,
                                   onSearch: (searchTerm) {},
-                                  onSelectedItem: (selectedItem) {},
+                                  onSelectedItem: store.selectOccupation,
                                 ),
                               ),
                             ),
