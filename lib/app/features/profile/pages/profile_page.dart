@@ -66,8 +66,17 @@ class _ProfilePageState extends State<ProfilePage> {
                         ),
                       ),
                     ),
-                    // TODO: Add profile name
                     Text('${user.name} ${user.surname}, $age'),
+                    Wrap(
+                      children: [
+                        Row(
+                          children: [
+                            Icon(store.genders[user.sex]),
+                            Text(store.genderMap[user.sex]!.capitalize()),
+                          ],
+                        ),
+                      ],
+                    ),
                     SectionWidget(
                       title: 'About me',
                       content: Text(user.bio ?? ''),
