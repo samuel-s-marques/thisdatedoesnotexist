@@ -69,7 +69,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     // TODO: Add profile name
                     Text('${user.name} ${user.surname}, $age'),
                     SectionWidget(
-                      title: 'Bio',
+                      title: 'About me',
                       content: Text(user.bio ?? ''),
                     ),
                     SectionWidget(
