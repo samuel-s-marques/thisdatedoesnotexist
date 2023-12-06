@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:thisdatedoesnotexist/app/core/models/base_model.dart';
+import 'package:thisdatedoesnotexist/app/core/util.dart';
 
 class SearchableListView extends StatefulWidget {
   const SearchableListView({
@@ -55,7 +56,7 @@ class _SearchableListViewState extends State<SearchableListView> {
             itemCount: filteredItems.length,
             itemBuilder: (context, index) {
               return ListTile(
-                title: Text(filteredItems[index].name!),
+                title: Text(filteredItems[index].name!.capitalize()),
                 onTap: () {
                   widget.onSelectedItem(filteredItems[index]);
                   Navigator.pop(context);
