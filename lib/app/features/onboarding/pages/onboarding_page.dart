@@ -304,7 +304,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                     const SizedBox(height: 15),
                     const Text('Enter your country'),
                     CountryCodePicker(
-                      onChanged: (CountryCode countryCode) => store.selectCountry(countryCode.name!),
+                      onChanged: (CountryCode countryCode) => store.selectCountry(countryCode.code!),
                       showCountryOnly: true,
                       padding: EdgeInsets.zero,
                       initialSelection: 'US',
