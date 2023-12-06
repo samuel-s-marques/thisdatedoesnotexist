@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:thisdatedoesnotexist/app/core/models/user_model.dart';
@@ -42,9 +45,25 @@ class _ProfilePageState extends State<ProfilePage> {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // TODO: Add profile image
-                    Placeholder(
-                      fallbackWidth: double.infinity,
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height / 1.7,
+                      width: MediaQuery.of(context).size.width,
+                      child: Material(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(24),
+                          side: const BorderSide(
+                            width: 0.5,
+                            color: Colors.black26,
+                          ),
+                        ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(24),
+                          child: CachedNetworkImage(
+                            imageUrl: user.imageUrl != null ? '${store.server}${user.imageUrl}' : '',
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      ),
                     ),
                     // TODO: Add profile name
                     Text('${user.name} ${user.surname}'),
