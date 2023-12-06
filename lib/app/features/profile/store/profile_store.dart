@@ -17,7 +17,7 @@ abstract class ProfileStoreBase with Store {
   User? authenticatedUser;
   final Dio dio = Dio();
   final Map<String, String> genderMap = {'male': 'Man', 'female': 'Woman'};
-  final Map<String, IconData> genders = {'male': Icons.male, 'female': Icons.female};
+  final Map<String, IconData> genders = {'male': Icons.male_outlined, 'female': Icons.female_outlined};
 
   @action
   Future<UserModel?> getUser() async {
