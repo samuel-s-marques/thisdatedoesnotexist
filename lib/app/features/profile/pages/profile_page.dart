@@ -73,7 +73,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       content: Text(user.bio ?? ''),
                     ),
                     SectionWidget(
-                      title: 'Hobbies',
+                      title: 'Hobbies & Interests',
                       content: Wrap(
                         spacing: 5,
                         children: user.hobbies!
