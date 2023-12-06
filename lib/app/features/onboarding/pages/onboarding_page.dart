@@ -301,24 +301,26 @@ class _OnboardingPageState extends State<OnboardingPage> {
                     ),
                     const SizedBox(height: 15),
                     const Text('Select your occupation'),
-                    TextField(
-                      readOnly: true,
-                      onTap: () {                    
-                        showDialog(
-                          context: context,
-                          builder: (context) => AlertDialog(
-                            title: const Text('Select an occupation'),
-                            content: SizedBox(
-                              width: double.maxFinite,
-                              child: SearchableListView(
-                                items: store.occupations,
-                                onSearch: (searchTerm) {},
-                                onSelectedItem: (selectedItem) {},
+                    Observer(
+                      builder: (_) => TextFormField(
+                        readOnly: true,
+                        onTap: () {
+                          showDialog(
+                            context: context,
+                            builder: (context) => AlertDialog(
+                              title: const Text('Select an occupation'),
+                              content: SizedBox(
+                                width: double.maxFinite,
+                                child: SearchableListView(
+                                  items: store.occupations,
+                                  onSearch: (searchTerm) {},
+                                  onSelectedItem: (selectedItem) {},
+                                ),
                               ),
                             ),
-                          ),
-                        );
-                      },
+                          );
+                        },
+                      ),
                     ),
                     const SizedBox(height: 15),
                     const Text('Enter your country'),
