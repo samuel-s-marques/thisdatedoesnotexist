@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:country_code_picker/country_code_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:thisdatedoesnotexist/app/core/models/user_model.dart';
@@ -40,7 +41,8 @@ class _ProfilePageState extends State<ProfilePage> {
             if (snapshot.connectionState == ConnectionState.done && snapshot.hasData) {
               final UserModel user = snapshot.data;
               final int age = DateTime.now().year - user.birthdayDate!.year;
-        
+              final CountryCode country = CountryCode.fromCountryCode(user.country!);
+
               return Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -80,6 +82,15 @@ class _ProfilePageState extends State<ProfilePage> {
                           Text('${user.height} cm, ${user.weight} kg'),
                         ],
                       ),
+                      Row(
+                        children: [
+                          const Icon(Icons.home),
+                          Text('Lives in ${country.name}'),
+                          Image.file(
+                            File(country.flagUri!),
+                          ),
+                        ],
+                      ),
                     ],
                   ),
                   SectionWidget(
@@ -116,7 +127,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 ],
               );
             }
-        
+
             return const Center(
               child: CircularProgressIndicator(),
             );
