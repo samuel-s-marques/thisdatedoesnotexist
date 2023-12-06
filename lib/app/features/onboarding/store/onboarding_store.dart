@@ -6,14 +6,9 @@ import 'package:intl/intl.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:mobx/mobx.dart';
 import 'package:thisdatedoesnotexist/app/core/enum/database_status_enum.dart';
-import 'package:thisdatedoesnotexist/app/core/models/body_type_model.dart';
+import 'package:thisdatedoesnotexist/app/core/models/base_model.dart';
 import 'package:thisdatedoesnotexist/app/core/models/hobby_model.dart';
-import 'package:thisdatedoesnotexist/app/core/models/occupation_model.dart';
-import 'package:thisdatedoesnotexist/app/core/models/political_view_model.dart';
 import 'package:thisdatedoesnotexist/app/core/models/preferences_model.dart';
-import 'package:thisdatedoesnotexist/app/core/models/relationship_goal_model.dart';
-import 'package:thisdatedoesnotexist/app/core/models/religion_model.dart';
-import 'package:thisdatedoesnotexist/app/core/models/sex_model.dart';
 import 'package:thisdatedoesnotexist/app/core/models/user_model.dart';
 import 'package:thisdatedoesnotexist/app/core/services/auth_service.dart';
 import 'package:thisdatedoesnotexist/app/core/services/database_service.dart';
@@ -84,57 +79,57 @@ abstract class OnboardingStoreBase with Store {
   ObservableMap<String, List<Hobby>> groupedHobbies = ObservableMap();
 
   @observable
-  ObservableList<RelationshipGoal> relationshipGoals = ObservableList();
+  ObservableList<BaseModel> relationshipGoals = ObservableList();
 
   @observable
-  ObservableList<PoliticalView> politicalViews = ObservableList();
+  ObservableList<BaseModel> politicalViews = ObservableList();
 
   @observable
-  ObservableList<BodyType> bodyTypes = ObservableList();
+  ObservableList<BaseModel> bodyTypes = ObservableList();
 
   @observable
-  ObservableList<Religion> religions = ObservableList();
+  ObservableList<BaseModel> religions = ObservableList();
 
   @observable
-  ObservableList<Occupation> occupations = ObservableList();
+  ObservableList<BaseModel> occupations = ObservableList();
 
   @observable
-  Religion? religion;
+  BaseModel? religion;
 
   @observable
-  ObservableList<Sex> sexes = ObservableList();
+  ObservableList<BaseModel> sexes = ObservableList();
   Map<String, String> pluralSexesMap = {'male': 'Men', 'female': 'Women'};
   Map<String, String> singularSexesMap = {'male': 'Man', 'female': 'Woman'};
 
   @observable
-  ObservableList<PoliticalView> selectedPoliticalViewPreferences = ObservableList();
+  ObservableList<BaseModel> selectedPoliticalViewPreferences = ObservableList();
 
   @observable
-  ObservableList<BodyType> selectedBodyTypePreferences = ObservableList();
+  ObservableList<BaseModel> selectedBodyTypePreferences = ObservableList();
 
   @observable
-  ObservableList<RelationshipGoal> selectedRelationshipGoalPreferences = ObservableList();
+  ObservableList<BaseModel> selectedRelationshipGoalPreferences = ObservableList();
 
   @observable
-  ObservableList<Sex> selectedSexPreferences = ObservableList();
+  ObservableList<BaseModel> selectedSexPreferences = ObservableList();
 
   @observable
-  RelationshipGoal? selectedRelationshipGoal;
+  BaseModel? selectedRelationshipGoal;
 
   @observable
-  PoliticalView? selectedPoliticalView;
+  BaseModel? selectedPoliticalView;
 
   @observable
-  Occupation? occupation;
+  BaseModel? occupation;
 
   @observable
   String selectedCountry = '';
 
   @observable
-  Sex? sex;
+  BaseModel? sex;
 
   @observable
-  ObservableList<Religion> selectedReligionPreferences = ObservableList();
+  ObservableList<BaseModel> selectedReligionPreferences = ObservableList();
 
   @observable
   XFile? profileImage;
@@ -145,12 +140,12 @@ abstract class OnboardingStoreBase with Store {
   }
 
   @action
-  void selectRelationshipGoal(RelationshipGoal goal) {
+  void selectRelationshipGoal(BaseModel goal) {
     selectedRelationshipGoal = goal;
   }
 
   @action
-  void selectPoliticalView(PoliticalView view) {
+  void selectPoliticalView(BaseModel view) {
     selectedPoliticalView = view;
   }
 
@@ -162,7 +157,7 @@ abstract class OnboardingStoreBase with Store {
   @action
   void selectPoliticalViewPreference({
     required bool selected,
-    required PoliticalView view,
+    required BaseModel view,
   }) {
     if (selected) {
       selectedPoliticalViewPreferences.add(view);
@@ -174,7 +169,7 @@ abstract class OnboardingStoreBase with Store {
   @action
   void selectSexPreference({
     required bool selected,
-    required Sex sex,
+    required BaseModel sex,
   }) {
     if (selected) {
       selectedSexPreferences.add(sex);
@@ -184,14 +179,14 @@ abstract class OnboardingStoreBase with Store {
   }
 
   @action
-  void selectSex(Sex selectedSex) {
+  void selectSex(BaseModel selectedSex) {
     sex = selectedSex;
   }
 
   @action
   void selectBodyTypePreference({
     required bool selected,
-    required BodyType bodyType,
+    required BaseModel bodyType,
   }) {
     if (selected) {
       selectedBodyTypePreferences.add(bodyType);
@@ -203,7 +198,7 @@ abstract class OnboardingStoreBase with Store {
   @action
   void selectReligionPreference({
     required bool selected,
-    required Religion religion,
+    required BaseModel religion,
   }) {
     if (selected) {
       selectedReligionPreferences.add(religion);
@@ -215,7 +210,7 @@ abstract class OnboardingStoreBase with Store {
   @action
   void selectRelationshipGoalPreference({
     required bool selected,
-    required RelationshipGoal goal,
+    required BaseModel goal,
   }) {
     if (selected) {
       selectedRelationshipGoalPreferences.add(goal);
@@ -244,12 +239,12 @@ abstract class OnboardingStoreBase with Store {
   }
 
   @action
-  void selectReligion(Religion selectedReligion) {
+  void selectReligion(BaseModel selectedReligion) {
     religion = selectedReligion;
   }
 
   @action
-  void selectOccupation(Occupation selectedOccupation) {
+  void selectOccupation(BaseModel selectedOccupation) {
     occupation = selectedOccupation;
   }
 
@@ -278,7 +273,7 @@ abstract class OnboardingStoreBase with Store {
       final List<dynamic> data = response.data['data'];
 
       for (int index = 0; index < data.length; index++) {
-        final RelationshipGoal goal = RelationshipGoal.fromMap(data[index]);
+        final BaseModel goal = BaseModel.fromMap(data[index]);
         relationshipGoals.add(goal);
       }
     }
@@ -291,7 +286,7 @@ abstract class OnboardingStoreBase with Store {
       final List<dynamic> data = response.data['data'];
 
       for (int index = 0; index < data.length; index++) {
-        final PoliticalView view = PoliticalView.fromMap(data[index]);
+        final BaseModel view = BaseModel.fromMap(data[index]);
         politicalViews.add(view);
       }
     }
@@ -304,7 +299,7 @@ abstract class OnboardingStoreBase with Store {
       final List<dynamic> data = response.data['data'];
 
       for (int index = 0; index < data.length; index++) {
-        final Sex sex = Sex.fromMap(data[index]);
+        final BaseModel sex = BaseModel.fromMap(data[index]);
         sexes.add(sex);
       }
     }
@@ -317,7 +312,7 @@ abstract class OnboardingStoreBase with Store {
       final List<dynamic> data = response.data['data'];
 
       for (int index = 0; index < data.length; index++) {
-        final BodyType bodyType = BodyType.fromMap(data[index]);
+        final BaseModel bodyType = BaseModel.fromMap(data[index]);
         bodyTypes.add(bodyType);
       }
     }
@@ -331,7 +326,7 @@ abstract class OnboardingStoreBase with Store {
       final List<dynamic> data = response.data['data'];
 
       for (int index = 0; index < data.length; index++) {
-        final Religion religion = Religion.fromMap(data[index]);
+        final BaseModel religion = BaseModel.fromMap(data[index]);
         religions.add(religion);
       }
     }
@@ -345,7 +340,7 @@ abstract class OnboardingStoreBase with Store {
       final List<dynamic> data = response.data['data'];
 
       for (int index = 0; index < data.length; index++) {
-        final Occupation occupation = Occupation.fromMap(data[index]);
+        final BaseModel occupation = BaseModel.fromMap(data[index]);
         occupations.add(occupation);
       }
     }
