@@ -8,6 +8,7 @@ import 'package:mobx/mobx.dart';
 import 'package:thisdatedoesnotexist/app/core/enum/database_status_enum.dart';
 import 'package:thisdatedoesnotexist/app/core/models/body_type_model.dart';
 import 'package:thisdatedoesnotexist/app/core/models/hobby_model.dart';
+import 'package:thisdatedoesnotexist/app/core/models/occupation_model.dart';
 import 'package:thisdatedoesnotexist/app/core/models/political_view_model.dart';
 import 'package:thisdatedoesnotexist/app/core/models/preferences_model.dart';
 import 'package:thisdatedoesnotexist/app/core/models/relationship_goal_model.dart';
@@ -95,6 +96,9 @@ abstract class OnboardingStoreBase with Store {
   ObservableList<Religion> religions = ObservableList();
 
   @observable
+  ObservableList<Occupation> occupations = ObservableList();
+
+  @observable
   Religion? religion;
 
   @observable
@@ -119,6 +123,9 @@ abstract class OnboardingStoreBase with Store {
 
   @observable
   PoliticalView? selectedPoliticalView;
+
+  @observable
+  Occupation? occupation;
 
   @observable
   String selectedCountry = '';
@@ -241,6 +248,11 @@ abstract class OnboardingStoreBase with Store {
     religion = selectedReligion;
   }
 
+  @action
+  void selectOccupation(Occupation selectedOccupation) {
+    occupation = selectedOccupation;
+  }
+
   Future<void> getHobbies() async {
     final Response<dynamic> response = await dio.get('$server/api/hobbies');
 
@@ -326,6 +338,20 @@ abstract class OnboardingStoreBase with Store {
   }
 
   @action
+  Future<void> getOccupations() async {
+    final Response<dynamic> response = await dio.get('$server/api/occupations');
+
+    if (response.statusCode == 200) {
+      final List<dynamic> data = response.data['data'];
+
+      for (int index = 0; index < data.length; index++) {
+        final Occupation occupation = Occupation.fromMap(data[index]);
+        occupations.add(occupation);
+      }
+    }
+  }
+
+  @action
   Future<void> pickProfileImage() async {
     profileImage = await imagePicker.pickImage(
       source: ImageSource.gallery,
@@ -347,6 +373,7 @@ abstract class OnboardingStoreBase with Store {
       politicalView: selectedPoliticalView!.name,
       relationshipGoal: selectedRelationshipGoal!.name,
       sex: sex!.name,
+      occupation: occupation!.name,
       imageUrl: profileImage?.path,
       country: selectedCountry,
       bio: bioController.text.trim(),
