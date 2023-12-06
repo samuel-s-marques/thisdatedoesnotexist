@@ -43,6 +43,9 @@ abstract class OnboardingStoreBase with Store {
   );
 
   @observable
+  TextEditingController occupationController = TextEditingController();
+
+  @observable
   TextEditingController birthdayController = TextEditingController();
 
   @observable
@@ -246,6 +249,10 @@ abstract class OnboardingStoreBase with Store {
   @action
   void selectOccupation(BaseModel selectedOccupation) {
     occupation = selectedOccupation;
+
+    if (occupation != null) {
+      occupationController.text = occupation!.name!;
+    }
   }
 
   Future<void> getHobbies() async {
