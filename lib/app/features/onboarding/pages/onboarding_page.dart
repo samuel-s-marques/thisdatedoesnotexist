@@ -4,14 +4,11 @@ import 'package:country_code_picker/country_code_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:introduction_screen/introduction_screen.dart';
-import 'package:thisdatedoesnotexist/app/core/models/body_type_model.dart';
+import 'package:thisdatedoesnotexist/app/core/models/base_model.dart';
 import 'package:thisdatedoesnotexist/app/core/models/hobby_model.dart';
-import 'package:thisdatedoesnotexist/app/core/models/political_view_model.dart';
-import 'package:thisdatedoesnotexist/app/core/models/relationship_goal_model.dart';
-import 'package:thisdatedoesnotexist/app/core/models/religion_model.dart';
-import 'package:thisdatedoesnotexist/app/core/models/sex_model.dart';
 import 'package:thisdatedoesnotexist/app/core/models/user_model.dart';
 import 'package:thisdatedoesnotexist/app/core/util.dart';
+import 'package:thisdatedoesnotexist/app/core/widgets/searchable_list_view.dart';
 import 'package:thisdatedoesnotexist/app/features/onboarding/store/onboarding_store.dart';
 
 class OnboardingPage extends StatefulWidget {
@@ -32,6 +29,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
     store.user = UserModel(
       uid: store.authService.getUser().uid,
     );
+    store.getOccupations();
     store.getReligions();
     store.getHobbies();
     store.getPoliticalViews();
@@ -302,6 +300,27 @@ class _OnboardingPageState extends State<OnboardingPage> {
                       ),
                     ),
                     const SizedBox(height: 15),
+                    const Text('Select your occupation'),
+                    TextField(
+                      readOnly: true,
+                      onTap: () {                    
+                        showDialog(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                            title: const Text('Select an occupation'),
+                            content: SizedBox(
+                              width: double.maxFinite,
+                              child: SearchableListView(
+                                items: store.occupations,
+                                onSearch: (searchTerm) {},
+                                onSelectedItem: (selectedItem) {},
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                    const SizedBox(height: 15),
                     const Text('Enter your country'),
                     CountryCodePicker(
                       onChanged: (CountryCode countryCode) => store.selectCountry(countryCode.code!),
@@ -389,7 +408,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                 Observer(
                   builder: (_) => Wrap(
                     spacing: 5,
-                    children: store.sexes.map((Sex sex) {
+                    children: store.sexes.map((BaseModel sex) {
                       final bool isSelected = store.selectedSexPreferences.contains(sex);
 
                       return FilterChip(
@@ -460,7 +479,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                 Observer(
                   builder: (_) => Wrap(
                     spacing: 5,
-                    children: store.relationshipGoals.map((RelationshipGoal goal) {
+                    children: store.relationshipGoals.map((BaseModel goal) {
                       final bool isSelected = store.selectedRelationshipGoalPreferences.contains(goal);
 
                       return FilterChip(
@@ -486,7 +505,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                 Observer(
                   builder: (_) => Wrap(
                     spacing: 5,
-                    children: store.politicalViews.map((PoliticalView view) {
+                    children: store.politicalViews.map((BaseModel view) {
                       final bool isSelected = store.selectedPoliticalViewPreferences.contains(view);
 
                       return FilterChip(
@@ -512,7 +531,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                 Observer(
                   builder: (_) => Wrap(
                     spacing: 5,
-                    children: store.religions.map((Religion religion) {
+                    children: store.religions.map((BaseModel religion) {
                       final bool isSelected = store.selectedReligionPreferences.contains(religion);
 
                       return FilterChip(
@@ -538,7 +557,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                 Observer(
                   builder: (_) => Wrap(
                     spacing: 5,
-                    children: store.bodyTypes.map((BodyType bodyType) {
+                    children: store.bodyTypes.map((BaseModel bodyType) {
                       final bool isSelected = store.selectedBodyTypePreferences.contains(bodyType);
 
                       return FilterChip(
