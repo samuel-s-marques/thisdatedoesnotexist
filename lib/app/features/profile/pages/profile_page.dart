@@ -107,7 +107,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           const Icon(Icons.straighten_outlined),
                           const SizedBox(width: 5),
                           Text(
-                            '${user.height} cm, ${user.weight} kg',
+                            '${user.height} m, ${user.weight} kg',
                             style: const TextStyle(fontSize: 16),
                           ),
                         ],
