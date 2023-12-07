@@ -47,7 +47,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   SizedBox(
-                    height: MediaQuery.of(context).size.height / 1.7,
+                    height: MediaQuery.of(context).size.height / 1.9,
                     width: MediaQuery.of(context).size.width,
                     child: Material(
                       shape: RoundedRectangleBorder(
@@ -66,7 +66,28 @@ class _ProfilePageState extends State<ProfilePage> {
                       ),
                     ),
                   ),
-                  Text('${user.name} ${user.surname}, $age'),
+                  Text.rich(
+                    TextSpan(
+                      children: [
+                        TextSpan(
+                          text: '${user.name} ${user.surname}',
+                        ),
+                        const TextSpan(
+                          text: ', ',
+                          style: TextStyle(
+                            fontWeight: FontWeight.normal,
+                          ),
+                        ),
+                        TextSpan(
+                          text: age.toString(),
+                        ),
+                      ],
+                    ),
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                   const SizedBox(height: 10),
                   Wrap(
                     runSpacing: 5,
@@ -75,28 +96,40 @@ class _ProfilePageState extends State<ProfilePage> {
                         children: [
                           Icon(store.genders[user.sex]),
                           const SizedBox(width: 5),
-                          Text(store.genderMap[user.sex]!.capitalize()),
+                          Text(
+                            store.genderMap[user.sex]!.capitalize(),
+                            style: const TextStyle(fontSize: 16),
+                          ),
                         ],
                       ),
                       Row(
                         children: [
                           const Icon(Icons.straighten_outlined),
                           const SizedBox(width: 5),
-                          Text('${user.height} cm, ${user.weight} kg'),
+                          Text(
+                            '${user.height} cm, ${user.weight} kg',
+                            style: const TextStyle(fontSize: 16),
+                          ),
                         ],
                       ),
                       Row(
                         children: [
                           const Icon(Icons.work_outline),
                           const SizedBox(width: 5),
-                          Text(user.occupation!.capitalize()),
+                          Text(
+                            user.occupation!.capitalize(),
+                            style: const TextStyle(fontSize: 16),
+                          ),
                         ],
                       ),
                       Row(
                         children: [
                           const Icon(Icons.home_outlined),
                           const SizedBox(width: 5),
-                          Text('Lives in ${country.name} ${countryCodeToEmoji(country.code!)}'),
+                          Text(
+                            'Lives in ${country.name} ${countryCodeToEmoji(country.code!)}',
+                            style: const TextStyle(fontSize: 16),
+                          ),
                         ],
                       ),
                     ],
@@ -104,7 +137,10 @@ class _ProfilePageState extends State<ProfilePage> {
                   const SizedBox(height: 10),
                   SectionWidget(
                     title: 'About me',
-                    content: Text(user.bio ?? ''),
+                    content: Text(
+                      user.bio ?? '',
+                      style: const TextStyle(fontSize: 16),
+                    ),
                   ),
                   const SizedBox(height: 10),
                   SectionWidget(
@@ -116,6 +152,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             (hobby) => Chip(
                               label: Text(
                                 hobby.name.capitalize(),
+                                style: const TextStyle(fontSize: 16),
                               ),
                             ),
                           )
@@ -125,17 +162,26 @@ class _ProfilePageState extends State<ProfilePage> {
                   const SizedBox(height: 10),
                   SectionWidget(
                     title: 'Relationship Goal',
-                    content: Text(user.relationshipGoal ?? ''),
+                    content: Text(
+                      user.relationshipGoal ?? '',
+                      style: const TextStyle(fontSize: 16),
+                    ),
                   ),
                   const SizedBox(height: 10),
                   SectionWidget(
                     title: 'Political View',
-                    content: Text(user.politicalView ?? ''),
+                    content: Text(
+                      user.politicalView ?? '',
+                      style: const TextStyle(fontSize: 16),
+                    ),
                   ),
                   const SizedBox(height: 10),
                   SectionWidget(
                     title: 'Religion',
-                    content: Text(user.religion ?? ''),
+                    content: Text(
+                      user.religion ?? '',
+                      style: const TextStyle(fontSize: 16),
+                    ),
                   ),
                 ],
               );
