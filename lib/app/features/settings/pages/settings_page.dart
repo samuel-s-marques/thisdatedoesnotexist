@@ -79,7 +79,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       content: const Text('Are you sure you want to log out?'),
                       actions: [
                         TextButton(
-                          onPressed: () => Modular.to.pop(),
+                          onPressed: () => Navigator.pop(context),
                           child: const Text('No'),
                         ),
                         TextButton(
