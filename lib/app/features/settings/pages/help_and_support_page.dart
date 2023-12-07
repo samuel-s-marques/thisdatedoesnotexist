@@ -82,6 +82,36 @@ class HelpAndSupportPage extends StatelessWidget {
             trailing: const Icon(Icons.arrow_forward_ios),
             onTap: () {},
           ),
+          SettingsTile(
+            title: 'Delete Account',
+            leading: const Icon(Icons.delete, color: Colors.red),
+            titleStyle: const TextStyle(color: Colors.red),
+            trailing: const Icon(Icons.arrow_forward_ios),
+            onTap: () {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: const Text('Delete Account'),
+                    content: const Text('Are you sure you want to delete your account?'),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: const Text('No'),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                          store.deleteAccount(context);
+                        },
+                        child: const Text('Yes'),
+                      ),
+                    ],
+                  );
+                },
+              );
+            },
+          ),
         ],
       ),
     );
