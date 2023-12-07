@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_firebase_chat_core/flutter_firebase_chat_core.dart';
 import 'package:flutter_modular/flutter_modular.dart';
@@ -7,7 +8,9 @@ import 'package:thisdatedoesnotexist/app/core/exceptions/auth_exception.dart';
 import 'package:thisdatedoesnotexist/app/core/util.dart';
 
 class AuthService {
+  String server = const String.fromEnvironment('SERVER');
   final _auth = FirebaseAuth.instance;
+  final Dio dio = Dio();
 
   Future<AuthStatus> createAccount({required String email, required String password}) async {
     AuthStatus status = AuthStatus.unknown;
@@ -97,6 +100,16 @@ class AuthService {
     AuthStatus status = AuthStatus.unknown;
 
     try {
+      await dio.delete(
+        '$server/api/users',
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer ${await _auth.currentUser!.getIdToken()}',
+            'Content-Type': 'multipart/form-data',
+          },
+        ),
+      );
+
       await FirebaseChatCore.instance.deleteUserFromFirestore(_auth.currentUser!.uid);
       await _auth.currentUser!.delete();
 
