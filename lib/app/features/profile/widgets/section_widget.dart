@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 
 class SectionWidget extends StatelessWidget {
-
   const SectionWidget({
     super.key,
     required this.title,
@@ -20,7 +19,14 @@ class SectionWidget extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text(title),
+          Text(
+            title,
+            style: const TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 5),
           content,
         ],
       ),
