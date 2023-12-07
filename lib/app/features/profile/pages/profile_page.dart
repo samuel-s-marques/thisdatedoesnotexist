@@ -66,6 +66,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       ),
                     ),
                   ),
+                  const SizedBox(height: 20),
                   Text.rich(
                     TextSpan(
                       children: [
@@ -134,22 +135,23 @@ class _ProfilePageState extends State<ProfilePage> {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 10),
                   SectionWidget(
+                    padding: const EdgeInsets.only(top: 20, bottom: 10),
                     title: 'About me',
                     content: Text(
                       user.bio?.trim() ?? '',
                       style: const TextStyle(fontSize: 16),
                     ),
                   ),
-                  const SizedBox(height: 10),
                   SectionWidget(
+                    padding: const EdgeInsets.symmetric(vertical: 10),
                     title: 'Hobbies & Interests',
                     content: Wrap(
                       spacing: 5,
                       children: user.hobbies!
                           .map(
                             (hobby) => Chip(
+                              padding: EdgeInsets.zero,
                               label: Text(
                                 hobby.name.capitalize(),
                                 style: const TextStyle(fontSize: 16),
@@ -159,24 +161,24 @@ class _ProfilePageState extends State<ProfilePage> {
                           .toList(),
                     ),
                   ),
-                  const SizedBox(height: 10),
                   SectionWidget(
+                    padding: const EdgeInsets.symmetric(vertical: 10),
                     title: 'Relationship Goal',
                     content: Text(
                       user.relationshipGoal?.capitalize() ?? '',
                       style: const TextStyle(fontSize: 16),
                     ),
                   ),
-                  const SizedBox(height: 10),
                   SectionWidget(
+                    padding: const EdgeInsets.symmetric(vertical: 10),
                     title: 'Political View',
                     content: Text(
                       user.politicalView?.capitalize() ?? '',
                       style: const TextStyle(fontSize: 16),
                     ),
                   ),
-                  const SizedBox(height: 10),
                   SectionWidget(
+                    padding: const EdgeInsets.symmetric(vertical: 10),
                     title: 'Religion',
                     content: Text(
                       user.religion?.capitalize() ?? '',
