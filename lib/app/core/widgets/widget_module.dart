@@ -43,7 +43,9 @@ class _WidgetModuleProviderState<T extends Module> extends State<_WidgetModulePr
   void initState() {
     super.initState();
     Modular.bindModule(widget.module);
-    if (kDebugMode) print('-- ${widget.module.runtimeType} INITIALIZED');
+    if (kDebugMode) {
+      print('-- ${widget.module.runtimeType} INITIALIZED');
+    }
   }
 
   @override

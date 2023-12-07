@@ -1,11 +1,7 @@
 import 'package:appinio_swiper/appinio_swiper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:thisdatedoesnotexist/app/core/models/body_type_model.dart';
-import 'package:thisdatedoesnotexist/app/core/models/political_view_model.dart';
-import 'package:thisdatedoesnotexist/app/core/models/relationship_goal_model.dart';
-import 'package:thisdatedoesnotexist/app/core/models/religion_model.dart';
-import 'package:thisdatedoesnotexist/app/core/models/sex_model.dart';
+import 'package:thisdatedoesnotexist/app/core/models/base_model.dart';
 import 'package:thisdatedoesnotexist/app/core/models/user_model.dart';
 import 'package:thisdatedoesnotexist/app/core/util.dart';
 import 'package:thisdatedoesnotexist/app/features/home/store/home_store.dart';
@@ -110,7 +106,7 @@ class _HomePageState extends State<HomePage> {
                                 Observer(
                                   builder: (_) => Wrap(
                                     spacing: 5,
-                                    children: store.sexes.map((Sex sex) {
+                                    children: store.sexes.map((BaseModel sex) {
                                       final bool isSelected = store.selectedSexPreferences.contains(sex);
 
                                       return FilterChip(
@@ -173,7 +169,7 @@ class _HomePageState extends State<HomePage> {
                                 Observer(
                                   builder: (_) => Wrap(
                                     spacing: 5,
-                                    children: store.relationshipGoals.map((RelationshipGoal goal) {
+                                    children: store.relationshipGoals.map((BaseModel goal) {
                                       final bool isSelected = store.selectedRelationshipGoalPreferences.contains(goal);
 
                                       return FilterChip(
@@ -195,7 +191,7 @@ class _HomePageState extends State<HomePage> {
                                 Observer(
                                   builder: (_) => Wrap(
                                     spacing: 5,
-                                    children: store.politicalViews.map((PoliticalView view) {
+                                    children: store.politicalViews.map((BaseModel view) {
                                       final bool isSelected = store.selectedPoliticalViewPreferences.contains(view);
 
                                       return FilterChip(
@@ -217,7 +213,7 @@ class _HomePageState extends State<HomePage> {
                                 Observer(
                                   builder: (_) => Wrap(
                                     spacing: 5,
-                                    children: store.religions.map((Religion religion) {
+                                    children: store.religions.map((BaseModel religion) {
                                       final bool isSelected = store.selectedReligionPreferences.contains(religion);
 
                                       return FilterChip(
@@ -238,7 +234,7 @@ class _HomePageState extends State<HomePage> {
                                 Observer(
                                   builder: (_) => Wrap(
                                     spacing: 5,
-                                    children: store.bodyTypes.map((BodyType bodyType) {
+                                    children: store.bodyTypes.map((BaseModel bodyType) {
                                       final bool isSelected = store.selectedBodyTypePreferences.contains(bodyType);
 
                                       return FilterChip(
@@ -292,7 +288,7 @@ class _HomePageState extends State<HomePage> {
             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 15),
             child: FutureBuilder(
               future: _future,
-              builder: (BuildContext context, AsyncSnapshot snapshot) {
+              builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
                 if (snapshot.hasData) {
                   if (snapshot.data == false) {
                     return const Center(

@@ -5,12 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:mobx/mobx.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:thisdatedoesnotexist/app/core/models/body_type_model.dart';
-import 'package:thisdatedoesnotexist/app/core/models/political_view_model.dart';
+import 'package:thisdatedoesnotexist/app/core/models/base_model.dart';
 import 'package:thisdatedoesnotexist/app/core/models/preferences_model.dart';
-import 'package:thisdatedoesnotexist/app/core/models/relationship_goal_model.dart';
-import 'package:thisdatedoesnotexist/app/core/models/religion_model.dart';
-import 'package:thisdatedoesnotexist/app/core/models/sex_model.dart';
 import 'package:thisdatedoesnotexist/app/core/services/auth_service.dart';
 import 'package:thisdatedoesnotexist/app/core/util.dart';
 import 'package:thisdatedoesnotexist/app/features/chat/chat_module.dart';
@@ -47,40 +43,40 @@ abstract class HomeStoreBase with Store {
   RangeValues ageValues = const RangeValues(18, 50);
 
   @observable
-  ObservableList<RelationshipGoal> relationshipGoals = ObservableList();
+  ObservableList<BaseModel> relationshipGoals = ObservableList();
 
   @observable
-  ObservableList<PoliticalView> politicalViews = ObservableList();
+  ObservableList<BaseModel> politicalViews = ObservableList();
 
   @observable
-  ObservableList<BodyType> bodyTypes = ObservableList();
+  ObservableList<BaseModel> bodyTypes = ObservableList();
 
   @observable
-  ObservableList<Religion> religions = ObservableList();
+  ObservableList<BaseModel> religions = ObservableList();
 
   @observable
-  ObservableList<Sex> sexes = ObservableList();
+  ObservableList<BaseModel> sexes = ObservableList();
   Map<String, String> sexesMap = {'male': 'Men', 'female': 'Women'};
 
   @observable
-  ObservableList<PoliticalView> selectedPoliticalViewPreferences = ObservableList();
+  ObservableList<BaseModel> selectedPoliticalViewPreferences = ObservableList();
 
   @observable
-  ObservableList<BodyType> selectedBodyTypePreferences = ObservableList();
+  ObservableList<BaseModel> selectedBodyTypePreferences = ObservableList();
 
   @observable
-  ObservableList<RelationshipGoal> selectedRelationshipGoalPreferences = ObservableList();
+  ObservableList<BaseModel> selectedRelationshipGoalPreferences = ObservableList();
 
   @observable
-  ObservableList<Religion> selectedReligionPreferences = ObservableList();
+  ObservableList<BaseModel> selectedReligionPreferences = ObservableList();
 
   @observable
-  ObservableList<Sex> selectedSexPreferences = ObservableList();
+  ObservableList<BaseModel> selectedSexPreferences = ObservableList();
 
   @action
   Future<void> selectPoliticalViewPreference({
     required bool selected,
-    required PoliticalView view,
+    required BaseModel view,
   }) async {
     if (selected) {
       selectedPoliticalViewPreferences.add(view);
@@ -92,7 +88,7 @@ abstract class HomeStoreBase with Store {
   @action
   Future<void> selectReligionPreference({
     required bool selected,
-    required Religion religion,
+    required BaseModel religion,
   }) async {
     if (selected) {
       selectedReligionPreferences.add(religion);
@@ -104,7 +100,7 @@ abstract class HomeStoreBase with Store {
   @action
   Future<void> selectSexPreference({
     required bool selected,
-    required Sex sex,
+    required BaseModel sex,
   }) async {
     if (selected) {
       selectedSexPreferences.add(sex);
@@ -116,7 +112,7 @@ abstract class HomeStoreBase with Store {
   @action
   Future<void> selectBodyTypePreference({
     required bool selected,
-    required BodyType bodyType,
+    required BaseModel bodyType,
   }) async {
     if (selected) {
       selectedBodyTypePreferences.add(bodyType);
@@ -128,7 +124,7 @@ abstract class HomeStoreBase with Store {
   @action
   Future<void> selectRelationshipGoalPreference({
     required bool selected,
-    required RelationshipGoal goal,
+    required BaseModel goal,
   }) async {
     if (selected) {
       selectedRelationshipGoalPreferences.add(goal);
@@ -144,7 +140,7 @@ abstract class HomeStoreBase with Store {
 
   Future<bool> getPreferences() async {
     authenticatedUser ??= authService.getUser();
-    final Response response = await dio.get('$server/api/preferences/${authenticatedUser?.uid}');
+    final Response<dynamic> response = await dio.get('$server/api/preferences/${authenticatedUser?.uid}');
 
     if (response.statusCode == 200) {
       final Map<String, dynamic> data = response.data;
@@ -157,11 +153,11 @@ abstract class HomeStoreBase with Store {
       final double minAge = checkDouble(data['min_age'] ?? 18);
       final double maxAge = checkDouble(data['max_age'] ?? 50);
 
-      selectedRelationshipGoalPreferences = ObservableList.of(relationshipGoals.map((goal) => RelationshipGoal.fromMap(goal)).toList());
-      selectedBodyTypePreferences = ObservableList.of(bodyTypes.map((type) => BodyType.fromMap(type)).toList());
-      selectedPoliticalViewPreferences = ObservableList.of(politicalViews.map((view) => PoliticalView.fromMap(view)).toList());
-      selectedSexPreferences = ObservableList.of(sexes.map((sex) => Sex.fromMap(sex)).toList());
-      selectedReligionPreferences = ObservableList.of(religions.map((religion) => Religion.fromMap(religion)).toList());
+      selectedRelationshipGoalPreferences = ObservableList.of(relationshipGoals.map((goal) => BaseModel.fromMap(goal)).toList());
+      selectedBodyTypePreferences = ObservableList.of(bodyTypes.map((type) => BaseModel.fromMap(type)).toList());
+      selectedPoliticalViewPreferences = ObservableList.of(politicalViews.map((view) => BaseModel.fromMap(view)).toList());
+      selectedSexPreferences = ObservableList.of(sexes.map((sex) => BaseModel.fromMap(sex)).toList());
+      selectedReligionPreferences = ObservableList.of(religions.map((religion) => BaseModel.fromMap(religion)).toList());
       ageValues = RangeValues(minAge, maxAge);
 
       return true;
@@ -171,65 +167,65 @@ abstract class HomeStoreBase with Store {
   }
 
   Future<void> getRelationshipGoals() async {
-    final Response response = await dio.get('$server/api/relationship-goals');
+    final Response<dynamic> response = await dio.get('$server/api/relationship-goals');
 
     if (response.statusCode == 200) {
       final List<dynamic> data = response.data['data'];
 
       for (int index = 0; index < data.length; index++) {
-        final RelationshipGoal goal = RelationshipGoal.fromMap(data[index]);
+        final BaseModel goal = BaseModel.fromMap(data[index]);
         relationshipGoals.add(goal);
       }
     }
   }
 
   Future<void> getSexes() async {
-    final Response response = await dio.get('$server/api/sexes');
+    final Response<dynamic> response = await dio.get('$server/api/sexes');
 
     if (response.statusCode == 200) {
       final List<dynamic> data = response.data['data'];
 
       for (int index = 0; index < data.length; index++) {
-        final Sex sex = Sex.fromMap(data[index]);
+        final BaseModel sex = BaseModel.fromMap(data[index]);
         sexes.add(sex);
       }
     }
   }
 
   Future<void> getPoliticalViews() async {
-    final Response response = await dio.get('$server/api/political-views');
+    final Response<dynamic> response = await dio.get('$server/api/political-views');
 
     if (response.statusCode == 200) {
       final List<dynamic> data = response.data['data'];
 
       for (int index = 0; index < data.length; index++) {
-        final PoliticalView view = PoliticalView.fromMap(data[index]);
+        final BaseModel view = BaseModel.fromMap(data[index]);
         politicalViews.add(view);
       }
     }
   }
 
   Future<void> getBodyTypes() async {
-    final Response response = await dio.get('$server/api/body-types');
+    final Response<dynamic> response = await dio.get('$server/api/body-types');
 
     if (response.statusCode == 200) {
       final List<dynamic> data = response.data['data'];
 
       for (int index = 0; index < data.length; index++) {
-        final BodyType bodyType = BodyType.fromMap(data[index]);
+        final BaseModel bodyType = BaseModel.fromMap(data[index]);
         bodyTypes.add(bodyType);
       }
     }
   }
 
   Future<void> getReligions() async {
-    final Response response = await dio.get('$server/api/religions');
+    final Response<dynamic> response = await dio.get('$server/api/religions');
 
     if (response.statusCode == 200) {
       final List<dynamic> data = response.data['data'];
 
       for (int index = 0; index < data.length; index++) {
-        final Religion religion = Religion.fromMap(data[index]);
+        final BaseModel religion = BaseModel.fromMap(data[index]);
         religions.add(religion);
       }
     }

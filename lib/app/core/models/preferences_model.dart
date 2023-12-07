@@ -1,8 +1,4 @@
-import 'package:thisdatedoesnotexist/app/core/models/body_type_model.dart';
-import 'package:thisdatedoesnotexist/app/core/models/political_view_model.dart';
-import 'package:thisdatedoesnotexist/app/core/models/relationship_goal_model.dart';
-import 'package:thisdatedoesnotexist/app/core/models/religion_model.dart';
-import 'package:thisdatedoesnotexist/app/core/models/sex_model.dart';
+import 'package:thisdatedoesnotexist/app/core/models/base_model.dart';
 import 'package:thisdatedoesnotexist/app/core/util.dart';
 
 class Preferences {
@@ -26,11 +22,11 @@ class Preferences {
     final double maxAge = checkDouble(map['max_age'] ?? 50);
 
     return Preferences(
-      sexes: sexes.map((sex) => Sex.fromMap(sex)).toList(),
-      relationshipGoals: relationshipGoals.map((goal) => RelationshipGoal.fromMap(goal)).toList(),
-      politicalViews: politicalViews.map((view) => PoliticalView.fromMap(view)).toList(),
-      bodyTypes: bodyTypes.map((type) => BodyType.fromMap(type)).toList(),
-      religions: religions.map((religion) => Religion.fromMap(religion)).toList(),
+      sexes: sexes.map((sex) => BaseModel.fromMap(sex)).toList(),
+      relationshipGoals: relationshipGoals.map((goal) => BaseModel.fromMap(goal)).toList(),
+      politicalViews: politicalViews.map((view) => BaseModel.fromMap(view)).toList(),
+      bodyTypes: bodyTypes.map((type) => BaseModel.fromMap(type)).toList(),
+      religions: religions.map((religion) => BaseModel.fromMap(religion)).toList(),
       minAge: minAge,
       maxAge: maxAge,
     );
@@ -48,11 +44,11 @@ class Preferences {
     };
   }
 
-  final List<Sex> sexes;
-  final List<RelationshipGoal> relationshipGoals;
-  final List<PoliticalView> politicalViews;
-  final List<BodyType> bodyTypes;
-  final List<Religion> religions;
+  final List<BaseModel> sexes;
+  final List<BaseModel> relationshipGoals;
+  final List<BaseModel> politicalViews;
+  final List<BaseModel> bodyTypes;
+  final List<BaseModel> religions;
   final double minAge;
   final double maxAge;
 }

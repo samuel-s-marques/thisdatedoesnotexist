@@ -8,42 +8,42 @@ environment:
   sdk: ">=3.1.5 <4.0.0"
 
 dependencies:
+  appinio_swiper: ^2.1.0
+  cached_network_image: ^3.3.0
+  cloud_firestore: ^4.13.0
+  connectivity_plus: ^5.0.1
+  country_code_picker: ^3.0.0
+  cupertino_icons: ^1.0.2
+  dio: ^5.3.3
+  feedback: ^3.0.0
+  firebase_auth: ^4.12.1
+  firebase_core: ^2.21.0
   flutter:
     sdk: flutter
-  connectivity_plus: ^5.0.1
-  shared_preferences: ^2.2.2
-  cupertino_icons: ^1.0.2
-  firebase_core: ^2.21.0
-  firebase_auth: ^4.12.1
-  mobx: ^2.2.1
+  flutter_chat_ui: ^1.6.9
+  flutter_firebase_chat_core: ^1.6.7
   flutter_mobx: ^2.1.1
   flutter_modular: ^6.3.2
   flutter_svg: ^2.0.9
   google_sign_in: ^6.1.5
-  timeago: ^3.6.0
-  flutter_chat_ui: ^1.6.9
-  flutter_firebase_chat_core: ^1.6.7
-  sentry_flutter: ^7.12.0
-  cloud_firestore: ^4.13.0
-  feedback: ^3.0.0
-  dio: ^5.3.3
-  path_provider: ^2.1.1
-  appinio_swiper: ^2.1.0
-  introduction_screen: ^3.1.12
-  cached_network_image: ^3.3.0
-  country_code_picker: ^3.0.0
   image_picker: ^1.0.4
-  mask_text_input_formatter: ^2.7.0
   intl: ^0.18.1
+  introduction_screen: ^3.1.12
+  mask_text_input_formatter: ^2.7.0
+  mobx: ^2.2.1
+  path_provider: ^2.1.1
+  sentry_flutter: ^7.12.0
+  shared_preferences: ^2.2.2
+  timeago: ^3.6.0
 
 dev_dependencies:
-  flutter_test:
-    sdk: flutter
-  mockito: ^5.4.2
   build_runner: ^2.4.6
   flutter_lints: ^3.0.1
+  flutter_test:
+    sdk: flutter
   lints: ^3.0.0
   mobx_codegen: ^2.4.0
+  mockito: ^5.4.2
 
 flutter:
   uses-material-design: true

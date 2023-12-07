@@ -66,7 +66,7 @@ class DatabaseService {
     final User authenticatedUser = authService.getUser();
 
     try {
-      final Response response = await dio.get(
+      final Response<dynamic> response = await dio.get(
         '$server/api/users/${authenticatedUser.uid}',
         options: Options(
           headers: {'Authorization': 'Bearer ${await authenticatedUser.getIdToken()}', 'Content-Type': 'application/json'},
@@ -93,7 +93,7 @@ class DatabaseService {
   Future<bool> userExists() async {
     final User authenticatedUser = authService.getUser();
 
-    final Response response = await dio.get(
+    final Response<dynamic> response = await dio.get(
       '$server/api/users/${authenticatedUser.uid}',
       options: Options(
         headers: {'Authorization': 'Bearer ${await authenticatedUser.getIdToken()}', 'Content-Type': 'application/json'},
@@ -110,7 +110,6 @@ class DatabaseService {
   // TODO: Implement updateUser
   Future<DatabaseStatus> updateUser(UserModel user) async {
     try {
-      final User authenticatedUser = authService.getUser();
       return DatabaseStatus.successful;
     } catch (e) {
       return DatabaseStatus.failure;

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:thisdatedoesnotexist/app/features/profile/widgets/section_widget.dart';
 
 class SettingsSection extends StatelessWidget {
-
   const SettingsSection({
     super.key,
     required this.title,

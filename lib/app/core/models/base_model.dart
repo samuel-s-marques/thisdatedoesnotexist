@@ -1,11 +1,11 @@
-class Religion {
-  Religion({
+class BaseModel {
+  BaseModel({
     this.id,
     this.name,
   });
 
-  factory Religion.fromMap(Map<String, dynamic> map) {
-    return Religion(
+  factory BaseModel.fromMap(Map<String, dynamic> map) {
+    return BaseModel(
       id: map['id'] as int,
       name: map['name'] as String,
     );
@@ -28,7 +28,7 @@ class Religion {
       return false;
     }
 
-    return other is Religion && other.id == id && other.name == name;
+    return other is BaseModel && other.id == id && other.name == name;
   }
 
   @override
