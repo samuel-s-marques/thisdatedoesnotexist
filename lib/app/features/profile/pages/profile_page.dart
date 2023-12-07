@@ -138,7 +138,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   SectionWidget(
                     title: 'About me',
                     content: Text(
-                      user.bio ?? '',
+                      user.bio?.trim() ?? '',
                       style: const TextStyle(fontSize: 16),
                     ),
                   ),
@@ -163,7 +163,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   SectionWidget(
                     title: 'Relationship Goal',
                     content: Text(
-                      user.relationshipGoal ?? '',
+                      user.relationshipGoal?.capitalize() ?? '',
                       style: const TextStyle(fontSize: 16),
                     ),
                   ),
@@ -171,7 +171,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   SectionWidget(
                     title: 'Political View',
                     content: Text(
-                      user.politicalView ?? '',
+                      user.politicalView?.capitalize() ?? '',
                       style: const TextStyle(fontSize: 16),
                     ),
                   ),
@@ -179,7 +179,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   SectionWidget(
                     title: 'Religion',
                     content: Text(
-                      user.religion ?? '',
+                      user.religion?.capitalize() ?? '',
                       style: const TextStyle(fontSize: 16),
                     ),
                   ),
