@@ -117,12 +117,14 @@ abstract class AuthStoreBase with Store {
     isLoading = false;
   }
 
-  Future<void> checkLogin() async {
+  Future<bool> checkLogin() async {
     final DatabaseService databaseService = DatabaseService();
     final UserModel? user = await databaseService.getUser();
 
     if (user != null && user.active!) {
-      await Modular.to.pushReplacementNamed('/home/');
+      return true;
     }
+
+    return false;
   }
 }
