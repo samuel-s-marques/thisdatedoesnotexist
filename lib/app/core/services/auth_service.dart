@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_firebase_chat_core/flutter_firebase_chat_core.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:thisdatedoesnotexist/app/core/enum/auth_status_enum.dart';
 import 'package:thisdatedoesnotexist/app/core/exceptions/auth_exception.dart';
 import 'package:thisdatedoesnotexist/app/core/util.dart';
@@ -112,6 +113,7 @@ class AuthService {
 
       await FirebaseChatCore.instance.deleteUserFromFirestore(_auth.currentUser!.uid);
       await _auth.currentUser!.delete();
+      await OneSignal.logout();
 
       status = AuthStatus.successful;
     } on FirebaseAuthException catch (exception) {
