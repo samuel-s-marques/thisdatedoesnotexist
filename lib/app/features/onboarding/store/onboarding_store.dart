@@ -5,6 +5,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:mobx/mobx.dart';
+import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:thisdatedoesnotexist/app/core/enum/database_status_enum.dart';
 import 'package:thisdatedoesnotexist/app/core/models/base_model.dart';
 import 'package:thisdatedoesnotexist/app/core/models/hobby_model.dart';
@@ -396,6 +397,7 @@ abstract class OnboardingStoreBase with Store {
     );
 
     if (await databaseService.createUser(user!) == DatabaseStatus.successful) {
+      await OneSignal.Notifications.requestPermission(true);
       await Modular.to.pushReplacementNamed('/home/');
     } else {
       context.showSnackBarError(
