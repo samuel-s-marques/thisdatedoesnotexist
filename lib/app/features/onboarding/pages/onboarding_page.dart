@@ -234,6 +234,26 @@ class _OnboardingPageState extends State<OnboardingPage> {
                       ),
                     ),
                     const SizedBox(height: 15),
+                    const Text('Select your pronouns'),
+                    Observer(
+                      builder: (_) => DropdownButtonFormField(
+                        items: store.pronouns.map((pronoun) {
+                          return DropdownMenuItem(
+                            value: pronoun,
+                            child: Text('${pronoun.subjectPronoun}/${pronoun.objectPronoun}'),
+                          );
+                        }).toList(),
+                        validator: (value) {
+                          if (value == null) {
+                            return 'Please pick your pronouns.';
+                          }
+
+                          return null;
+                        },
+                        onChanged: (pronoun) => store.setPronouns(pronoun!),
+                      ),
+                    ),
+                    const SizedBox(height: 15),
                     const Text('Enter your religion'),
                     Observer(
                       builder: (_) => DropdownButtonFormField(
