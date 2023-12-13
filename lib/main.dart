@@ -9,25 +9,27 @@ import 'package:thisdatedoesnotexist/app/app_widget.dart';
 import 'package:thisdatedoesnotexist/firebase_options.dart';
 
 void main() async {
-  const String oneSignalAppId = String.fromEnvironment('ONESIGNAL_APP_ID');
   WidgetsFlutterBinding.ensureInitialized();
+  const String oneSignalAppId = String.fromEnvironment('ONESIGNAL_APP_ID');
 
-  OneSignal.initialize(oneSignalAppId);
-  await OneSignal.Notifications.requestPermission(true);
-
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await SentryFlutter.init(
     (options) {
       options.dsn = const String.fromEnvironment('SENTRY_DSN');
       options.tracesSampleRate = 1.0;
     },
-    appRunner: () => runApp(
-      BetterFeedback(
-        child: ModularApp(
-          module: AppModule(),
-          child: const AppWidget(),
+    appRunner: () async {
+      await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+      await OneSignal.Debug.setLogLevel(OSLogLevel.verbose);
+      OneSignal.initialize(oneSignalAppId);
+
+      return runApp(
+        BetterFeedback(
+          child: ModularApp(
+            module: AppModule(),
+            child: const AppWidget(),
+          ),
         ),
-      ),
-    ),
+      );
+    },
   );
 }
