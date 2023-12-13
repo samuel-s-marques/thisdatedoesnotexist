@@ -41,6 +41,8 @@ class _ProfilePageState extends State<ProfilePage> {
               final UserModel user = snapshot.data;
               final int age = user.age!;
               final CountryCode country = CountryCode.fromCountryCode(user.country!);
+              final String subjectPronoun = user.pronoun!.subjectPronoun!;
+              final String objectPronoun = user.pronoun!.objectPronoun!;
 
               return Column(
                 mainAxisSize: MainAxisSize.min,
@@ -119,6 +121,16 @@ class _ProfilePageState extends State<ProfilePage> {
                           const SizedBox(width: 5),
                           Text(
                             user.occupation!.capitalize(),
+                            style: const TextStyle(fontSize: 16),
+                          ),
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          const Icon(Icons.campaign_outlined),
+                          const SizedBox(width: 5),
+                          Text(
+                            'Uses $subjectPronoun/$objectPronoun pronouns',
                             style: const TextStyle(fontSize: 16),
                           ),
                         ],
