@@ -10,6 +10,7 @@ import 'package:thisdatedoesnotexist/app/core/enum/database_status_enum.dart';
 import 'package:thisdatedoesnotexist/app/core/models/base_model.dart';
 import 'package:thisdatedoesnotexist/app/core/models/hobby_model.dart';
 import 'package:thisdatedoesnotexist/app/core/models/preferences_model.dart';
+import 'package:thisdatedoesnotexist/app/core/models/pronoun_model.dart';
 import 'package:thisdatedoesnotexist/app/core/models/user_model.dart';
 import 'package:thisdatedoesnotexist/app/core/services/auth_service.dart';
 import 'package:thisdatedoesnotexist/app/core/services/database_service.dart';
@@ -106,6 +107,12 @@ abstract class OnboardingStoreBase with Store {
   Map<String, String> singularSexesMap = {'male': 'Man', 'female': 'Woman'};
 
   @observable
+  ObservableList<Pronoun> pronouns = ObservableList();
+
+  @observable
+  Pronoun? selectedPronouns;
+
+  @observable
   ObservableList<BaseModel> selectedPoliticalViewPreferences = ObservableList();
 
   @observable
@@ -156,6 +163,11 @@ abstract class OnboardingStoreBase with Store {
   @action
   void setAgeValues(RangeValues values) {
     ageValues = values;
+  }
+
+  @action
+  void setPronouns(Pronoun pronouns) {
+    selectedPronouns = pronouns;
   }
 
   @action
