@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:thisdatedoesnotexist/app/core/models/hobby_model.dart';
 import 'package:thisdatedoesnotexist/app/core/models/preferences_model.dart';
+import 'package:thisdatedoesnotexist/app/core/models/pronoun_model.dart';
 import 'package:thisdatedoesnotexist/app/core/services/auth_service.dart';
 import 'package:thisdatedoesnotexist/app/core/util.dart';
 
@@ -18,11 +19,11 @@ class UserModel {
     this.politicalView,
     this.height,
     this.weight,
+    this.pronoun,
     this.occupation,
     this.imageUrl,
-    this.birthdayDate,
     this.lastSwipe,
-    this.swipes,
+    this.availableSwipes,
     this.active,
     this.relationshipGoal,
     this.hobbies,
@@ -53,11 +54,11 @@ class UserModel {
       height: height,
       weight: weight,
       imageUrl: map['image_url'],
-      birthdayDate: map['birthday_date'] != null ? DateTime.parse(map['birthday_date']) : null,
       lastSwipe: map['last_swipe'] != null ? DateTime.parse(map['last_swipe']) : null,
-      swipes: map['swipes'],
+      availableSwipes: map['available_swipes'],
       active: map['active'] != 0,
       relationshipGoal: map['relationship_goal'],
+      pronoun: map['pronoun'] != null ? Pronoun.fromMap(map['pronoun'] as Map<String, dynamic>) : null,
       hobbies: (map['hobbies'] as List<dynamic>?)?.map((hobbyMap) => Hobby.fromMap(hobbyMap as Map<String, dynamic>)).toList(),
       preferences: map['preferences'] != null ? Preferences.fromMap(map['preferences'] as Map<String, dynamic>) : null,
     );
@@ -72,6 +73,7 @@ class UserModel {
   final String? surname;
   final int? age;
   final String? sex;
+  final Pronoun? pronoun;
   final String? bio;
   final String? religion;
   final String? occupation;
@@ -80,8 +82,7 @@ class UserModel {
   final double? height;
   final double? weight;
   final String? imageUrl;
-  final DateTime? birthdayDate;
-  final int? swipes;
+  final int? availableSwipes;
   final bool? active;
   final DateTime? lastSwipe;
   final String? relationshipGoal;
@@ -102,8 +103,8 @@ class UserModel {
       'occupation': occupation,
       'height': height,
       'weight': weight,
-      'birthday_date': birthdayDate?.toIso8601String(),
-      'swipes': swipes ?? 20,
+      'pronoun': pronoun?.toMap(),
+      'available_swipes': availableSwipes ?? 20,
       'last_swipe': lastSwipe?.toIso8601String(),
       'active': active ?? false,
       'relationship_goal': relationshipGoal ?? '',
@@ -123,7 +124,7 @@ class UserModel {
     if (response.statusCode == 200) {
       final UserModel user = UserModel.fromMap(response.data);
 
-      return user.swipes ?? 0;
+      return user.availableSwipes ?? 0;
     }
 
     return 0;
