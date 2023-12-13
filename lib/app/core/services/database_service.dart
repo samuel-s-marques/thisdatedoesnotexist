@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 // ignore: depend_on_referenced_packages
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_firebase_chat_core/flutter_firebase_chat_core.dart';
+import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:thisdatedoesnotexist/app/core/enum/database_status_enum.dart';
 import 'package:thisdatedoesnotexist/app/core/models/user_model.dart';
@@ -49,6 +50,7 @@ class DatabaseService {
           },
         ),
       );
+      await OneSignal.login(authenticatedUser.uid);
 
       status = DatabaseStatus.successful;
     } catch (exception, stackTrace) {
