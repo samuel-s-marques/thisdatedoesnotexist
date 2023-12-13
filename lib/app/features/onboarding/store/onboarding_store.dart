@@ -381,9 +381,8 @@ abstract class OnboardingStoreBase with Store {
       country: selectedCountry,
       bio: bioController.text.trim(),
       age: DateTime.now().year - birthDay!.year,
-      birthdayDate: birthDay,
       hobbies: selectedHobbies,
-      swipes: 20,
+      availableSwipes: 20,
       active: true,
       preferences: Preferences(
         sexes: selectedSexPreferences,
