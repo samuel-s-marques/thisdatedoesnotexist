@@ -39,7 +39,7 @@ class _ProfilePageState extends State<ProfilePage> {
           builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
             if (snapshot.connectionState == ConnectionState.done && snapshot.hasData) {
               final UserModel user = snapshot.data;
-              final int age = DateTime.now().year - user.birthdayDate!.year;
+              final int age = user.age!;
               final CountryCode country = CountryCode.fromCountryCode(user.country!);
 
               return Column(
