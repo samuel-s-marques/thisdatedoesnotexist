@@ -13,7 +13,7 @@ class _ChatListPageState extends State<ChatListPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: ListView.builder(
-        itemCount: 2,
+        itemCount: 0,
         itemBuilder: (BuildContext context, int index) {
           return ChatListTile(
             id: '0',
