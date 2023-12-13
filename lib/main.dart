@@ -19,7 +19,6 @@ void main() async {
     },
     appRunner: () async {
       await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-      await OneSignal.Debug.setLogLevel(OSLogLevel.verbose);
       OneSignal.initialize(oneSignalAppId);
 
       return runApp(
