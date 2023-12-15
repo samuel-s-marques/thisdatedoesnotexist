@@ -19,7 +19,7 @@ class Preferences {
     final List<dynamic> bodyTypes = map['body_types'] ?? [];
     final List<dynamic> religions = map['religions'] ?? [];
     final double minAge = checkDouble(map['min_age'] ?? 18);
-    final double maxAge = checkDouble(map['max_age'] ?? 50);
+    final double maxAge = checkDouble(map['max_age'] ?? 70);
 
     return Preferences(
       sexes: sexes.map((sex) => BaseModel.fromMap(sex)).toList(),
