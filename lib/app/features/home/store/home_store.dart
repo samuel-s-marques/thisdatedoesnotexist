@@ -40,7 +40,7 @@ abstract class HomeStoreBase with Store {
   AppinioSwiperController cardSwiperController = AppinioSwiperController();
 
   @observable
-  RangeValues ageValues = const RangeValues(18, 50);
+  RangeValues ageValues = const RangeValues(18, 70);
 
   @observable
   ObservableList<BaseModel> relationshipGoals = ObservableList();
@@ -151,7 +151,7 @@ abstract class HomeStoreBase with Store {
       final List<dynamic> bodyTypes = data['body_types'] ?? [];
       final List<dynamic> religions = data['religions'] ?? [];
       final double minAge = checkDouble(data['min_age'] ?? 18);
-      final double maxAge = checkDouble(data['max_age'] ?? 50);
+      final double maxAge = checkDouble(data['max_age'] ?? 70);
 
       selectedRelationshipGoalPreferences = ObservableList.of(relationshipGoals.map((goal) => BaseModel.fromMap(goal)).toList());
       selectedBodyTypePreferences = ObservableList.of(bodyTypes.map((type) => BaseModel.fromMap(type)).toList());
@@ -269,7 +269,7 @@ abstract class HomeStoreBase with Store {
           await dio.post(
             '$server/api/swipes',
             data: {
-              'target_id': cards[previousIndex].uuid,
+              'target_id': cards[previousIndex].uid,
               'swiper_id': authenticatedUser!.uid,
               'direction': direction,
             },
@@ -282,6 +282,7 @@ abstract class HomeStoreBase with Store {
           );
 
           swipes--;
+          cards.removeAt(previousIndex);
 
           await dio.put(
             '$server/api/users',
