@@ -56,7 +56,7 @@ abstract class OnboardingStoreBase with Store {
   @action
   Future<void> selectBirthday(BuildContext context) async {
     final DateTime minDate = DateTime(DateTime.now().year - 18);
-    final DateTime maxDate = DateTime(DateTime.now().year - 50);
+    final DateTime maxDate = DateTime(DateTime.now().year - 70);
     final DateFormat format = DateFormat('dd/MM/yyyy');
 
     final DateTime? pickedDate = await showDatePicker(
@@ -75,7 +75,7 @@ abstract class OnboardingStoreBase with Store {
   UserModel? user;
 
   @observable
-  RangeValues ageValues = const RangeValues(18, 50);
+  RangeValues ageValues = const RangeValues(18, 70);
 
   @observable
   ObservableList<Hobby> selectedHobbies = ObservableList();
@@ -338,6 +338,19 @@ abstract class OnboardingStoreBase with Store {
     }
   }
 
+  Future<void> getPronouns() async {
+    final Response<dynamic> response = await dio.get('$server/api/pronouns');
+
+    if (response.statusCode == 200) {
+      final List<dynamic> data = response.data['data'];
+
+      for (int index = 0; index < data.length; index++) {
+        final Pronoun pronoun = Pronoun.fromMap(data[index]);
+        pronouns.add(pronoun);
+      }
+    }
+  }
+
   @action
   Future<void> getReligions() async {
     final Response<dynamic> response = await dio.get('$server/api/religions');
@@ -386,15 +399,15 @@ abstract class OnboardingStoreBase with Store {
       weight: weight,
       religion: religion!.name,
       politicalView: selectedPoliticalView!.name,
-      relationshipGoal: selectedRelationshipGoal!.name,
+      relationshipGoal: selectedRelationshipGoal,
       sex: sex!.name,
       occupation: occupation!.name,
       imageUrl: profileImage?.path,
       country: selectedCountry,
+      pronoun: selectedPronouns,
       bio: bioController.text.trim(),
       age: DateTime.now().year - birthDay!.year,
       hobbies: selectedHobbies,
-      availableSwipes: 20,
       active: true,
       preferences: Preferences(
         sexes: selectedSexPreferences,
@@ -408,7 +421,10 @@ abstract class OnboardingStoreBase with Store {
     );
 
     if (await databaseService.createUser(user!) == DatabaseStatus.successful) {
-      await OneSignal.Notifications.requestPermission(true);
+      if (!OneSignal.Notifications.permission) {
+        await OneSignal.Notifications.requestPermission(true);
+      }
+
       await Modular.to.pushReplacementNamed('/home/');
     } else {
       context.showSnackBarError(
