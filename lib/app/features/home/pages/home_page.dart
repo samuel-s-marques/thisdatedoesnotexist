@@ -4,6 +4,7 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:thisdatedoesnotexist/app/core/models/base_model.dart';
 import 'package:thisdatedoesnotexist/app/core/models/user_model.dart';
 import 'package:thisdatedoesnotexist/app/core/util.dart';
+import 'package:thisdatedoesnotexist/app/features/home/models/character_model.dart';
 import 'package:thisdatedoesnotexist/app/features/home/store/home_store.dart';
 import 'package:thisdatedoesnotexist/app/features/home/widgets/card_widget.dart';
 
@@ -156,7 +157,7 @@ class _HomePageState extends State<HomePage> {
                                 Observer(
                                   builder: (_) => RangeSlider(
                                     min: 18,
-                                    max: 50,
+                                    max: 70,
                                     values: store.ageValues,
                                     onChanged: store.setAgeValues,
                                   ),
@@ -311,7 +312,12 @@ class _HomePageState extends State<HomePage> {
                           onSwipeEnd: store.onSwipe,
                           controller: store.cardSwiperController,
                           cardBuilder: (BuildContext context, int index) {
-                            return CardWidget(character: store.cards[index]);
+                            final CharacterModel character = store.cards[index];
+
+                            return CardWidget(
+                              character: character,
+                              imageUrl: '${store.server}/uploads/characters/${character.uid}.png',
+                            );
                           },
                         ),
                       ),
