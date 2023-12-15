@@ -29,6 +29,8 @@ class _OnboardingPageState extends State<OnboardingPage> {
     store.user = UserModel(
       uid: store.authService.getUser().uid,
     );
+
+    store.getPronouns();
     store.getOccupations();
     store.getReligions();
     store.getHobbies();
@@ -349,7 +351,6 @@ class _OnboardingPageState extends State<OnboardingPage> {
                       onChanged: (CountryCode countryCode) => store.selectCountry(countryCode.code!),
                       showCountryOnly: true,
                       padding: EdgeInsets.zero,
-                      initialSelection: 'US',
                       showOnlyCountryWhenClosed: true,
                       showFlagMain: true,
                       showFlagDialog: true,
@@ -485,7 +486,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                 Observer(
                   builder: (_) => RangeSlider(
                     min: 18,
-                    max: 50,
+                    max: 70,
                     values: store.ageValues,
                     onChanged: store.setAgeValues,
                   ),
