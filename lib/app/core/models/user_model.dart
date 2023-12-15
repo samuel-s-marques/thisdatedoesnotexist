@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:thisdatedoesnotexist/app/core/models/base_model.dart';
 import 'package:thisdatedoesnotexist/app/core/models/hobby_model.dart';
 import 'package:thisdatedoesnotexist/app/core/models/preferences_model.dart';
 import 'package:thisdatedoesnotexist/app/core/models/pronoun_model.dart';
@@ -57,7 +58,7 @@ class UserModel {
       lastSwipe: map['last_swipe'] != null ? DateTime.parse(map['last_swipe']) : null,
       availableSwipes: map['available_swipes'],
       active: map['active'] != 0,
-      relationshipGoal: map['relationship_goal'],
+      relationshipGoal: map['relationship_goal'] != null ? BaseModel.fromMap(map['relationship_goal'] as Map<String, dynamic>) : null,
       pronoun: map['pronoun'] != null ? Pronoun.fromMap(map['pronoun'] as Map<String, dynamic>) : null,
       hobbies: (map['hobbies'] as List<dynamic>?)?.map((hobbyMap) => Hobby.fromMap(hobbyMap as Map<String, dynamic>)).toList(),
       preferences: map['preferences'] != null ? Preferences.fromMap(map['preferences'] as Map<String, dynamic>) : null,
@@ -85,7 +86,7 @@ class UserModel {
   final int? availableSwipes;
   final bool? active;
   final DateTime? lastSwipe;
-  final String? relationshipGoal;
+  final BaseModel? relationshipGoal;
   final List<Hobby>? hobbies;
   final Preferences? preferences;
 
@@ -107,7 +108,7 @@ class UserModel {
       'available_swipes': availableSwipes ?? 20,
       'last_swipe': lastSwipe?.toIso8601String(),
       'active': active ?? false,
-      'relationship_goal': relationshipGoal ?? '',
+      'relationship_goal': relationshipGoal?.toMap(),
       'hobbies': hobbies?.map((Hobby hobby) => hobby.toMap()).toList(),
       'preferences': preferences?.toMap(),
     };
