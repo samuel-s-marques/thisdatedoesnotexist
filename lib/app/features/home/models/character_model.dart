@@ -1,6 +1,6 @@
 class CharacterModel {
   CharacterModel({
-    required this.uuid,
+    required this.uid,
     required this.name,
     required this.surname,
     required this.age,
@@ -8,26 +8,26 @@ class CharacterModel {
 
   factory CharacterModel.fromMap(Map<String, dynamic> map) {
     return CharacterModel(
-      uuid: map['uuid'],
+      uid: map['uid'],
       name: map['name'],
       surname: map['surname'],
       age: map['age'],
     );
   }
 
-  final String uuid;
+  final String uid;
   final String name;
   final String surname;
   final int age;
 
   CharacterModel copyWith({
-    String? uuid,
+    String? uid,
     String? name,
     String? surname,
     int? age,
   }) {
     return CharacterModel(
-      uuid: uuid ?? this.uuid,
+      uid: uid ?? this.uid,
       name: name ?? this.name,
       surname: surname ?? this.surname,
       age: age ?? this.age,
@@ -36,7 +36,7 @@ class CharacterModel {
 
   Map<String, dynamic> toMap() {
     return {
-      'uuid': uuid,
+      'uid': uid,
       'name': name,
       'surname': surname,
       'age': age,
