@@ -175,7 +175,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     padding: const EdgeInsets.symmetric(vertical: 10),
                     title: 'Relationship Goal',
                     content: Text(
-                      user.relationshipGoal?.capitalize() ?? '',
+                      user.relationshipGoal?.name!.capitalize() ?? '',
                       style: const TextStyle(fontSize: 16),
                     ),
                   ),
