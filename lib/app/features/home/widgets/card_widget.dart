@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:thisdatedoesnotexist/app/features/home/models/character_model.dart';
 
@@ -5,9 +6,11 @@ class CardWidget extends StatelessWidget {
   const CardWidget({
     super.key,
     required this.character,
+    required this.imageUrl,
   });
 
   final CharacterModel character;
+  final String imageUrl;
 
   @override
   Widget build(BuildContext context) {
@@ -31,11 +34,9 @@ class CardWidget extends StatelessWidget {
         children: [
           Flexible(
             child: Container(
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                 image: DecorationImage(
-                  image: NetworkImage(
-                    'https://placehold.co/256x256/png',
-                  ),
+                  image: CachedNetworkImageProvider(imageUrl),
                   fit: BoxFit.cover,
                 ),
               ),
