@@ -45,7 +45,9 @@ class CardWidget extends StatelessWidget {
                   ),
                 ),
                 IconButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    // TODO: Implement report image feature
+                  },
                   iconSize: 28,
                   icon: const Icon(
                     Icons.report,
