@@ -33,13 +33,26 @@ class CardWidget extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Flexible(
-            child: Container(
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                  image: CachedNetworkImageProvider(imageUrl),
-                  fit: BoxFit.cover,
+            child: Stack(
+              alignment: Alignment.topRight,
+              children: [
+                Container(
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      image: CachedNetworkImageProvider(imageUrl),
+                      fit: BoxFit.cover,
+                    ),
+                  ),
                 ),
-              ),
+                IconButton(
+                  onPressed: () {},
+                  iconSize: 28,
+                  icon: const Icon(
+                    Icons.report,
+                    color: Colors.white,
+                  ),
+                ),
+              ],
             ),
           ),
           Padding(
