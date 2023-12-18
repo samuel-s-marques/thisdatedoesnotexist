@@ -261,49 +261,53 @@ abstract class HomeStoreBase with Store {
   ) async {
     authenticatedUser ??= authService.getUser();
 
-    if (swipes > 0) {
-      if (activity.direction == AxisDirection.right || activity.direction == AxisDirection.left) {
-        try {
-          final String direction = activity.direction == AxisDirection.right ? 'right' : 'left';
+    switch (activity) {
+      case Swipe():
+        if (swipes > 0) {
+          if (activity.direction == AxisDirection.right || activity.direction == AxisDirection.left) {
+            try {
+              final String direction = activity.direction == AxisDirection.right ? 'right' : 'left';
 
-          await dio.post(
-            '$server/api/swipes',
-            data: {
-              'target_id': cards[previousIndex].uid,
-              'swiper_id': authenticatedUser!.uid,
-              'direction': direction,
-            },
-            options: Options(
-              headers: {
-                'Authorization': 'Bearer ${await authenticatedUser!.getIdToken()}',
-                'Content-Type': 'application/json',
-              },
-            ),
-          );
+              await dio.post(
+                '$server/api/swipes',
+                data: {
+                  'target_id': cards[previousIndex].uid,
+                  'swiper_id': authenticatedUser!.uid,
+                  'direction': direction,
+                },
+                options: Options(
+                  headers: {
+                    'Authorization': 'Bearer ${await authenticatedUser!.getIdToken()}',
+                    'Content-Type': 'application/json',
+                  },
+                ),
+              );
 
-          swipes--;
-          cards.removeAt(previousIndex);
+              swipes--;
 
-          await dio.put(
-            '$server/api/users',
-            data: {
-              'swipes': swipes,
-              'last_swipe': DateTime.now().toIso8601String(),
-            },
-            options: Options(
-              headers: {
-                'Authorization': 'Bearer ${await authenticatedUser!.getIdToken()}',
-                'Content-Type': 'application/json',
-              },
-            ),
-          );
-        } catch (exception, stackTrace) {
-          await Sentry.captureException(
-            exception,
-            stackTrace: stackTrace,
-          );
+              await dio.put(
+                '$server/api/users',
+                data: {
+                  'swipes': swipes,
+                  'last_swipe': DateTime.now().toIso8601String(),
+                },
+                options: Options(
+                  headers: {
+                    'Authorization': 'Bearer ${await authenticatedUser!.getIdToken()}',
+                    'Content-Type': 'application/json',
+                  },
+                ),
+              );
+            } catch (exception, stackTrace) {
+              await Sentry.captureException(
+                exception,
+                stackTrace: stackTrace,
+              );
+            }
+          }
         }
-      }
+        break;
+      default:
     }
   }
 
@@ -334,7 +338,7 @@ abstract class HomeStoreBase with Store {
   @action
   Future<bool?> getTodayCards() async {
     if (await getPreferences()) {
-      String url = '$server/api/characters?uid=${authenticatedUser?.uid}&min_age=${ageValues.start.round()}&max_age=${ageValues.end.round()}';
+      String url = '$server/api/characters?uid=${authenticatedUser?.uid}&min_age=${ageValues.start.round()}&max_age=${ageValues.end.round()}&per_page=$swipes';
 
       if (selectedPoliticalViewPreferences.isNotEmpty) {
         final List<String?> politicalViews = selectedPoliticalViewPreferences.map((e) => e.name).toList();
