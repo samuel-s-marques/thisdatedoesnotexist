@@ -10,7 +10,7 @@ import 'package:thisdatedoesnotexist/app/core/models/preferences_model.dart';
 import 'package:thisdatedoesnotexist/app/core/services/auth_service.dart';
 import 'package:thisdatedoesnotexist/app/core/util.dart';
 import 'package:thisdatedoesnotexist/app/features/chat/chat_module.dart';
-import 'package:thisdatedoesnotexist/app/features/home/models/character_model.dart';
+import 'package:thisdatedoesnotexist/app/core/models/character_model.dart';
 import 'package:thisdatedoesnotexist/app/features/profile/profile_module.dart';
 
 part 'home_store.g.dart';
