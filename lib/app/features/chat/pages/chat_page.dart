@@ -5,6 +5,7 @@ import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:thisdatedoesnotexist/app/core/models/character_model.dart';
 import 'package:thisdatedoesnotexist/app/features/chat/store/chat_store.dart';
+import 'package:uuid/uuid.dart';
 
 class ChatPage extends StatefulWidget {
   const ChatPage({
@@ -21,11 +22,32 @@ class ChatPage extends StatefulWidget {
 class _ChatPageState extends State<ChatPage> {
   ChatStore store = ChatStore();
   Future<dynamic>? future;
+  final List<types.Message> _messages = [];
+  types.User? _user;
+  Uuid uuid = const Uuid();
 
   @override
   void initState() {
     super.initState();
     future = store.getCharacterById(widget.id);
+    _user = types.User(id: store.authenticatedUser!.uid);
+  }
+
+  void _addMessage(types.Message message) {
+    setState(() {
+      _messages.add(message);
+    });
+  }
+
+  void _handleSendPressed(types.PartialText message) {
+    final types.Message newMessage = types.TextMessage(
+      author: _user!,
+      id: uuid.v4(),
+      text: message.text,
+      createdAt: DateTime.now().millisecondsSinceEpoch,
+    );
+
+    _addMessage(newMessage);
   }
 
   @override
@@ -54,8 +76,8 @@ class _ChatPageState extends State<ChatPage> {
             ),
             body: Chat(
               messages: const [],
-              onSendPressed: (types.PartialText message) {},
-              user: types.User(id: character.uid),
+              onSendPressed: _handleSendPressed,
+              user: _user!,
             ),
           );
         }
