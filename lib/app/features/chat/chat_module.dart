@@ -18,6 +18,11 @@ class ChatModule extends WidgetModule {
 
   @override
   void routes(r) {
-    r.child('/', child: (context) => const ChatPage());
+    r.child(
+      '/:id',
+      child: (context) => ChatPage(
+        id: r.args.params['id'],
+      ),
+    );
   }
 }
