@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 // ignore: depend_on_referenced_packages
@@ -6,6 +8,7 @@ import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:thisdatedoesnotexist/app/core/models/character_model.dart';
 import 'package:thisdatedoesnotexist/app/features/chat/store/chat_store.dart';
 import 'package:uuid/uuid.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
 
 class ChatPage extends StatefulWidget {
   const ChatPage({
@@ -25,21 +28,33 @@ class _ChatPageState extends State<ChatPage> {
   final List<types.Message> _messages = [];
   types.User? _user;
   Uuid uuid = const Uuid();
+  WebSocketChannel? channel;
 
   @override
   void initState() {
     super.initState();
+    channel = WebSocketChannel.connect(
+      Uri.parse(store.wssServer),
+    );
     future = store.getCharacterById(widget.id);
     _user = types.User(id: store.authenticatedUser!.uid);
   }
 
-  void _addMessage(types.Message message) {
+  @override
+  void dispose() {
+    channel!.sink.close();
+    super.dispose();
+  }
+
+  void _addMessage(types.Message message, String roomId) {
+    channel!.sink.add(jsonEncode(message.copyWith(roomId: roomId).toJson()));
+
     setState(() {
-      _messages.add(message);
+      _messages.insert(0, message);
     });
   }
 
-  void _handleSendPressed(types.PartialText message) {
+  void _handleSendPressed(types.PartialText message, String roomId) {
     final types.Message newMessage = types.TextMessage(
       author: _user!,
       id: uuid.v4(),
@@ -47,7 +62,7 @@ class _ChatPageState extends State<ChatPage> {
       createdAt: DateTime.now().millisecondsSinceEpoch,
     );
 
-    _addMessage(newMessage);
+    _addMessage(newMessage, roomId);
   }
 
   @override
@@ -74,10 +89,25 @@ class _ChatPageState extends State<ChatPage> {
                 ],
               ),
             ),
-            body: Chat(
-              messages: _messages,
-              onSendPressed: _handleSendPressed,
-              user: _user!,
+            body: StreamBuilder(
+              stream: channel!.stream,
+              builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+                final List<types.Message> updatedMessages = List.from(_messages);
+
+                if (snapshot.hasData) {
+                  final types.Message message = types.Message.fromJson(
+                    jsonDecode(snapshot.data),
+                  );
+
+                  updatedMessages.insert(0, message);
+                }
+
+                return Chat(
+                  messages: updatedMessages,
+                  onSendPressed: (types.PartialText message) => _handleSendPressed(message, character.uid),
+                  user: _user!,
+                );
+              },
             ),
           );
         }
