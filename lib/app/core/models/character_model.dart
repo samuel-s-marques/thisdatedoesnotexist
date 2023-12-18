@@ -13,7 +13,7 @@ class CharacterModel {
       name: map['name'],
       surname: map['surname'],
       age: map['age'],
-      updatedAt: DateTime.parse(map['updatedAt']),
+      updatedAt: DateTime.parse(map['updated_at']),
     );
   }
 
