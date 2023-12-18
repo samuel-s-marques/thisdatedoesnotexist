@@ -20,11 +20,18 @@ class ChatPage extends StatefulWidget {
 
 class _ChatPageState extends State<ChatPage> {
   ChatStore store = ChatStore();
+  Future<dynamic>? future;
+
+  @override
+  void initState() {
+    super.initState();
+    future = store.getCharacterById(widget.id);
+  }
 
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future: store.getCharacterById(widget.id),
+      future: future,
       builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
         if (snapshot.hasData) {
           final CharacterModel character = CharacterModel.fromMap(snapshot.data);
