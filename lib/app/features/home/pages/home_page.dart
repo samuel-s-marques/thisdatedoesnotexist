@@ -2,9 +2,9 @@ import 'package:appinio_swiper/appinio_swiper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:thisdatedoesnotexist/app/core/models/base_model.dart';
+import 'package:thisdatedoesnotexist/app/core/models/character_model.dart';
 import 'package:thisdatedoesnotexist/app/core/models/user_model.dart';
 import 'package:thisdatedoesnotexist/app/core/util.dart';
-import 'package:thisdatedoesnotexist/app/features/home/models/character_model.dart';
 import 'package:thisdatedoesnotexist/app/features/home/store/home_store.dart';
 import 'package:thisdatedoesnotexist/app/features/home/widgets/card_widget.dart';
 
