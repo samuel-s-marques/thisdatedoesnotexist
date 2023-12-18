@@ -2,7 +2,6 @@ import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:mobx/mobx.dart';
 import 'package:thisdatedoesnotexist/app/core/services/auth_service.dart';
-import 'package:thisdatedoesnotexist/app/features/chat/widgets/chat_list_tile.dart';
 
 part 'chat_store.g.dart';
 
