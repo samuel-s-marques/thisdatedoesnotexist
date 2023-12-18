@@ -48,7 +48,7 @@ class _ChatPageState extends State<ChatPage> {
             body: Chat(
               messages: const [],
               onSendPressed: (types.PartialText message) {},
-              user: const types.User(id: '0'),
+              user: types.User(id: character.uid),
             ),
           );
         }
