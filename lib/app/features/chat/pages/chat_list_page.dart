@@ -30,7 +30,6 @@ class _ChatListPageState extends State<ChatListPage> {
                 return ChatListTile(
                   id: character.uid,
                   name: '${character.name} ${character.surname}',
-                  message: 'Hiiii',
                   time: character.updatedAt,
                   avatarUrl: '${store.server}/uploads/characters/${character.uid}.png',
                 );
