@@ -18,7 +18,14 @@ abstract class ChatStoreBase with Store {
     authenticatedUser ??= authService.getUser();
 
     final Response<dynamic> response = await dio.get('$server/api/chats?uid=${authenticatedUser?.uid}');
-    
+
+    return response.data;
+  }
+
+  @action
+  Future<dynamic> getCharacterById(String id) async {
+    final Response<dynamic> response = await dio.get('$server/api/characters/$id');
+
     return response.data;
   }
 }
