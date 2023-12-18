@@ -75,7 +75,7 @@ class _ChatPageState extends State<ChatPage> {
               ),
             ),
             body: Chat(
-              messages: const [],
+              messages: _messages,
               onSendPressed: _handleSendPressed,
               user: _user!,
             ),
