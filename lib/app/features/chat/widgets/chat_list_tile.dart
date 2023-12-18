@@ -9,13 +9,13 @@ class ChatListTile extends StatelessWidget {
     super.key,
     required this.id,
     required this.name,
-    required this.message,
+    this.message,
     required this.time,
     required this.avatarUrl,
   });
   final String id;
   final String name;
-  final String message;
+  final String? message;
   final DateTime time;
   final String avatarUrl;
 
@@ -23,7 +23,7 @@ class ChatListTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListTile(
       title: Text(name),
-      subtitle: Text(message),
+      subtitle: message != null ? Text(message!) : null,
       trailing: Text(timeago.format(time)),
       leading: CircleAvatar(
         backgroundImage: CachedNetworkImageProvider(avatarUrl),
