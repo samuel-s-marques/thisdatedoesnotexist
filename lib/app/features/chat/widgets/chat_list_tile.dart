@@ -4,7 +4,6 @@ import 'package:flutter_modular/flutter_modular.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 class ChatListTile extends StatelessWidget {
-
   const ChatListTile({
     super.key,
     required this.id,
@@ -24,7 +23,7 @@ class ChatListTile extends StatelessWidget {
     return ListTile(
       title: Text(name),
       subtitle: message != null ? Text(message!) : null,
-      trailing: Text(timeago.format(time)),
+      trailing: Text(timeago.format(time, locale: 'en_short')),
       leading: CircleAvatar(
         backgroundImage: CachedNetworkImageProvider(avatarUrl),
       ),
