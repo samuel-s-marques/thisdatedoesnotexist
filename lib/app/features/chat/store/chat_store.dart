@@ -12,6 +12,7 @@ abstract class ChatStoreBase with Store {
   User? authenticatedUser;
   final Dio dio = Dio();
   String server = const String.fromEnvironment('SERVER');
+  String wssServer = const String.fromEnvironment('WSS_SERVER');
 
   @action
   Future<dynamic> getChats() async {
