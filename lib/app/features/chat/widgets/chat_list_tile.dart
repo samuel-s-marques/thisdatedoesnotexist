@@ -28,7 +28,7 @@ class ChatListTile extends StatelessWidget {
       leading: CircleAvatar(
         backgroundImage: CachedNetworkImageProvider(avatarUrl),
       ),
-      onTap: () => Modular.to.pushNamed('/chat'),
+      onTap: () => Modular.to.pushNamed('/chat/$id'),
     );
   }
 }
