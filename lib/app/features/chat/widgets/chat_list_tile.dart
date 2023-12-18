@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:timeago/timeago.dart' as timeago;
@@ -25,7 +26,7 @@ class ChatListTile extends StatelessWidget {
       subtitle: Text(message),
       trailing: Text(timeago.format(time)),
       leading: CircleAvatar(
-        backgroundImage: NetworkImage(avatarUrl),
+        backgroundImage: CachedNetworkImageProvider(avatarUrl),
       ),
       onTap: () => Modular.to.pushNamed('/chat'),
     );
