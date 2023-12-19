@@ -22,7 +22,12 @@ class ChatListTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListTile(
       title: Text(name),
-      subtitle: message != null ? Text(message!) : null,
+      subtitle: message != null
+          ? Text(
+              message!,
+              overflow: TextOverflow.ellipsis,
+            )
+          : null,
       trailing: Text(timeago.format(time, locale: 'en_short')),
       leading: CircleAvatar(
         backgroundImage: CachedNetworkImageProvider(avatarUrl),
