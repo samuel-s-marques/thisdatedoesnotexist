@@ -26,6 +26,7 @@ class ChatListTile extends StatelessWidget {
           ? Text(
               message!,
               overflow: TextOverflow.ellipsis,
+              maxLines: 1,
             )
           : null,
       trailing: Text(timeago.format(time, locale: 'en_short')),
