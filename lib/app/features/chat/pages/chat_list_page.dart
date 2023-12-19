@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:thisdatedoesnotexist/app/core/models/character_model.dart';
+import 'package:thisdatedoesnotexist/app/features/chat/models/chat_model.dart';
 import 'package:thisdatedoesnotexist/app/features/chat/store/chat_store.dart';
 import 'package:thisdatedoesnotexist/app/features/chat/widgets/chat_list_tile.dart';
 
@@ -26,11 +27,17 @@ class _ChatListPageState extends State<ChatListPage> {
               itemCount: data.length,
               itemBuilder: (BuildContext context, int index) {
                 final CharacterModel character = CharacterModel.fromMap(data[index]['character']);
+                final ChatModel chat = ChatModel(
+                  name: '${character.name} ${character.surname}',
+                  lastMessage: data[index]['last_message'],
+                  seen: data[index]['seen'] != 0,
+                  updatedAt: DateTime.parse(data[index]['updated_at']),
+                );
 
                 return ChatListTile(
                   id: character.uid,
                   name: '${character.name} ${character.surname}',
-                  time: character.updatedAt,
+                  time: chat.updatedAt,
                   avatarUrl: '${store.server}/uploads/characters/${character.uid}.png',
                 );
               },
