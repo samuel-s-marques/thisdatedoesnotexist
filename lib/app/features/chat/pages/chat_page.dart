@@ -25,10 +25,11 @@ class ChatPage extends StatefulWidget {
 class _ChatPageState extends State<ChatPage> {
   ChatStore store = ChatStore();
   Future<dynamic>? future;
-  final List<types.Message> _messages = [];
+  List<types.Message> _messages = [];
   types.User? _user;
   Uuid uuid = const Uuid();
   WebSocketChannel? channel;
+  int page = 1;
 
   @override
   void initState() {
@@ -38,6 +39,7 @@ class _ChatPageState extends State<ChatPage> {
     );
     future = store.getCharacterById(widget.id);
     _user = types.User(id: store.authenticatedUser!.uid);
+    _handleEndReached();
   }
 
   @override
@@ -62,6 +64,15 @@ class _ChatPageState extends State<ChatPage> {
     );
 
     _addMessage(newMessage, roomId);
+  }
+
+  Future<void> _handleEndReached() async {
+    final List<types.Message> messages = await store.getMessages(widget.id, page);
+
+    setState(() {
+      _messages = [..._messages, ...messages];
+      page++;
+    });
   }
 
   @override
@@ -102,6 +113,7 @@ class _ChatPageState extends State<ChatPage> {
                 return Chat(
                   messages: _messages,
                   onSendPressed: (types.PartialText message) => _handleSendPressed(message, character.uid),
+                  onEndReached: _handleEndReached,
                   user: _user!,
                 );
               },
