@@ -38,6 +38,7 @@ class _ChatListPageState extends State<ChatListPage> {
                   id: character.uid,
                   name: '${character.name} ${character.surname}',
                   time: chat.updatedAt,
+                  message: chat.lastMessage,
                   avatarUrl: '${store.server}/uploads/characters/${character.uid}.png',
                 );
               },
