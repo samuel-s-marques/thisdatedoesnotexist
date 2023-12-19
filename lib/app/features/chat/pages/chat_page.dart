@@ -49,9 +49,7 @@ class _ChatPageState extends State<ChatPage> {
   void _addMessage(types.Message message, String roomId) {
     channel!.sink.add(jsonEncode(message.copyWith(roomId: roomId).toJson()));
 
-    setState(() {
-      _messages.insert(0, message);
-    });
+    _messages.insert(0, message);
   }
 
   void _handleSendPressed(types.PartialText message, String roomId) {
@@ -60,6 +58,7 @@ class _ChatPageState extends State<ChatPage> {
       id: uuid.v4(),
       text: message.text,
       createdAt: DateTime.now().millisecondsSinceEpoch,
+      updatedAt: DateTime.now().millisecondsSinceEpoch,
     );
 
     _addMessage(newMessage, roomId);
@@ -92,18 +91,16 @@ class _ChatPageState extends State<ChatPage> {
             body: StreamBuilder(
               stream: channel!.stream,
               builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
-                final List<types.Message> updatedMessages = List.from(_messages);
-
                 if (snapshot.hasData) {
                   final types.Message message = types.Message.fromJson(
                     jsonDecode(snapshot.data),
                   );
 
-                  updatedMessages.insert(0, message);
+                  _messages.insert(0, message);
                 }
 
                 return Chat(
-                  messages: updatedMessages,
+                  messages: _messages,
                   onSendPressed: (types.PartialText message) => _handleSendPressed(message, character.uid),
                   user: _user!,
                 );
