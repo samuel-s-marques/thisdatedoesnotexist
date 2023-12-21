@@ -6,7 +6,7 @@ class ChatModel {
     required this.updatedAt,
   });
 
-  factory ChatModel.fromMap(Map<String, dynamic> map) {
+  factory ChatModel.fromMap(Map<dynamic, dynamic> map) {
     return ChatModel(
       name: map['name'],
       lastMessage: map['last_message'],
