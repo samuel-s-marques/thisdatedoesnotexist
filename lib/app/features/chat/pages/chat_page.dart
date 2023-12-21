@@ -30,6 +30,7 @@ class _ChatPageState extends State<ChatPage> {
   Uuid uuid = const Uuid();
   WebSocketChannel? channel;
   int page = 1;
+  int availablePages = 1;
 
   @override
   void initState() {
@@ -67,12 +68,16 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   Future<void> _handleEndReached() async {
-    final List<types.Message> messages = await store.getMessages(widget.id, page);
+    if (availablePages >= page) {
+      final List<types.Message> messages = await store.getMessages(widget.id, page, (updatedAvailablePages) {
+        availablePages = updatedAvailablePages;
+      });
 
-    setState(() {
-      _messages = [..._messages, ...messages];
-      page++;
-    });
+      setState(() {
+        _messages = [..._messages, ...messages];
+        page++;
+      });
+    }
   }
 
   @override
