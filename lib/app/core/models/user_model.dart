@@ -38,7 +38,7 @@ class UserModel {
     );
   }
 
-  factory UserModel.fromMap(Map<String, dynamic> map) {
+  factory UserModel.fromMap(Map<dynamic, dynamic> map) {
     final double height = checkDouble(map['height'] ?? 1.6);
     final double weight = checkDouble(map['weight'] ?? 60);
 
