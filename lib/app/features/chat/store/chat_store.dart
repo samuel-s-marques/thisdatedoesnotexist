@@ -22,7 +22,7 @@ abstract class ChatStoreBase with Store {
   Future<dynamic> getChats() async {
     authenticatedUser ??= authService.getUser();
 
-    final Response<dynamic> response = await dio.get('$server/api/chats?uid=${authenticatedUser?.uid}');
+    final Response<dynamic> response = await dio.get('$server/api/chats?uid=${authenticatedUser?.uid}', options: DioOptions());
 
     return response.data;
   }
@@ -31,7 +31,7 @@ abstract class ChatStoreBase with Store {
   Future<dynamic> getCharacterById(String id) async {
     authenticatedUser ??= authService.getUser();
 
-    final Response<dynamic> response = await dio.get('$server/api/characters/$id');
+    final Response<dynamic> response = await dio.get('$server/api/characters/$id', options: DioOptions());
 
     return response.data;
   }
@@ -40,7 +40,7 @@ abstract class ChatStoreBase with Store {
   Future<List<types.Message>> getMessages(String id, int page, void Function(int) updateAvailablePages) async {
     authenticatedUser ??= authService.getUser();
     final List<types.Message> messages = [];
-    final Response<dynamic> response = await dio.get('$server/api/messages?uid=$id&page=$page');
+    final Response<dynamic> response = await dio.get('$server/api/messages?uid=$id&page=$page', options: DioOptions());
 
     if (response.statusCode == 200) {
       final int totalPages = response.data['meta']['last_page'] - page;
