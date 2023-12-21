@@ -5,6 +5,7 @@ import 'package:thisdatedoesnotexist/app/core/models/hobby_model.dart';
 import 'package:thisdatedoesnotexist/app/core/models/preferences_model.dart';
 import 'package:thisdatedoesnotexist/app/core/models/pronoun_model.dart';
 import 'package:thisdatedoesnotexist/app/core/services/auth_service.dart';
+import 'package:thisdatedoesnotexist/app/core/services/dio_service.dart';
 import 'package:thisdatedoesnotexist/app/core/util.dart';
 
 class UserModel {
@@ -67,7 +68,7 @@ class UserModel {
 
   String server = const String.fromEnvironment('SERVER');
   final User authenticatedUser = AuthService().getUser();
-  final Dio dio = Dio();
+  final DioService dio = DioService();
 
   final String uid;
   final String? name;
@@ -117,7 +118,7 @@ class UserModel {
   Future<int> getSwipes() async {
     final Response<dynamic> response = await dio.get(
       '$server/api/users/$uid',
-      options: Options(
+      options: DioOptions(
         headers: {'Authorization': 'Bearer ${await authenticatedUser.getIdToken()}', 'Content-Type': 'application/json'},
       ),
     );
@@ -134,7 +135,7 @@ class UserModel {
   Future<bool> isActive() async {
     final Response<dynamic> response = await dio.get(
       '$server/api/users/$uid',
-      options: Options(
+      options: DioOptions(
         headers: {'Authorization': 'Bearer ${await authenticatedUser.getIdToken()}', 'Content-Type': 'application/json'},
       ),
     );
