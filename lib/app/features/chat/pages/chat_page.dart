@@ -41,6 +41,7 @@ class _ChatPageState extends State<ChatPage> {
     future = store.getCharacterById(widget.id);
     _user = types.User(id: store.authenticatedUser!.uid);
     _handleEndReached();
+    channel!.stream.listen(_handleWebSocketMessage);
   }
 
   @override
@@ -51,8 +52,6 @@ class _ChatPageState extends State<ChatPage> {
 
   void _addMessage(types.Message message, String roomId) {
     channel!.sink.add(jsonEncode(message.copyWith(roomId: roomId).toJson()));
-
-    _messages.insert(0, message);
   }
 
   void _handleSendPressed(types.PartialText message, String roomId) {
@@ -65,6 +64,10 @@ class _ChatPageState extends State<ChatPage> {
     );
 
     _addMessage(newMessage, roomId);
+
+    setState(() {
+      _messages.insert(0, newMessage);
+    });
   }
 
   Future<void> _handleEndReached() async {
@@ -73,9 +76,22 @@ class _ChatPageState extends State<ChatPage> {
         availablePages = updatedAvailablePages;
       });
 
+      final List<types.Message> updatedMessages = [..._messages, ...messages];
       setState(() {
-        _messages = [..._messages, ...messages];
+        _messages = updatedMessages;
         page++;
+      });
+    }
+  }
+
+  void _handleWebSocketMessage(dynamic data) {
+    if (data != null) {
+      final types.Message message = types.Message.fromJson(
+        jsonDecode(data),
+      );
+
+      setState(() {
+        _messages.insert(0, message);
       });
     }
   }
@@ -104,24 +120,11 @@ class _ChatPageState extends State<ChatPage> {
                 ],
               ),
             ),
-            body: StreamBuilder(
-              stream: channel!.stream,
-              builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
-                if (snapshot.hasData) {
-                  final types.Message message = types.Message.fromJson(
-                    jsonDecode(snapshot.data),
-                  );
-
-                  _messages.insert(0, message);
-                }
-
-                return Chat(
-                  messages: _messages,
-                  onSendPressed: (types.PartialText message) => _handleSendPressed(message, character.uid),
-                  onEndReached: _handleEndReached,
-                  user: _user!,
-                );
-              },
+            body: Chat(
+              messages: _messages,
+              onSendPressed: (types.PartialText message) => _handleSendPressed(message, character.uid),
+              onEndReached: _handleEndReached,
+              user: _user!,
             ),
           );
         }
