@@ -1,6 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:thisdatedoesnotexist/app/core/models/character_model.dart';
+import 'package:thisdatedoesnotexist/app/core/models/user_model.dart';
 
 class CardWidget extends StatelessWidget {
   const CardWidget({
@@ -9,7 +9,7 @@ class CardWidget extends StatelessWidget {
     required this.imageUrl,
   });
 
-  final CharacterModel character;
+  final UserModel character;
   final String imageUrl;
 
   @override
