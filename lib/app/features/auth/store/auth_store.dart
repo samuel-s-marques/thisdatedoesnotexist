@@ -83,6 +83,9 @@ abstract class AuthStoreBase with Store {
 
     if (status == AuthStatus.successful) {
       final UserModel? user = await databaseService.getUser();
+
+      print(user);
+
       if (user == null || user.active == false) {
         await Modular.to.pushReplacementNamed('/onboarding/');
       } else {
