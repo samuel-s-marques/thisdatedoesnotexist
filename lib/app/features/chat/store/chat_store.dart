@@ -1,8 +1,8 @@
 import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:mobx/mobx.dart';
 import 'package:thisdatedoesnotexist/app/core/services/auth_service.dart';
+import 'package:thisdatedoesnotexist/app/core/services/dio_service.dart';
 import 'package:uuid/uuid.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 
@@ -13,10 +13,10 @@ class ChatStore = ChatStoreBase with _$ChatStore;
 abstract class ChatStoreBase with Store {
   AuthService authService = AuthService();
   User? authenticatedUser;
-  final Dio dio = Dio();
   Uuid uuid = const Uuid();
   String server = const String.fromEnvironment('SERVER');
   String wssServer = const String.fromEnvironment('WSS_SERVER');
+  final DioService dio = DioService();
 
   @action
   Future<dynamic> getChats() async {
