@@ -14,6 +14,7 @@ import 'package:thisdatedoesnotexist/app/core/models/pronoun_model.dart';
 import 'package:thisdatedoesnotexist/app/core/models/user_model.dart';
 import 'package:thisdatedoesnotexist/app/core/services/auth_service.dart';
 import 'package:thisdatedoesnotexist/app/core/services/database_service.dart';
+import 'package:thisdatedoesnotexist/app/core/services/dio_service.dart';
 import 'package:thisdatedoesnotexist/app/core/util.dart';
 
 part 'onboarding_store.g.dart';
@@ -30,7 +31,7 @@ abstract class OnboardingStoreBase with Store {
   TextEditingController heightController = TextEditingController();
   TextEditingController weightController = TextEditingController();
   final ImagePicker imagePicker = ImagePicker();
-  final Dio dio = Dio();
+  final DioService dio = DioService();
   final MaskTextInputFormatter heightMask = MaskTextInputFormatter(
     mask: '#,##',
     filter: {
