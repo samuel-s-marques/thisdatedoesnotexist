@@ -72,12 +72,13 @@ class DatabaseService {
       final Response<dynamic> response = await dio.get(
         '$server/api/users/${authenticatedUser.uid}',
         options: DioOptions(
+          cache: false,
           headers: {'Authorization': 'Bearer ${await authenticatedUser.getIdToken()}', 'Content-Type': 'application/json'},
         ),
       );
 
       if (response.statusCode == 200) {
-        final UserModel user = UserModel.fromMap(response.data);
+        final UserModel user = UserModel.fromMap(response.data as Map<String, dynamic>);
 
         return user;
       }
