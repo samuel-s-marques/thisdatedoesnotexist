@@ -37,13 +37,16 @@ abstract class ChatStoreBase with Store {
   }
 
   @action
-  Future<List<types.Message>> getMessages(String id, int page) async {
+  Future<List<types.Message>> getMessages(String id, int page, void Function(int) updateAvailablePages) async {
     authenticatedUser ??= authService.getUser();
     final List<types.Message> messages = [];
     final Response<dynamic> response = await dio.get('$server/api/messages?uid=$id&page=$page');
 
     if (response.statusCode == 200) {
+      final int totalPages = response.data['meta']['last_page'] - page;
       final List<dynamic> data = response.data['data'];
+      
+      updateAvailablePages(totalPages);
 
       for (final Map<String, dynamic> item in data) {
         final String content = item['content'];
