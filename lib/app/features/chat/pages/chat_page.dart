@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 // ignore: depend_on_referenced_packages
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
-import 'package:thisdatedoesnotexist/app/core/models/character_model.dart';
+import 'package:thisdatedoesnotexist/app/core/models/user_model.dart';
 import 'package:thisdatedoesnotexist/app/features/chat/store/chat_store.dart';
 import 'package:uuid/uuid.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
@@ -81,7 +81,7 @@ class _ChatPageState extends State<ChatPage> {
       future: future,
       builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
         if (snapshot.hasData) {
-          final CharacterModel character = CharacterModel.fromMap(snapshot.data);
+          final UserModel character = UserModel.fromMap(snapshot.data);
 
           return Scaffold(
             appBar: AppBar(
