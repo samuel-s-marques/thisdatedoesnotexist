@@ -12,7 +12,7 @@ class Preferences {
     required this.maxAge,
   });
 
-  factory Preferences.fromMap(Map<String, dynamic> map) {
+  factory Preferences.fromMap(Map<dynamic, dynamic> map) {
     final List<dynamic> sexes = map['sexes'] ?? [];
     final List<dynamic> relationshipGoals = map['relationship_goals'] ?? [];
     final List<dynamic> politicalViews = map['political_views'] ?? [];

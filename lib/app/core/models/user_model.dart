@@ -124,7 +124,7 @@ class UserModel {
     );
 
     if (response.statusCode == 200) {
-      final UserModel user = UserModel.fromMap(response.data as Map<String, dynamic>);
+      final UserModel user = UserModel.fromMap(response.data);
 
       return user.availableSwipes ?? 0;
     }

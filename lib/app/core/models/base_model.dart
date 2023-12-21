@@ -4,7 +4,7 @@ class BaseModel {
     this.name,
   });
 
-  factory BaseModel.fromMap(Map<String, dynamic> map) {
+  factory BaseModel.fromMap(Map<dynamic, dynamic> map) {
     return BaseModel(
       id: map['id'] as int,
       name: map['name'] as String,

@@ -8,7 +8,7 @@ class Pronoun {
     this.possessivePronoun,
   });
 
-  factory Pronoun.fromMap(Map<String, dynamic> map) {
+  factory Pronoun.fromMap(Map<dynamic, dynamic> map) {
     return Pronoun(
       id: map['id'] as int,
       type: map['type'] as String,
