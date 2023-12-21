@@ -7,10 +7,11 @@ import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:thisdatedoesnotexist/app/core/models/base_model.dart';
 import 'package:thisdatedoesnotexist/app/core/models/preferences_model.dart';
+import 'package:thisdatedoesnotexist/app/core/models/user_model.dart';
 import 'package:thisdatedoesnotexist/app/core/services/auth_service.dart';
+import 'package:thisdatedoesnotexist/app/core/services/dio_service.dart';
 import 'package:thisdatedoesnotexist/app/core/util.dart';
 import 'package:thisdatedoesnotexist/app/features/chat/chat_module.dart';
-import 'package:thisdatedoesnotexist/app/core/models/character_model.dart';
 import 'package:thisdatedoesnotexist/app/features/profile/profile_module.dart';
 
 part 'home_store.g.dart';
@@ -20,7 +21,7 @@ class HomeStore = HomeStoreBase with _$HomeStore;
 abstract class HomeStoreBase with Store {
   AuthService authService = AuthService();
   User? authenticatedUser;
-  final Dio dio = Dio();
+  final DioService dio = DioService();
   String server = const String.fromEnvironment('SERVER');
   SharedPreferences? prefs;
 
@@ -33,7 +34,7 @@ abstract class HomeStoreBase with Store {
   ];
 
   @observable
-  ObservableList<CharacterModel> cards = ObservableList();
+  ObservableList<UserModel> cards = ObservableList();
 
   List<String> appbars = ['Home', 'Chat', 'Profile'];
 
@@ -365,10 +366,15 @@ abstract class HomeStoreBase with Store {
         url += '&religion=${religions.join(',')}';
       }
 
-      final Response<dynamic> response = await Dio().get(url);
+      final Response<dynamic> response = await Dio().get(
+        url,
+        options: DioOptions(
+          cache: false,
+        ),
+      );
 
       if (response.statusCode == 200) {
-        cards = ObservableList.of((response.data['data'] as List<dynamic>).map((e) => CharacterModel.fromMap(e)).toList());
+        cards = ObservableList.of((response.data['data'] as List<dynamic>).map((e) => UserModel.fromMap(e)).toList());
 
         if (cards.isEmpty) {
           return false;
