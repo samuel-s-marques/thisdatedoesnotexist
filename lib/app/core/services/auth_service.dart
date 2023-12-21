@@ -6,12 +6,13 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:thisdatedoesnotexist/app/core/enum/auth_status_enum.dart';
 import 'package:thisdatedoesnotexist/app/core/exceptions/auth_exception.dart';
+import 'package:thisdatedoesnotexist/app/core/services/dio_service.dart';
 import 'package:thisdatedoesnotexist/app/core/util.dart';
 
 class AuthService {
   String server = const String.fromEnvironment('SERVER');
   final _auth = FirebaseAuth.instance;
-  final Dio dio = Dio();
+  final DioService dio = DioService();
 
   Future<AuthStatus> createAccount({required String email, required String password}) async {
     AuthStatus status = AuthStatus.unknown;
