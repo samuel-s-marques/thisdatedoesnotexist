@@ -10,4 +10,14 @@ class CacheService {
     final Box<dynamic> box = Hive.box('thisdatedoesnotexist');
     return box.get(key);
   }
+
+  Future<void> deleteData(String key) async {
+    final Box<dynamic> box = Hive.box('thisdatedoesnotexist');
+    await box.delete(key);
+  }
+
+  Future<void> clearData() async {
+    final Box<dynamic> box = Hive.box('thisdatedoesnotexist');
+    await box.clear();
+  }
 }
