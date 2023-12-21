@@ -270,7 +270,7 @@ abstract class OnboardingStoreBase with Store {
   }
 
   Future<void> getHobbies() async {
-    final Response<dynamic> response = await dio.get('$server/api/hobbies');
+    final Response<dynamic> response = await dio.get('$server/api/hobbies', options: DioOptions());
 
     if (response.statusCode == 200) {
       final List<dynamic> data = response.data['data'];
@@ -288,7 +288,7 @@ abstract class OnboardingStoreBase with Store {
   }
 
   Future<void> getRelationshipGoals() async {
-    final Response<dynamic> response = await dio.get('$server/api/relationship-goals');
+    final Response<dynamic> response = await dio.get('$server/api/relationship-goals', options: DioOptions());
 
     if (response.statusCode == 200) {
       final List<dynamic> data = response.data['data'];
@@ -301,7 +301,7 @@ abstract class OnboardingStoreBase with Store {
   }
 
   Future<void> getPoliticalViews() async {
-    final Response<dynamic> response = await dio.get('$server/api/political-views');
+    final Response<dynamic> response = await dio.get('$server/api/political-views', options: DioOptions());
 
     if (response.statusCode == 200) {
       final List<dynamic> data = response.data['data'];
@@ -314,7 +314,7 @@ abstract class OnboardingStoreBase with Store {
   }
 
   Future<void> getSexes() async {
-    final Response<dynamic> response = await dio.get('$server/api/sexes');
+    final Response<dynamic> response = await dio.get('$server/api/sexes', options: DioOptions());
 
     if (response.statusCode == 200) {
       final List<dynamic> data = response.data['data'];
@@ -327,7 +327,7 @@ abstract class OnboardingStoreBase with Store {
   }
 
   Future<void> getBodyTypes() async {
-    final Response<dynamic> response = await dio.get('$server/api/body-types');
+    final Response<dynamic> response = await dio.get('$server/api/body-types', options: DioOptions());
 
     if (response.statusCode == 200) {
       final List<dynamic> data = response.data['data'];
@@ -340,7 +340,7 @@ abstract class OnboardingStoreBase with Store {
   }
 
   Future<void> getPronouns() async {
-    final Response<dynamic> response = await dio.get('$server/api/pronouns');
+    final Response<dynamic> response = await dio.get('$server/api/pronouns', options: DioOptions());
 
     if (response.statusCode == 200) {
       final List<dynamic> data = response.data['data'];
@@ -354,7 +354,7 @@ abstract class OnboardingStoreBase with Store {
 
   @action
   Future<void> getReligions() async {
-    final Response<dynamic> response = await dio.get('$server/api/religions');
+    final Response<dynamic> response = await dio.get('$server/api/religions', options: DioOptions());
 
     if (response.statusCode == 200) {
       final List<dynamic> data = response.data['data'];
@@ -368,7 +368,7 @@ abstract class OnboardingStoreBase with Store {
 
   @action
   Future<void> getOccupations() async {
-    final Response<dynamic> response = await dio.get('$server/api/occupations');
+    final Response<dynamic> response = await dio.get('$server/api/occupations', options: DioOptions());
 
     if (response.statusCode == 200) {
       final List<dynamic> data = response.data['data'];
