@@ -8,11 +8,12 @@ import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:thisdatedoesnotexist/app/core/enum/database_status_enum.dart';
 import 'package:thisdatedoesnotexist/app/core/models/user_model.dart';
 import 'package:thisdatedoesnotexist/app/core/services/auth_service.dart';
+import 'package:thisdatedoesnotexist/app/core/services/dio_service.dart';
 
 class DatabaseService {
   final AuthService authService = AuthService();
   String server = const String.fromEnvironment('SERVER');
-  final Dio dio = Dio();
+  final DioService dio = DioService();
 
   Future<DatabaseStatus> createUser(UserModel user) async {
     DatabaseStatus status = DatabaseStatus.unknown;
@@ -70,7 +71,7 @@ class DatabaseService {
     try {
       final Response<dynamic> response = await dio.get(
         '$server/api/users/${authenticatedUser.uid}',
-        options: Options(
+        options: DioOptions(
           headers: {'Authorization': 'Bearer ${await authenticatedUser.getIdToken()}', 'Content-Type': 'application/json'},
         ),
       );
@@ -97,7 +98,7 @@ class DatabaseService {
 
     final Response<dynamic> response = await dio.get(
       '$server/api/users/${authenticatedUser.uid}',
-      options: Options(
+      options: DioOptions(
         headers: {'Authorization': 'Bearer ${await authenticatedUser.getIdToken()}', 'Content-Type': 'application/json'},
       ),
     );
