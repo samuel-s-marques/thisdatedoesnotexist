@@ -7,10 +7,11 @@ import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:thisdatedoesnotexist/app/core/models/base_model.dart';
 import 'package:thisdatedoesnotexist/app/core/models/preferences_model.dart';
+import 'package:thisdatedoesnotexist/app/core/models/user_model.dart';
 import 'package:thisdatedoesnotexist/app/core/services/auth_service.dart';
+import 'package:thisdatedoesnotexist/app/core/services/dio_service.dart';
 import 'package:thisdatedoesnotexist/app/core/util.dart';
 import 'package:thisdatedoesnotexist/app/features/chat/chat_module.dart';
-import 'package:thisdatedoesnotexist/app/features/home/models/character_model.dart';
 import 'package:thisdatedoesnotexist/app/features/profile/profile_module.dart';
 
 part 'home_store.g.dart';
@@ -20,7 +21,7 @@ class HomeStore = HomeStoreBase with _$HomeStore;
 abstract class HomeStoreBase with Store {
   AuthService authService = AuthService();
   User? authenticatedUser;
-  final Dio dio = Dio();
+  final DioService dio = DioService();
   String server = const String.fromEnvironment('SERVER');
   SharedPreferences? prefs;
 
@@ -33,14 +34,14 @@ abstract class HomeStoreBase with Store {
   ];
 
   @observable
-  ObservableList<CharacterModel> cards = ObservableList();
+  ObservableList<UserModel> cards = ObservableList();
 
   List<String> appbars = ['Home', 'Chat', 'Profile'];
 
   AppinioSwiperController cardSwiperController = AppinioSwiperController();
 
   @observable
-  RangeValues ageValues = const RangeValues(18, 50);
+  RangeValues ageValues = const RangeValues(18, 70);
 
   @observable
   ObservableList<BaseModel> relationshipGoals = ObservableList();
@@ -140,7 +141,7 @@ abstract class HomeStoreBase with Store {
 
   Future<bool> getPreferences() async {
     authenticatedUser ??= authService.getUser();
-    final Response<dynamic> response = await dio.get('$server/api/preferences/${authenticatedUser?.uid}');
+    final Response<dynamic> response = await dio.get('$server/api/preferences/${authenticatedUser?.uid}', options: DioOptions());
 
     if (response.statusCode == 200) {
       final Map<String, dynamic> data = response.data;
@@ -151,7 +152,7 @@ abstract class HomeStoreBase with Store {
       final List<dynamic> bodyTypes = data['body_types'] ?? [];
       final List<dynamic> religions = data['religions'] ?? [];
       final double minAge = checkDouble(data['min_age'] ?? 18);
-      final double maxAge = checkDouble(data['max_age'] ?? 50);
+      final double maxAge = checkDouble(data['max_age'] ?? 70);
 
       selectedRelationshipGoalPreferences = ObservableList.of(relationshipGoals.map((goal) => BaseModel.fromMap(goal)).toList());
       selectedBodyTypePreferences = ObservableList.of(bodyTypes.map((type) => BaseModel.fromMap(type)).toList());
@@ -167,7 +168,7 @@ abstract class HomeStoreBase with Store {
   }
 
   Future<void> getRelationshipGoals() async {
-    final Response<dynamic> response = await dio.get('$server/api/relationship-goals');
+    final Response<dynamic> response = await dio.get('$server/api/relationship-goals', options: DioOptions());
 
     if (response.statusCode == 200) {
       final List<dynamic> data = response.data['data'];
@@ -180,7 +181,7 @@ abstract class HomeStoreBase with Store {
   }
 
   Future<void> getSexes() async {
-    final Response<dynamic> response = await dio.get('$server/api/sexes');
+    final Response<dynamic> response = await dio.get('$server/api/sexes', options: DioOptions());
 
     if (response.statusCode == 200) {
       final List<dynamic> data = response.data['data'];
@@ -193,7 +194,7 @@ abstract class HomeStoreBase with Store {
   }
 
   Future<void> getPoliticalViews() async {
-    final Response<dynamic> response = await dio.get('$server/api/political-views');
+    final Response<dynamic> response = await dio.get('$server/api/political-views', options: DioOptions());
 
     if (response.statusCode == 200) {
       final List<dynamic> data = response.data['data'];
@@ -206,7 +207,7 @@ abstract class HomeStoreBase with Store {
   }
 
   Future<void> getBodyTypes() async {
-    final Response<dynamic> response = await dio.get('$server/api/body-types');
+    final Response<dynamic> response = await dio.get('$server/api/body-types', options: DioOptions());
 
     if (response.statusCode == 200) {
       final List<dynamic> data = response.data['data'];
@@ -219,7 +220,7 @@ abstract class HomeStoreBase with Store {
   }
 
   Future<void> getReligions() async {
-    final Response<dynamic> response = await dio.get('$server/api/religions');
+    final Response<dynamic> response = await dio.get('$server/api/religions', options: DioOptions());
 
     if (response.statusCode == 200) {
       final List<dynamic> data = response.data['data'];
@@ -261,48 +262,53 @@ abstract class HomeStoreBase with Store {
   ) async {
     authenticatedUser ??= authService.getUser();
 
-    if (swipes > 0) {
-      if (activity.direction == AxisDirection.right || activity.direction == AxisDirection.left) {
-        try {
-          final String direction = activity.direction == AxisDirection.right ? 'right' : 'left';
+    switch (activity) {
+      case Swipe():
+        if (swipes > 0) {
+          if (activity.direction == AxisDirection.right || activity.direction == AxisDirection.left) {
+            try {
+              final String direction = activity.direction == AxisDirection.right ? 'right' : 'left';
 
-          await dio.post(
-            '$server/api/swipes',
-            data: {
-              'target_id': cards[previousIndex].uuid,
-              'swiper_id': authenticatedUser!.uid,
-              'direction': direction,
-            },
-            options: Options(
-              headers: {
-                'Authorization': 'Bearer ${await authenticatedUser!.getIdToken()}',
-                'Content-Type': 'application/json',
-              },
-            ),
-          );
+              await dio.post(
+                '$server/api/swipes',
+                data: {
+                  'target_id': cards[previousIndex].uid,
+                  'swiper_id': authenticatedUser!.uid,
+                  'direction': direction,
+                },
+                options: Options(
+                  headers: {
+                    'Authorization': 'Bearer ${await authenticatedUser!.getIdToken()}',
+                    'Content-Type': 'application/json',
+                  },
+                ),
+              );
 
-          swipes--;
+              swipes--;
 
-          await dio.put(
-            '$server/api/users',
-            data: {
-              'swipes': swipes,
-              'last_swipe': DateTime.now().toIso8601String(),
-            },
-            options: Options(
-              headers: {
-                'Authorization': 'Bearer ${await authenticatedUser!.getIdToken()}',
-                'Content-Type': 'application/json',
-              },
-            ),
-          );
-        } catch (exception, stackTrace) {
-          await Sentry.captureException(
-            exception,
-            stackTrace: stackTrace,
-          );
+              await dio.put(
+                '$server/api/users',
+                data: {
+                  'swipes': swipes,
+                  'last_swipe': DateTime.now().toIso8601String(),
+                },
+                options: Options(
+                  headers: {
+                    'Authorization': 'Bearer ${await authenticatedUser!.getIdToken()}',
+                    'Content-Type': 'application/json',
+                  },
+                ),
+              );
+            } catch (exception, stackTrace) {
+              await Sentry.captureException(
+                exception,
+                stackTrace: stackTrace,
+              );
+            }
+          }
         }
-      }
+        break;
+      default:
     }
   }
 
@@ -333,7 +339,7 @@ abstract class HomeStoreBase with Store {
   @action
   Future<bool?> getTodayCards() async {
     if (await getPreferences()) {
-      String url = '$server/api/characters?uid=${authenticatedUser?.uid}&min_age=${ageValues.start.round()}&max_age=${ageValues.end.round()}';
+      String url = '$server/api/characters?uid=${authenticatedUser?.uid}&min_age=${ageValues.start.round()}&max_age=${ageValues.end.round()}&per_page=$swipes';
 
       if (selectedPoliticalViewPreferences.isNotEmpty) {
         final List<String?> politicalViews = selectedPoliticalViewPreferences.map((e) => e.name).toList();
@@ -360,10 +366,15 @@ abstract class HomeStoreBase with Store {
         url += '&religion=${religions.join(',')}';
       }
 
-      final Response<dynamic> response = await Dio().get(url);
+      final Response<dynamic> response = await Dio().get(
+        url,
+        options: DioOptions(
+          cache: false,
+        ),
+      );
 
       if (response.statusCode == 200) {
-        cards = ObservableList.of((response.data['data'] as List<dynamic>).map((e) => CharacterModel.fromMap(e)).toList());
+        cards = ObservableList.of((response.data['data'] as List<dynamic>).map((e) => UserModel.fromMap(e)).toList());
 
         if (cards.isEmpty) {
           return false;

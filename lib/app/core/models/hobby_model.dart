@@ -4,7 +4,7 @@ class Hobby {
     required this.type,
   });
 
-  factory Hobby.fromMap(Map<String, dynamic> json) {
+  factory Hobby.fromMap(Map<dynamic, dynamic> json) {
     return Hobby(
       name: json['name'],
       type: json['type'],

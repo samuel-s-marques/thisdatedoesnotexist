@@ -29,6 +29,8 @@ class _OnboardingPageState extends State<OnboardingPage> {
     store.user = UserModel(
       uid: store.authService.getUser().uid,
     );
+
+    store.getPronouns();
     store.getOccupations();
     store.getReligions();
     store.getHobbies();
@@ -234,6 +236,26 @@ class _OnboardingPageState extends State<OnboardingPage> {
                       ),
                     ),
                     const SizedBox(height: 15),
+                    const Text('Select your pronouns'),
+                    Observer(
+                      builder: (_) => DropdownButtonFormField(
+                        items: store.pronouns.map((pronoun) {
+                          return DropdownMenuItem(
+                            value: pronoun,
+                            child: Text('${pronoun.subjectPronoun}/${pronoun.objectPronoun}'),
+                          );
+                        }).toList(),
+                        validator: (value) {
+                          if (value == null) {
+                            return 'Please pick your pronouns.';
+                          }
+
+                          return null;
+                        },
+                        onChanged: (pronoun) => store.setPronouns(pronoun!),
+                      ),
+                    ),
+                    const SizedBox(height: 15),
                     const Text('Enter your religion'),
                     Observer(
                       builder: (_) => DropdownButtonFormField(
@@ -329,7 +351,6 @@ class _OnboardingPageState extends State<OnboardingPage> {
                       onChanged: (CountryCode countryCode) => store.selectCountry(countryCode.code!),
                       showCountryOnly: true,
                       padding: EdgeInsets.zero,
-                      initialSelection: 'US',
                       showOnlyCountryWhenClosed: true,
                       showFlagMain: true,
                       showFlagDialog: true,
@@ -465,7 +486,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                 Observer(
                   builder: (_) => RangeSlider(
                     min: 18,
-                    max: 50,
+                    max: 70,
                     values: store.ageValues,
                     onChanged: store.setAgeValues,
                   ),

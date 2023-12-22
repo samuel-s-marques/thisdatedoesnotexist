@@ -12,14 +12,14 @@ class Preferences {
     required this.maxAge,
   });
 
-  factory Preferences.fromMap(Map<String, dynamic> map) {
+  factory Preferences.fromMap(Map<dynamic, dynamic> map) {
     final List<dynamic> sexes = map['sexes'] ?? [];
     final List<dynamic> relationshipGoals = map['relationship_goals'] ?? [];
     final List<dynamic> politicalViews = map['political_views'] ?? [];
     final List<dynamic> bodyTypes = map['body_types'] ?? [];
     final List<dynamic> religions = map['religions'] ?? [];
     final double minAge = checkDouble(map['min_age'] ?? 18);
-    final double maxAge = checkDouble(map['max_age'] ?? 50);
+    final double maxAge = checkDouble(map['max_age'] ?? 70);
 
     return Preferences(
       sexes: sexes.map((sex) => BaseModel.fromMap(sex)).toList(),

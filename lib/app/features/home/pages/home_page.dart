@@ -156,7 +156,7 @@ class _HomePageState extends State<HomePage> {
                                 Observer(
                                   builder: (_) => RangeSlider(
                                     min: 18,
-                                    max: 50,
+                                    max: 70,
                                     values: store.ageValues,
                                     onChanged: store.setAgeValues,
                                   ),
@@ -311,7 +311,12 @@ class _HomePageState extends State<HomePage> {
                           onSwipeEnd: store.onSwipe,
                           controller: store.cardSwiperController,
                           cardBuilder: (BuildContext context, int index) {
-                            return CardWidget(character: store.cards[index]);
+                            final UserModel character = store.cards[index];
+
+                            return CardWidget(
+                              character: character,
+                              imageUrl: '${store.server}/uploads/characters/${character.uid}.png',
+                            );
                           },
                         ),
                       ),

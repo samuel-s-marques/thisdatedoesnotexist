@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_modular/flutter_modular.dart';
 import 'package:mobx/mobx.dart';
 import 'package:thisdatedoesnotexist/app/core/enum/auth_status_enum.dart';
 import 'package:thisdatedoesnotexist/app/core/services/auth_service.dart';
+import 'package:thisdatedoesnotexist/app/core/services/cache_service.dart';
 import 'package:thisdatedoesnotexist/app/core/util.dart';
 
 part 'settings_store.g.dart';
@@ -54,7 +54,8 @@ abstract class SettingsStoreBase with Store {
   @action
   Future<void> deleteAccount(BuildContext context) async {
     if (await authService.deleteAccount() == AuthStatus.successful) {
-      await Modular.to.pushReplacementNamed('/');
+      await Navigator.pushReplacementNamed(context, '/');
+      await CacheService().clearData();
       context.showSnackBarSuccess(message: 'Account deleted successfully.');
     } else {
       context.showSnackBarError(message: 'Error deleting account. Try again later.');
@@ -64,7 +65,8 @@ abstract class SettingsStoreBase with Store {
   @action
   Future<void> logOut(BuildContext context) async {
     if (await authService.logout() == AuthStatus.successful) {
-      await Modular.to.pushReplacementNamed('/');
+      await Navigator.pushReplacementNamed(context, '/');
+      await CacheService().clearData();
       context.showSnackBarSuccess(message: 'Logged out successfully.');
     } else {
       context.showSnackBarError(message: 'Error logging out. Try again later.');

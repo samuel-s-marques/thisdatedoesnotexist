@@ -1,4 +1,5 @@
 import 'package:flutter_modular/flutter_modular.dart';
+import 'package:thisdatedoesnotexist/app/core/route_guards/auth_guard.dart';
 import 'package:thisdatedoesnotexist/app/features/auth/auth_module.dart';
 import 'package:thisdatedoesnotexist/app/features/auth/store/auth_store.dart';
 import 'package:thisdatedoesnotexist/app/features/chat/chat_module.dart';
@@ -20,7 +21,7 @@ class AppModule extends Module {
 
   @override
   void routes(r) {
-    r.module('/', module: AuthModule());
+    r.module('/', module: AuthModule(), guards: [AuthGuard()]);
     r.module('/onboarding', module: OnboardingModule());
     r.module('/home', module: HomeModule());
     r.module('/chat', module: const ChatModule());

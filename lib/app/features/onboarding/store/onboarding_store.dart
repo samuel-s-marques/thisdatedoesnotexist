@@ -5,13 +5,16 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:mobx/mobx.dart';
+import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:thisdatedoesnotexist/app/core/enum/database_status_enum.dart';
 import 'package:thisdatedoesnotexist/app/core/models/base_model.dart';
 import 'package:thisdatedoesnotexist/app/core/models/hobby_model.dart';
 import 'package:thisdatedoesnotexist/app/core/models/preferences_model.dart';
+import 'package:thisdatedoesnotexist/app/core/models/pronoun_model.dart';
 import 'package:thisdatedoesnotexist/app/core/models/user_model.dart';
 import 'package:thisdatedoesnotexist/app/core/services/auth_service.dart';
 import 'package:thisdatedoesnotexist/app/core/services/database_service.dart';
+import 'package:thisdatedoesnotexist/app/core/services/dio_service.dart';
 import 'package:thisdatedoesnotexist/app/core/util.dart';
 
 part 'onboarding_store.g.dart';
@@ -28,7 +31,7 @@ abstract class OnboardingStoreBase with Store {
   TextEditingController heightController = TextEditingController();
   TextEditingController weightController = TextEditingController();
   final ImagePicker imagePicker = ImagePicker();
-  final Dio dio = Dio();
+  final DioService dio = DioService();
   final MaskTextInputFormatter heightMask = MaskTextInputFormatter(
     mask: '#,##',
     filter: {
@@ -54,7 +57,7 @@ abstract class OnboardingStoreBase with Store {
   @action
   Future<void> selectBirthday(BuildContext context) async {
     final DateTime minDate = DateTime(DateTime.now().year - 18);
-    final DateTime maxDate = DateTime(DateTime.now().year - 50);
+    final DateTime maxDate = DateTime(DateTime.now().year - 70);
     final DateFormat format = DateFormat('dd/MM/yyyy');
 
     final DateTime? pickedDate = await showDatePicker(
@@ -73,7 +76,7 @@ abstract class OnboardingStoreBase with Store {
   UserModel? user;
 
   @observable
-  RangeValues ageValues = const RangeValues(18, 50);
+  RangeValues ageValues = const RangeValues(18, 70);
 
   @observable
   ObservableList<Hobby> selectedHobbies = ObservableList();
@@ -103,6 +106,12 @@ abstract class OnboardingStoreBase with Store {
   ObservableList<BaseModel> sexes = ObservableList();
   Map<String, String> pluralSexesMap = {'male': 'Men', 'female': 'Women'};
   Map<String, String> singularSexesMap = {'male': 'Man', 'female': 'Woman'};
+
+  @observable
+  ObservableList<Pronoun> pronouns = ObservableList();
+
+  @observable
+  Pronoun? selectedPronouns;
 
   @observable
   ObservableList<BaseModel> selectedPoliticalViewPreferences = ObservableList();
@@ -155,6 +164,11 @@ abstract class OnboardingStoreBase with Store {
   @action
   void setAgeValues(RangeValues values) {
     ageValues = values;
+  }
+
+  @action
+  void setPronouns(Pronoun pronouns) {
+    selectedPronouns = pronouns;
   }
 
   @action
@@ -256,7 +270,7 @@ abstract class OnboardingStoreBase with Store {
   }
 
   Future<void> getHobbies() async {
-    final Response<dynamic> response = await dio.get('$server/api/hobbies');
+    final Response<dynamic> response = await dio.get('$server/api/hobbies', options: DioOptions());
 
     if (response.statusCode == 200) {
       final List<dynamic> data = response.data['data'];
@@ -274,7 +288,7 @@ abstract class OnboardingStoreBase with Store {
   }
 
   Future<void> getRelationshipGoals() async {
-    final Response<dynamic> response = await dio.get('$server/api/relationship-goals');
+    final Response<dynamic> response = await dio.get('$server/api/relationship-goals', options: DioOptions());
 
     if (response.statusCode == 200) {
       final List<dynamic> data = response.data['data'];
@@ -287,7 +301,7 @@ abstract class OnboardingStoreBase with Store {
   }
 
   Future<void> getPoliticalViews() async {
-    final Response<dynamic> response = await dio.get('$server/api/political-views');
+    final Response<dynamic> response = await dio.get('$server/api/political-views', options: DioOptions());
 
     if (response.statusCode == 200) {
       final List<dynamic> data = response.data['data'];
@@ -300,7 +314,7 @@ abstract class OnboardingStoreBase with Store {
   }
 
   Future<void> getSexes() async {
-    final Response<dynamic> response = await dio.get('$server/api/sexes');
+    final Response<dynamic> response = await dio.get('$server/api/sexes', options: DioOptions());
 
     if (response.statusCode == 200) {
       final List<dynamic> data = response.data['data'];
@@ -313,7 +327,7 @@ abstract class OnboardingStoreBase with Store {
   }
 
   Future<void> getBodyTypes() async {
-    final Response<dynamic> response = await dio.get('$server/api/body-types');
+    final Response<dynamic> response = await dio.get('$server/api/body-types', options: DioOptions());
 
     if (response.statusCode == 200) {
       final List<dynamic> data = response.data['data'];
@@ -325,9 +339,22 @@ abstract class OnboardingStoreBase with Store {
     }
   }
 
+  Future<void> getPronouns() async {
+    final Response<dynamic> response = await dio.get('$server/api/pronouns', options: DioOptions());
+
+    if (response.statusCode == 200) {
+      final List<dynamic> data = response.data['data'];
+
+      for (int index = 0; index < data.length; index++) {
+        final Pronoun pronoun = Pronoun.fromMap(data[index]);
+        pronouns.add(pronoun);
+      }
+    }
+  }
+
   @action
   Future<void> getReligions() async {
-    final Response<dynamic> response = await dio.get('$server/api/religions');
+    final Response<dynamic> response = await dio.get('$server/api/religions', options: DioOptions());
 
     if (response.statusCode == 200) {
       final List<dynamic> data = response.data['data'];
@@ -341,7 +368,7 @@ abstract class OnboardingStoreBase with Store {
 
   @action
   Future<void> getOccupations() async {
-    final Response<dynamic> response = await dio.get('$server/api/occupations');
+    final Response<dynamic> response = await dio.get('$server/api/occupations', options: DioOptions());
 
     if (response.statusCode == 200) {
       final List<dynamic> data = response.data['data'];
@@ -373,16 +400,15 @@ abstract class OnboardingStoreBase with Store {
       weight: weight,
       religion: religion!.name,
       politicalView: selectedPoliticalView!.name,
-      relationshipGoal: selectedRelationshipGoal!.name,
+      relationshipGoal: selectedRelationshipGoal,
       sex: sex!.name,
       occupation: occupation!.name,
       imageUrl: profileImage?.path,
       country: selectedCountry,
+      pronoun: selectedPronouns,
       bio: bioController.text.trim(),
       age: DateTime.now().year - birthDay!.year,
-      birthdayDate: birthDay,
       hobbies: selectedHobbies,
-      swipes: 20,
       active: true,
       preferences: Preferences(
         sexes: selectedSexPreferences,
@@ -396,6 +422,10 @@ abstract class OnboardingStoreBase with Store {
     );
 
     if (await databaseService.createUser(user!) == DatabaseStatus.successful) {
+      if (!OneSignal.Notifications.permission) {
+        await OneSignal.Notifications.requestPermission(true);
+      }
+
       await Modular.to.pushReplacementNamed('/home/');
     } else {
       context.showSnackBarError(

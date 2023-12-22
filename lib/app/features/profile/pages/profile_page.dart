@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:country_code_picker/country_code_picker.dart';
 import 'package:flutter/material.dart';
@@ -39,8 +37,10 @@ class _ProfilePageState extends State<ProfilePage> {
           builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
             if (snapshot.connectionState == ConnectionState.done && snapshot.hasData) {
               final UserModel user = snapshot.data;
-              final int age = DateTime.now().year - user.birthdayDate!.year;
+              final int age = user.age!;
               final CountryCode country = CountryCode.fromCountryCode(user.country!);
+              final String subjectPronoun = user.pronoun!.subjectPronoun!;
+              final String objectPronoun = user.pronoun!.objectPronoun!;
 
               return Column(
                 mainAxisSize: MainAxisSize.min,
@@ -125,6 +125,16 @@ class _ProfilePageState extends State<ProfilePage> {
                       ),
                       Row(
                         children: [
+                          const Icon(Icons.campaign_outlined),
+                          const SizedBox(width: 5),
+                          Text(
+                            'Uses $subjectPronoun/$objectPronoun pronouns',
+                            style: const TextStyle(fontSize: 16),
+                          ),
+                        ],
+                      ),
+                      Row(
+                        children: [
                           const Icon(Icons.home_outlined),
                           const SizedBox(width: 5),
                           Text(
@@ -165,7 +175,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     padding: const EdgeInsets.symmetric(vertical: 10),
                     title: 'Relationship Goal',
                     content: Text(
-                      user.relationshipGoal?.capitalize() ?? '',
+                      user.relationshipGoal?.name!.capitalize() ?? '',
                       style: const TextStyle(fontSize: 16),
                     ),
                   ),

@@ -24,15 +24,15 @@ extension StringExtension on String {
 extension ShowSnackBar on BuildContext {
   void showSnackBar({
     required String message,
-    IconData? icon,
+    IconData icon = Icons.info,
     Color backgroundColor = Colors.white,
   }) {
     ScaffoldMessenger.of(this).showSnackBar(
       SnackBar(
         content: Row(
           children: [
-            if (icon != null) Icon(icon),
-            if (icon != null) const SizedBox(width: 10),
+            Icon(icon),
+            const SizedBox(width: 10),
             Expanded(
               child: Text(message),
             ),

@@ -1,4 +1,3 @@
-import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:mobx/mobx.dart';
@@ -15,7 +14,6 @@ abstract class ProfileStoreBase with Store {
   DatabaseService databaseService = DatabaseService();
   AuthService authService = AuthService();
   User? authenticatedUser;
-  final Dio dio = Dio();
   final Map<String, String> genderMap = {'male': 'Man', 'female': 'Woman'};
   final Map<String, IconData> genders = {'male': Icons.male_outlined, 'female': Icons.female_outlined};
 

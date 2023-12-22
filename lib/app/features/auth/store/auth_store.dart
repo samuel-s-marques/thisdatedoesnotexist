@@ -83,6 +83,9 @@ abstract class AuthStoreBase with Store {
 
     if (status == AuthStatus.successful) {
       final UserModel? user = await databaseService.getUser();
+
+      print(user);
+
       if (user == null || user.active == false) {
         await Modular.to.pushReplacementNamed('/onboarding/');
       } else {
@@ -117,12 +120,14 @@ abstract class AuthStoreBase with Store {
     isLoading = false;
   }
 
-  Future<void> checkLogin() async {
+  Future<bool> checkLogin() async {
     final DatabaseService databaseService = DatabaseService();
     final UserModel? user = await databaseService.getUser();
 
     if (user != null && user.active!) {
-      await Modular.to.pushReplacementNamed('/home/');
+      return true;
     }
+
+    return false;
   }
 }

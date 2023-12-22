@@ -1,8 +1,11 @@
 import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:thisdatedoesnotexist/app/core/models/base_model.dart';
 import 'package:thisdatedoesnotexist/app/core/models/hobby_model.dart';
 import 'package:thisdatedoesnotexist/app/core/models/preferences_model.dart';
+import 'package:thisdatedoesnotexist/app/core/models/pronoun_model.dart';
 import 'package:thisdatedoesnotexist/app/core/services/auth_service.dart';
+import 'package:thisdatedoesnotexist/app/core/services/dio_service.dart';
 import 'package:thisdatedoesnotexist/app/core/util.dart';
 
 class UserModel {
@@ -18,11 +21,11 @@ class UserModel {
     this.politicalView,
     this.height,
     this.weight,
+    this.pronoun,
     this.occupation,
     this.imageUrl,
-    this.birthdayDate,
     this.lastSwipe,
-    this.swipes,
+    this.availableSwipes,
     this.active,
     this.relationshipGoal,
     this.hobbies,
@@ -35,7 +38,7 @@ class UserModel {
     );
   }
 
-  factory UserModel.fromMap(Map<String, dynamic> map) {
+  factory UserModel.fromMap(Map<dynamic, dynamic> map) {
     final double height = checkDouble(map['height'] ?? 1.6);
     final double weight = checkDouble(map['weight'] ?? 60);
 
@@ -53,11 +56,11 @@ class UserModel {
       height: height,
       weight: weight,
       imageUrl: map['image_url'],
-      birthdayDate: map['birthday_date'] != null ? DateTime.parse(map['birthday_date']) : null,
       lastSwipe: map['last_swipe'] != null ? DateTime.parse(map['last_swipe']) : null,
-      swipes: map['swipes'],
+      availableSwipes: map['available_swipes'],
       active: map['active'] != 0,
-      relationshipGoal: map['relationship_goal'],
+      relationshipGoal: map['relationship_goal'] != null ? BaseModel.fromMap(map['relationship_goal'] as Map<String, dynamic>) : null,
+      pronoun: map['pronoun'] != null ? Pronoun.fromMap(map['pronoun'] as Map<String, dynamic>) : null,
       hobbies: (map['hobbies'] as List<dynamic>?)?.map((hobbyMap) => Hobby.fromMap(hobbyMap as Map<String, dynamic>)).toList(),
       preferences: map['preferences'] != null ? Preferences.fromMap(map['preferences'] as Map<String, dynamic>) : null,
     );
@@ -65,13 +68,14 @@ class UserModel {
 
   String server = const String.fromEnvironment('SERVER');
   final User authenticatedUser = AuthService().getUser();
-  final Dio dio = Dio();
+  final DioService dio = DioService();
 
   final String uid;
   final String? name;
   final String? surname;
   final int? age;
   final String? sex;
+  final Pronoun? pronoun;
   final String? bio;
   final String? religion;
   final String? occupation;
@@ -80,11 +84,10 @@ class UserModel {
   final double? height;
   final double? weight;
   final String? imageUrl;
-  final DateTime? birthdayDate;
-  final int? swipes;
+  final int? availableSwipes;
   final bool? active;
   final DateTime? lastSwipe;
-  final String? relationshipGoal;
+  final BaseModel? relationshipGoal;
   final List<Hobby>? hobbies;
   final Preferences? preferences;
 
@@ -102,11 +105,11 @@ class UserModel {
       'occupation': occupation,
       'height': height,
       'weight': weight,
-      'birthday_date': birthdayDate?.toIso8601String(),
-      'swipes': swipes ?? 20,
+      'pronoun': pronoun?.toMap(),
+      'available_swipes': availableSwipes ?? 20,
       'last_swipe': lastSwipe?.toIso8601String(),
       'active': active ?? false,
-      'relationship_goal': relationshipGoal ?? '',
+      'relationship_goal': relationshipGoal?.toMap(),
       'hobbies': hobbies?.map((Hobby hobby) => hobby.toMap()).toList(),
       'preferences': preferences?.toMap(),
     };
@@ -115,7 +118,7 @@ class UserModel {
   Future<int> getSwipes() async {
     final Response<dynamic> response = await dio.get(
       '$server/api/users/$uid',
-      options: Options(
+      options: DioOptions(
         headers: {'Authorization': 'Bearer ${await authenticatedUser.getIdToken()}', 'Content-Type': 'application/json'},
       ),
     );
@@ -123,7 +126,7 @@ class UserModel {
     if (response.statusCode == 200) {
       final UserModel user = UserModel.fromMap(response.data);
 
-      return user.swipes ?? 0;
+      return user.availableSwipes ?? 0;
     }
 
     return 0;
@@ -132,13 +135,13 @@ class UserModel {
   Future<bool> isActive() async {
     final Response<dynamic> response = await dio.get(
       '$server/api/users/$uid',
-      options: Options(
+      options: DioOptions(
         headers: {'Authorization': 'Bearer ${await authenticatedUser.getIdToken()}', 'Content-Type': 'application/json'},
       ),
     );
 
     if (response.statusCode == 200) {
-      final UserModel user = UserModel.fromMap(response.data);
+      final UserModel user = UserModel.fromMap(response.data as Map<String, dynamic>);
 
       return user.active ?? false;
     }
