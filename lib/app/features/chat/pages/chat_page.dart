@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:thisdatedoesnotexist/app/core/models/user_model.dart';
+import 'package:thisdatedoesnotexist/app/core/util.dart';
 import 'package:thisdatedoesnotexist/app/features/chat/store/chat_store.dart';
 import 'package:uuid/uuid.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
@@ -86,9 +87,22 @@ class _ChatPageState extends State<ChatPage> {
 
   void _handleWebSocketMessage(dynamic data) {
     if (data != null) {
-      final types.Message message = types.Message.fromJson(
-        jsonDecode(data),
-      );
+      final Map<String, dynamic> json = jsonDecode(data);
+
+      if (json['type'] == 'system') {
+        switch (json['status']) {
+          case 'error':
+            context.showSnackBarError(message: json['message']);
+            break;
+          case 'success':
+            context.showSnackBarSuccess(message: json['message']);
+            break;
+          default:
+            context.showSnackBar(message: json['message']);
+        }
+      }
+
+      final types.Message message = types.Message.fromJson(json);
 
       setState(() {
         _messages.insert(0, message);
