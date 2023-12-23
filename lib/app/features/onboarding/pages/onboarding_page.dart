@@ -73,7 +73,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(24),
                         side: BorderSide(
-                          width: 0.5,
+                          width: store.allowProfileImage != null ? 2.5 : 0.5,
                           color: store.allowProfileImage != null
                               ? store.allowProfileImage == true
                                   ? Colors.green
