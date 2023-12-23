@@ -390,6 +390,11 @@ abstract class OnboardingStoreBase with Store {
       imageQuality: 70,
     );
 
+    if (profileImage == null) {
+      allowProfileImage = null;
+      return;
+    }
+
     final FormData formData = FormData.fromMap({
       'profile_image': await MultipartFile.fromFile(profileImage!.path),
     });
