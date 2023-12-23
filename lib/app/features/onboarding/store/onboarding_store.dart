@@ -46,6 +46,9 @@ abstract class OnboardingStoreBase with Store {
   );
 
   @observable
+  bool allowProfileImage = false;
+
+  @observable
   TextEditingController occupationController = TextEditingController();
 
   @observable
@@ -402,7 +405,15 @@ abstract class OnboardingStoreBase with Store {
         context.showSnackBarError(
           message: 'This image is not allowed. Please, choose another one.',
         );
+
+        allowProfileImage = false;
+        return;
+      } else if (response.statusCode == 200) {
+        allowProfileImage = true;
+        return;
       }
+
+      return;
     } catch (e) {
       context.showSnackBarError(message: 'Something went wrong. Please try again.');
     }
