@@ -77,7 +77,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                       ),
                     ),
                     child: InkWell(
-                      onTap: () async => store.pickProfileImage(),
+                      onTap: () async => store.pickProfileImage(context),
                       borderRadius: BorderRadius.circular(24),
                       child: Observer(
                         builder: (_) {
