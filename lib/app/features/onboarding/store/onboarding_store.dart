@@ -46,6 +46,9 @@ abstract class OnboardingStoreBase with Store {
   );
 
   @observable
+  bool? allowProfileImage;
+
+  @observable
   TextEditingController occupationController = TextEditingController();
 
   @observable
@@ -381,11 +384,44 @@ abstract class OnboardingStoreBase with Store {
   }
 
   @action
-  Future<void> pickProfileImage() async {
+  Future<void> pickProfileImage(BuildContext context) async {
     profileImage = await imagePicker.pickImage(
       source: ImageSource.gallery,
       imageQuality: 70,
     );
+
+    if (profileImage == null) {
+      allowProfileImage = null;
+      return;
+    }
+
+    final FormData formData = FormData.fromMap({
+      'profile_image': await MultipartFile.fromFile(profileImage!.path),
+    });
+
+    try {
+      final Response<dynamic> response = await dio.post(
+        '$server/api/users/upload',
+        data: formData,
+        options: DioOptions(),
+      );
+
+      if (response.statusCode == 400) {
+        context.showSnackBarError(
+          message: 'This image is not allowed. Please, choose another one.',
+        );
+
+        allowProfileImage = false;
+        return;
+      } else if (response.statusCode == 200) {
+        allowProfileImage = true;
+        return;
+      }
+
+      return;
+    } catch (e) {
+      context.showSnackBarError(message: 'Something went wrong. Please try again.');
+    }
   }
 
   Future<void> onDone(BuildContext context) async {

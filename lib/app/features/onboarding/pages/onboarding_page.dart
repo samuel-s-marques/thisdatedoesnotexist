@@ -68,34 +68,40 @@ class _OnboardingPageState extends State<OnboardingPage> {
                 SizedBox(
                   height: MediaQuery.of(context).size.height / 1.7,
                   width: MediaQuery.of(context).size.width,
-                  child: Material(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(24),
-                      side: const BorderSide(
-                        width: 0.5,
-                        color: Colors.black26,
+                  child: Observer(
+                    builder: (_) => Material(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(24),
+                        side: BorderSide(
+                          width: store.allowProfileImage != null ? 2.5 : 0.5,
+                          color: store.allowProfileImage != null
+                              ? store.allowProfileImage == true
+                                  ? Colors.green
+                                  : Colors.red
+                              : Colors.black26,
+                        ),
                       ),
-                    ),
-                    child: InkWell(
-                      onTap: () async => store.pickProfileImage(),
-                      borderRadius: BorderRadius.circular(24),
-                      child: Observer(
-                        builder: (_) {
-                          if (store.profileImage != null) {
-                            return ClipRRect(
-                              borderRadius: BorderRadius.circular(24),
-                              child: Image.file(
-                                File(store.profileImage!.path),
-                                fit: BoxFit.cover,
-                              ),
-                            );
-                          } else {
-                            return const Icon(
-                              Icons.add,
-                              color: Colors.black26,
-                            );
-                          }
-                        },
+                      child: InkWell(
+                        onTap: () async => store.pickProfileImage(context),
+                        borderRadius: BorderRadius.circular(24),
+                        child: Observer(
+                          builder: (_) {
+                            if (store.profileImage != null) {
+                              return ClipRRect(
+                                borderRadius: BorderRadius.circular(24),
+                                child: Image.file(
+                                  File(store.profileImage!.path),
+                                  fit: BoxFit.cover,
+                                ),
+                              );
+                            } else {
+                              return const Icon(
+                                Icons.add,
+                                color: Colors.black26,
+                              );
+                            }
+                          },
+                        ),
                       ),
                     ),
                   ),
@@ -615,7 +621,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
         showNextButton: false,
         done: const Text('Done'),
         onDone: () async {
-          if (formKey.currentState!.validate()) {
+          if (formKey.currentState!.validate() && store.profileImage != null && store.allowProfileImage == true) {
             await store.onDone(context);
           } else {
             context.showSnackBarError(message: 'Please fill all the fields.');
