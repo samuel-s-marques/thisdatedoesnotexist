@@ -46,7 +46,7 @@ abstract class OnboardingStoreBase with Store {
   );
 
   @observable
-  bool allowProfileImage = false;
+  bool? allowProfileImage;
 
   @observable
   TextEditingController occupationController = TextEditingController();
