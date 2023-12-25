@@ -10,6 +10,6 @@ class NotificationModule extends Module {
 
   @override
   void routes(r) {
-    r.child('/', child: (context) => const NotificationPage());
+    r.child('/', child: (context) => NotificationPage());
   }
 }
