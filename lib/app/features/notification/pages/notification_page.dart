@@ -1,13 +1,26 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_modular/flutter_modular.dart';
 import 'package:thisdatedoesnotexist/app/core/models/notification_model.dart';
 import 'package:thisdatedoesnotexist/app/features/notification/store/notification_store.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
-class NotificationPage extends StatelessWidget {
-  NotificationPage({super.key});
+class NotificationPage extends StatefulWidget {
+  const NotificationPage({super.key});
 
-  final NotificationStore store = NotificationStore();
+  @override
+  State<NotificationPage> createState() => _NotificationPageState();
+}
+
+class _NotificationPageState extends State<NotificationPage> {
+  final NotificationStore store = Modular.get();
+
+  @override
+  void initState() {
+    super.initState();
+
+    store.setNotificationState(value: false);
+  }
 
   @override
   Widget build(BuildContext context) {
