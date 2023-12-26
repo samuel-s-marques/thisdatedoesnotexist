@@ -25,4 +25,17 @@ abstract class NotificationStoreBase with Store {
 
     return response.data;
   }
+
+  @observable
+  bool hasNotifications = false;
+
+  @action
+  void setNotificationState({required bool value}) {
+    hasNotifications = value;
+  }
+
+  @action
+  void handleOneSignalNotification() {
+    print('aaaaoiii');
+  }
 }
