@@ -5,6 +5,8 @@ import 'package:thisdatedoesnotexist/app/features/auth/store/auth_store.dart';
 import 'package:thisdatedoesnotexist/app/features/chat/chat_module.dart';
 import 'package:thisdatedoesnotexist/app/features/home/home_module.dart';
 import 'package:thisdatedoesnotexist/app/features/home/store/home_store.dart';
+import 'package:thisdatedoesnotexist/app/features/notification/notification_module.dart';
+import 'package:thisdatedoesnotexist/app/features/notification/store/notification_store.dart';
 import 'package:thisdatedoesnotexist/app/features/onboarding/onboarding_module.dart';
 import 'package:thisdatedoesnotexist/app/features/onboarding/store/onboarding_store.dart';
 import 'package:thisdatedoesnotexist/app/features/settings/settings_module.dart';
@@ -13,10 +15,11 @@ import 'package:thisdatedoesnotexist/app/features/settings/store/settings_store.
 class AppModule extends Module {
   @override
   void binds(i) {
-    i.add((i) => AuthStore());
-    i.add((i) => OnboardingStore());
-    i.add((i) => HomeStore());
-    i.add((i) => SettingsStore());
+    i.addSingleton(NotificationStore.new);
+    i.add<AuthStore>((i) => AuthStore());
+    i.add<OnboardingStore>((i) => OnboardingStore());
+    i.add<HomeStore>((i) => HomeStore());
+    i.add<SettingsStore>((i) => SettingsStore());
   }
 
   @override
@@ -26,5 +29,6 @@ class AppModule extends Module {
     r.module('/home', module: HomeModule());
     r.module('/chat', module: const ChatModule());
     r.module('/settings', module: SettingsModule());
+    r.module('/notifications', module: NotificationModule());
   }
 }

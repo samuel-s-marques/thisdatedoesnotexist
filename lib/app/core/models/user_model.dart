@@ -59,10 +59,10 @@ class UserModel {
       lastSwipe: map['last_swipe'] != null ? DateTime.parse(map['last_swipe']) : null,
       availableSwipes: map['available_swipes'],
       active: map['active'] != 0,
-      relationshipGoal: map['relationship_goal'] != null ? BaseModel.fromMap(map['relationship_goal'] as Map<String, dynamic>) : null,
-      pronoun: map['pronoun'] != null ? Pronoun.fromMap(map['pronoun'] as Map<String, dynamic>) : null,
-      hobbies: (map['hobbies'] as List<dynamic>?)?.map((hobbyMap) => Hobby.fromMap(hobbyMap as Map<String, dynamic>)).toList(),
-      preferences: map['preferences'] != null ? Preferences.fromMap(map['preferences'] as Map<String, dynamic>) : null,
+      relationshipGoal: map['relationship_goal'] != null ? BaseModel.fromMap(map['relationship_goal']) : null,
+      pronoun: map['pronoun'] != null ? Pronoun.fromMap(map['pronoun']) : null,
+      hobbies: (map['hobbies'] as List<dynamic>?)?.map((hobbyMap) => Hobby.fromMap(hobbyMap)).toList(),
+      preferences: map['preferences'] != null ? Preferences.fromMap(map['preferences']) : null,
     );
   }
 
