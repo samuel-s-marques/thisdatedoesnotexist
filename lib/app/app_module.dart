@@ -15,11 +15,11 @@ import 'package:thisdatedoesnotexist/app/features/settings/store/settings_store.
 class AppModule extends Module {
   @override
   void binds(i) {
-    i.add((i) => AuthStore());
-    i.add((i) => OnboardingStore());
-    i.add((i) => HomeStore());
-    i.add((i) => SettingsStore());
-    i.add((i) => NotificationStore());
+    i.addSingleton(NotificationStore.new);
+    i.add<AuthStore>((i) => AuthStore());
+    i.add<OnboardingStore>((i) => OnboardingStore());
+    i.add<HomeStore>((i) => HomeStore());
+    i.add<SettingsStore>((i) => SettingsStore());
   }
 
   @override
