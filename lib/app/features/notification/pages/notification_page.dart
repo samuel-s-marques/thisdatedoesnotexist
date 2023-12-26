@@ -48,7 +48,7 @@ class _NotificationPageState extends State<NotificationPage> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             CircleAvatar(
-                              backgroundImage: CachedNetworkImageProvider(notification.image!),
+                              backgroundImage: CachedNetworkImageProvider('${store.server}/uploads/${notification.image!}'),
                             )
                           ],
                         )
