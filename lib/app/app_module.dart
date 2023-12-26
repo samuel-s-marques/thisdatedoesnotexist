@@ -1,5 +1,6 @@
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:thisdatedoesnotexist/app/core/route_guards/auth_guard.dart';
+import 'package:thisdatedoesnotexist/app/core/store/connectivity_store.dart';
 import 'package:thisdatedoesnotexist/app/features/auth/auth_module.dart';
 import 'package:thisdatedoesnotexist/app/features/auth/store/auth_store.dart';
 import 'package:thisdatedoesnotexist/app/features/chat/chat_module.dart';
@@ -16,6 +17,7 @@ class AppModule extends Module {
   @override
   void binds(i) {
     i.addSingleton(NotificationStore.new);
+    i.addSingleton(ConnectivityStore.new);
     i.add<AuthStore>((i) => AuthStore());
     i.add<OnboardingStore>((i) => OnboardingStore());
     i.add<HomeStore>((i) => HomeStore());
