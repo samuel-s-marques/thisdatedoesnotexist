@@ -7,6 +7,7 @@ import 'package:thisdatedoesnotexist/app/core/models/user_model.dart';
 import 'package:thisdatedoesnotexist/app/core/util.dart';
 import 'package:thisdatedoesnotexist/app/features/home/store/home_store.dart';
 import 'package:thisdatedoesnotexist/app/features/home/widgets/card_widget.dart';
+import 'package:thisdatedoesnotexist/app/features/notification/store/notification_store.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -17,6 +18,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   HomeStore store = HomeStore();
+  NotificationStore notificationStore = Modular.get<NotificationStore>();
   Future<bool?>? _future;
 
   @override
@@ -260,10 +262,28 @@ class _HomePageState extends State<HomePage> {
                         icon: const Icon(Icons.tune),
                       ),
                       const SizedBox(width: 10),
-                      IconButton(
-                        onPressed: () => Modular.to.pushNamed('/notifications/'),
-                        icon: const Icon(Icons.notifications_outlined),
-                      )
+                      Observer(
+                        builder: (_) => IconButton(
+                          onPressed: () => Modular.to.pushNamed('/notifications/'),
+                          icon: Stack(
+                            alignment: Alignment.topRight,
+                            children: [
+                              const Icon(
+                                Icons.notifications_outlined,
+                              ),
+                              if (notificationStore.hasNotifications)
+                                Container(
+                                  height: 6,
+                                  width: 6,
+                                  decoration: const BoxDecoration(
+                                    color: Colors.red,
+                                    shape: BoxShape.circle,
+                                  ),
+                                ),
+                            ],
+                          ),
+                        ),
+                      ),
                     ],
                   );
                 } else if (appbarName == 'Chat') {
@@ -367,16 +387,30 @@ class _HomePageState extends State<HomePage> {
       ),
       bottomNavigationBar: Observer(
         builder: (_) => BottomNavigationBar(
-          items: const [
+          items: [
             BottomNavigationBarItem(
-              icon: Icon(Icons.home),
+              icon: Stack(
+                alignment: Alignment.topRight,
+                children: [
+                  const Icon(Icons.home),
+                  if (notificationStore.hasNotifications && store.selectedIndex != 0)
+                    Container(
+                      height: 6,
+                      width: 6,
+                      decoration: const BoxDecoration(
+                        color: Colors.red,
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                ],
+              ),
               label: 'Home',
             ),
-            BottomNavigationBarItem(
+            const BottomNavigationBarItem(
               icon: Icon(Icons.chat_bubble),
               label: 'Chat',
             ),
-            BottomNavigationBarItem(
+            const BottomNavigationBarItem(
               icon: Icon(Icons.person),
               label: 'Profile',
             ),
