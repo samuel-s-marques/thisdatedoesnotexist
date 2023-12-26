@@ -33,9 +33,4 @@ abstract class NotificationStoreBase with Store {
   void setNotificationState({required bool value}) {
     hasNotifications = value;
   }
-
-  @action
-  void handleOneSignalNotification() {
-    print('aaaaoiii');
-  }
 }
