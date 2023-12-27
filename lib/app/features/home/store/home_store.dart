@@ -374,7 +374,7 @@ abstract class HomeStoreBase with Store {
       );
 
       if (response.statusCode == 200) {
-        cards = ObservableList.of((response.data['data'] as List<dynamic>).map((e) => UserModel.fromMap(e)).toList());
+        cards = ObservableList.of((response.data['data'] as List<dynamic>).map((e) => UserModel.fromMap(e['profile'])).toList());
 
         if (cards.isEmpty) {
           return false;
