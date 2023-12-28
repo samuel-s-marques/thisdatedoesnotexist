@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:mobx/mobx.dart';
+import 'package:thisdatedoesnotexist/app/core/models/user_model.dart';
 import 'package:thisdatedoesnotexist/app/core/services/auth_service.dart';
 import 'package:thisdatedoesnotexist/app/core/services/dio_service.dart';
 import 'package:uuid/uuid.dart';
@@ -18,6 +19,9 @@ abstract class ChatStoreBase with Store {
   String wssServer = const String.fromEnvironment('WSS_SERVER');
   final DioService dio = DioService();
 
+  @observable
+  UserModel? character;
+
   @action
   Future<dynamic> getChats() async {
     authenticatedUser ??= authService.getUser();
@@ -28,12 +32,16 @@ abstract class ChatStoreBase with Store {
   }
 
   @action
-  Future<dynamic> getCharacterById(String id) async {
+  Future<UserModel?> getCharacterById(String id) async {
     authenticatedUser ??= authService.getUser();
 
     final Response<dynamic> response = await dio.get('$server/api/characters/$id', options: DioOptions());
 
-    return response.data;
+    if (response.statusCode == 200) {
+      character = UserModel.fromMap(response.data);
+    }
+
+    return character;
   }
 
   @action
