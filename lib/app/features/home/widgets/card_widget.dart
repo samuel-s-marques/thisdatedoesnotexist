@@ -129,8 +129,7 @@ class CardWidget extends StatelessWidget {
                                   const Icon(Icons.home_outlined),
                                   const SizedBox(width: 5),
                                   Text(
-                                    // todo: add country flag
-                                    'Lives in ${character.country}',
+                                    'Lives in ${character.country!} ${countryNameToEmoji(character.country!)}',
                                     style: const TextStyle(fontSize: 16),
                                   ),
                                 ],
