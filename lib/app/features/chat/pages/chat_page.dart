@@ -121,17 +121,22 @@ class _ChatPageState extends State<ChatPage> {
           return Scaffold(
             appBar: AppBar(
               leadingWidth: 30,
-              title: Row(
-                children: [
-                  CircleAvatar(
-                    maxRadius: 18,
-                    backgroundImage: CachedNetworkImageProvider(
-                      '${store.server}/uploads/characters/${character.uid}.png',
+              flexibleSpace: InkWell(
+                onTap: () {},
+              ),
+              title: IgnorePointer(
+                child: Row(
+                  children: [
+                    CircleAvatar(
+                      maxRadius: 18,
+                      backgroundImage: CachedNetworkImageProvider(
+                        '${store.server}/uploads/characters/${character.uid}.png',
+                      ),
                     ),
-                  ),
-                  const SizedBox(width: 10),
-                  Text('${character.name} ${character.surname}'),
-                ],
+                    const SizedBox(width: 10),
+                    Text('${character.name} ${character.surname}'),
+                  ],
+                ),
               ),
             ),
             body: Chat(
