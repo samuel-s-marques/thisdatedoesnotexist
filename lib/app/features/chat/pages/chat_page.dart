@@ -129,7 +129,6 @@ class _ChatPageState extends State<ChatPage> {
             ),
             endDrawerEnableOpenDragGesture: false,
             appBar: AppBar(
-              leadingWidth: 30,
               flexibleSpace: InkWell(
                 onTap: () {
                   key.currentState!.openEndDrawer();
@@ -149,6 +148,7 @@ class _ChatPageState extends State<ChatPage> {
                   ],
                 ),
               ),
+              titleSpacing: 0,
               actions: [
                 IconButton(
                   onPressed: () {},
