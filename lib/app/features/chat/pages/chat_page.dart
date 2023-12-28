@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 // ignore: depend_on_referenced_packages
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
+import 'package:flutter_modular/flutter_modular.dart';
 import 'package:thisdatedoesnotexist/app/core/models/user_model.dart';
 import 'package:thisdatedoesnotexist/app/core/util.dart';
 import 'package:thisdatedoesnotexist/app/features/chat/store/chat_store.dart';
@@ -24,7 +25,7 @@ class ChatPage extends StatefulWidget {
 }
 
 class _ChatPageState extends State<ChatPage> {
-  ChatStore store = ChatStore();
+  ChatStore store = Modular.get<ChatStore>();
   Future<dynamic>? future;
   List<types.Message> _messages = [];
   types.User? _user;
@@ -116,7 +117,7 @@ class _ChatPageState extends State<ChatPage> {
       future: future,
       builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
         if (snapshot.hasData) {
-          final UserModel character = UserModel.fromMap(snapshot.data);
+          final UserModel character = snapshot.data;
 
           return Scaffold(
             appBar: AppBar(
