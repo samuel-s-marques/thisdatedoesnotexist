@@ -93,6 +93,17 @@ class CardWidget extends StatelessWidget {
                               const SizedBox(height: 10),
                               Row(
                                 children: [
+                                  Icon(getGenderIconByName(character.sex!)),
+                                  const SizedBox(width: 5),
+                                  Text(
+                                    replaceGender(character.sex!).capitalize(),
+                                    style: const TextStyle(fontSize: 16),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 5),
+                              Row(
+                                children: [
                                   const Icon(Icons.straighten_outlined),
                                   const SizedBox(width: 5),
                                   Text(
