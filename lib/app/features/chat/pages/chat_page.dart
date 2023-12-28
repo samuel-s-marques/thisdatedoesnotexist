@@ -9,6 +9,7 @@ import 'package:flutter_modular/flutter_modular.dart';
 import 'package:thisdatedoesnotexist/app/core/models/user_model.dart';
 import 'package:thisdatedoesnotexist/app/core/util.dart';
 import 'package:thisdatedoesnotexist/app/features/chat/store/chat_store.dart';
+import 'package:thisdatedoesnotexist/app/features/chat/widgets/profile_drawer.dart';
 import 'package:uuid/uuid.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
@@ -33,6 +34,7 @@ class _ChatPageState extends State<ChatPage> {
   WebSocketChannel? channel;
   int page = 1;
   int availablePages = 1;
+  final GlobalKey<ScaffoldState> key = GlobalKey<ScaffoldState>();
 
   @override
   void initState() {
@@ -120,10 +122,18 @@ class _ChatPageState extends State<ChatPage> {
           final UserModel character = snapshot.data;
 
           return Scaffold(
+            key: key,
+            endDrawer: SizedBox(
+              width: double.infinity,
+              child: ProfileDrawer(),
+            ),
+            endDrawerEnableOpenDragGesture: false,
             appBar: AppBar(
               leadingWidth: 30,
               flexibleSpace: InkWell(
-                onTap: () {},
+                onTap: () {
+                  key.currentState!.openEndDrawer();
+                },
               ),
               title: IgnorePointer(
                 child: Row(
