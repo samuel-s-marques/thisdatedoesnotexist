@@ -95,10 +95,10 @@ class _ProfilePageState extends State<ProfilePage> {
                     children: [
                       Row(
                         children: [
-                          Icon(store.genders[user.sex]),
+                          Icon(getGenderIconByName(user.sex!)),
                           const SizedBox(width: 5),
                           Text(
-                            store.genderMap[user.sex]!.capitalize(),
+                            replaceGender(user.sex!).capitalize(),
                             style: const TextStyle(fontSize: 16),
                           ),
                         ],
