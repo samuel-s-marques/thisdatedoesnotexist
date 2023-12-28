@@ -351,7 +351,7 @@ class _HomePageState extends State<HomePage> {
                             ),
                             allowUnSwipe: false,
                             allowUnlimitedUnSwipe: false,
-                            backgroundCardCount: 2,
+                            backgroundCardCount: 0,
                             onSwipeEnd: store.onSwipe,
                             controller: store.cardSwiperController,
                             cardBuilder: (BuildContext context, int index) {
