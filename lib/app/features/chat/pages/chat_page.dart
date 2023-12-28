@@ -149,6 +149,12 @@ class _ChatPageState extends State<ChatPage> {
                   ],
                 ),
               ),
+              actions: [
+                IconButton(
+                  onPressed: () {},
+                  icon: const Icon(Icons.more_vert),
+                )
+              ],
             ),
             body: Chat(
               messages: _messages,
