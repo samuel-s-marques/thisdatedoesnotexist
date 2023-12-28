@@ -100,3 +100,15 @@ String countryCodeToEmoji(String countryCode) {
 String countryNameToEmoji(String countryName) {
   return countryCodeToEmoji(appConstants.countryNames[countryName]!);
 }
+
+String replaceGender(String text) {
+  text = text.replaceAll('male', 'man');
+  text = text.replaceAll('female', 'woman');
+  return text;
+}
+
+IconData getGenderIconByName(String sex) {
+  final Map<String, IconData> genders = {'male': Icons.male_outlined, 'female': Icons.female_outlined};
+
+  return genders[sex]!;
+}
