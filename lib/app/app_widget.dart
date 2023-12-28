@@ -15,9 +15,7 @@ class AppWidget extends StatelessWidget {
           overlayShape: SliderComponentShape.noOverlay,
         ),
         drawerTheme: const DrawerThemeData(
-          endShape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.zero,
-          ),
+          endShape: RoundedRectangleBorder(),
         ),
       ),
     );
