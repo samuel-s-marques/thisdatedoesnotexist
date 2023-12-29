@@ -44,7 +44,49 @@ class CardWidget extends StatelessWidget {
           ),
           IconButton(
             onPressed: () {
-              // TODO: Implement report image feature
+              showModalBottomSheet(
+                context: context,
+                enableDrag: true,
+                useSafeArea: true,
+                showDragHandle: true,
+                builder: (BuildContext context) {
+                  return ListView(
+                    children: [
+                      const Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 24),
+                        child: Text(
+                          'Report',
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      ListTile(
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 24),
+                        title: const Text('Inappropriate content'),
+                        leading: const Icon(Icons.no_adult_content_outlined),
+                        onTap: () {},
+                      ),
+                      const SizedBox(height: 10),
+                      ListTile(
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 24),
+                        title: const Text('Bug'),
+                        leading: const Icon(Icons.bug_report_outlined),
+                        onTap: () {},
+                      ),
+                      const SizedBox(height: 10),
+                      ListTile(
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 24),
+                        title: const Text('Other'),
+                        leading: const Icon(Icons.report_outlined),
+                        onTap: () {},
+                      ),
+                    ],
+                  );
+                },
+              );
             },
             iconSize: 28,
             icon: const Icon(
