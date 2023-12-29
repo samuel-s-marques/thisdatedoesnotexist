@@ -81,7 +81,40 @@ class CardWidget extends StatelessWidget {
                         contentPadding: const EdgeInsets.symmetric(horizontal: 24),
                         title: const Text('Other'),
                         leading: const Icon(Icons.report_outlined),
-                        onTap: () {},
+                        onTap: () {
+                          Navigator.pop(context);
+                          final TextEditingController _controller = TextEditingController();
+
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: const Text('Report'),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () {},
+                                    child: const Text('Send Report'),
+                                  ),
+                                ],
+                                content: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const Text('Please describe the issue:'),
+                                    const SizedBox(height: 10),
+                                    TextField(
+                                      controller: _controller,
+                                      textCapitalization: TextCapitalization.sentences,
+                                      decoration: const InputDecoration(
+                                        hintText: 'Description',
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
+                          );
+                        },
                       ),
                     ],
                   );
