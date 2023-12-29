@@ -5,9 +5,11 @@ import 'package:flutter/material.dart';
 // ignore: depend_on_referenced_packages
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
+import 'package:flutter_modular/flutter_modular.dart';
 import 'package:thisdatedoesnotexist/app/core/models/user_model.dart';
 import 'package:thisdatedoesnotexist/app/core/util.dart';
 import 'package:thisdatedoesnotexist/app/features/chat/store/chat_store.dart';
+import 'package:thisdatedoesnotexist/app/features/chat/widgets/profile_drawer.dart';
 import 'package:uuid/uuid.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
@@ -24,7 +26,7 @@ class ChatPage extends StatefulWidget {
 }
 
 class _ChatPageState extends State<ChatPage> {
-  ChatStore store = ChatStore();
+  ChatStore store = Modular.get<ChatStore>();
   Future<dynamic>? future;
   List<types.Message> _messages = [];
   types.User? _user;
@@ -32,6 +34,7 @@ class _ChatPageState extends State<ChatPage> {
   WebSocketChannel? channel;
   int page = 1;
   int availablePages = 1;
+  final GlobalKey<ScaffoldState> key = GlobalKey<ScaffoldState>();
 
   @override
   void initState() {
@@ -116,23 +119,42 @@ class _ChatPageState extends State<ChatPage> {
       future: future,
       builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
         if (snapshot.hasData) {
-          final UserModel character = UserModel.fromMap(snapshot.data);
+          final UserModel character = snapshot.data;
 
           return Scaffold(
+            key: key,
+            endDrawer: SizedBox(
+              width: double.infinity,
+              child: ProfileDrawer(),
+            ),
+            endDrawerEnableOpenDragGesture: false,
             appBar: AppBar(
-              leadingWidth: 30,
-              title: Row(
-                children: [
-                  CircleAvatar(
-                    maxRadius: 18,
-                    backgroundImage: CachedNetworkImageProvider(
-                      '${store.server}/uploads/characters/${character.uid}.png',
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  Text('${character.name} ${character.surname}'),
-                ],
+              flexibleSpace: InkWell(
+                onTap: () {
+                  key.currentState!.openEndDrawer();
+                },
               ),
+              title: IgnorePointer(
+                child: Row(
+                  children: [
+                    CircleAvatar(
+                      maxRadius: 18,
+                      backgroundImage: CachedNetworkImageProvider(
+                        '${store.server}/uploads/characters/${character.uid}.png',
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Text('${character.name} ${character.surname}'),
+                  ],
+                ),
+              ),
+              titleSpacing: 0,
+              actions: [
+                IconButton(
+                  onPressed: () {},
+                  icon: const Icon(Icons.more_vert),
+                )
+              ],
             ),
             body: Chat(
               messages: _messages,

@@ -4,6 +4,7 @@ import 'package:thisdatedoesnotexist/app/core/store/connectivity_store.dart';
 import 'package:thisdatedoesnotexist/app/features/auth/auth_module.dart';
 import 'package:thisdatedoesnotexist/app/features/auth/store/auth_store.dart';
 import 'package:thisdatedoesnotexist/app/features/chat/chat_module.dart';
+import 'package:thisdatedoesnotexist/app/features/chat/store/chat_store.dart';
 import 'package:thisdatedoesnotexist/app/features/home/home_module.dart';
 import 'package:thisdatedoesnotexist/app/features/home/store/home_store.dart';
 import 'package:thisdatedoesnotexist/app/features/notification/notification_module.dart';
@@ -22,6 +23,7 @@ class AppModule extends Module {
     i.add<OnboardingStore>((i) => OnboardingStore());
     i.add<HomeStore>((i) => HomeStore());
     i.add<SettingsStore>((i) => SettingsStore());
+    i.addSingleton(ChatStore.new);
   }
 
   @override

@@ -14,6 +14,9 @@ class AppWidget extends StatelessWidget {
         sliderTheme: SliderThemeData(
           overlayShape: SliderComponentShape.noOverlay,
         ),
+        drawerTheme: const DrawerThemeData(
+          endShape: RoundedRectangleBorder(),
+        ),
       ),
     );
   }

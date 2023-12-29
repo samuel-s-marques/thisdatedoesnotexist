@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:thisdatedoesnotexist/app/core/constants.dart';
+
+AppConstants appConstants = AppConstants();
 
 double checkDouble(dynamic value) {
   if (value is String) {
@@ -92,4 +95,24 @@ String countryCodeToEmoji(String countryCode) {
   final int firstLetter = countryCode.codeUnitAt(0) - 0x41 + 0x1F1E6;
   final int secondLetter = countryCode.codeUnitAt(1) - 0x41 + 0x1F1E6;
   return String.fromCharCode(firstLetter) + String.fromCharCode(secondLetter);
+}
+
+String countryNameToEmoji(String countryName) {
+  if (appConstants.countryNames[countryName] == null) {
+    return '';
+  }
+
+  return countryCodeToEmoji(appConstants.countryNames[countryName]!);
+}
+
+String replaceGender(String text) {
+  final Map<String, String> genders = {'male': 'man', 'female': 'woman'};
+
+  return genders[text]!;
+}
+
+IconData getGenderIconByName(String sex) {
+  final Map<String, IconData> genders = {'male': Icons.male_outlined, 'female': Icons.female_outlined};
+
+  return genders[sex]!;
 }

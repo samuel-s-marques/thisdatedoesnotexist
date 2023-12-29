@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:thisdatedoesnotexist/app/features/profile/widgets/section_widget.dart';
+import 'package:thisdatedoesnotexist/app/core/widgets/section_widget.dart';
 
 class SettingsSection extends StatelessWidget {
   const SettingsSection({

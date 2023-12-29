@@ -1,5 +1,4 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
 import 'package:mobx/mobx.dart';
 import 'package:thisdatedoesnotexist/app/core/models/user_model.dart';
 import 'package:thisdatedoesnotexist/app/core/services/auth_service.dart';
@@ -14,8 +13,6 @@ abstract class ProfileStoreBase with Store {
   DatabaseService databaseService = DatabaseService();
   AuthService authService = AuthService();
   User? authenticatedUser;
-  final Map<String, String> genderMap = {'male': 'Man', 'female': 'Woman'};
-  final Map<String, IconData> genders = {'male': Icons.male_outlined, 'female': Icons.female_outlined};
 
   @action
   Future<UserModel?> getUser() async {

@@ -3,8 +3,8 @@ import 'package:country_code_picker/country_code_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:thisdatedoesnotexist/app/core/models/user_model.dart';
 import 'package:thisdatedoesnotexist/app/core/util.dart';
+import 'package:thisdatedoesnotexist/app/core/widgets/section_widget.dart';
 import 'package:thisdatedoesnotexist/app/features/profile/store/profile_store.dart';
-import 'package:thisdatedoesnotexist/app/features/profile/widgets/section_widget.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -95,10 +95,10 @@ class _ProfilePageState extends State<ProfilePage> {
                     children: [
                       Row(
                         children: [
-                          Icon(store.genders[user.sex]),
+                          Icon(getGenderIconByName(user.sex!)),
                           const SizedBox(width: 5),
                           Text(
-                            store.genderMap[user.sex]!.capitalize(),
+                            replaceGender(user.sex!).capitalize(),
                             style: const TextStyle(fontSize: 16),
                           ),
                         ],
