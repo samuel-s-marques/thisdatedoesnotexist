@@ -33,7 +33,7 @@ class CardWidget extends StatelessWidget {
         'type': type,
       });
 
-      if (response.statusCode == 201) {
+      if (response.statusCode == 200) {
         Navigator.pop(context);
         context.showSnackBarSuccess(message: 'Report sent successfully');
       }
