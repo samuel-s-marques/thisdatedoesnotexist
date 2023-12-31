@@ -1,18 +1,46 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:thisdatedoesnotexist/app/core/models/user_model.dart';
+import 'package:thisdatedoesnotexist/app/core/services/dio_service.dart';
 import 'package:thisdatedoesnotexist/app/core/util.dart';
 import 'package:thisdatedoesnotexist/app/core/widgets/section_widget.dart';
+import 'package:thisdatedoesnotexist/app/features/home/store/home_store.dart';
 
 class CardWidget extends StatelessWidget {
   const CardWidget({
     super.key,
     required this.character,
     required this.imageUrl,
+    required this.dio,
+    required this.homeStore,
   });
 
   final UserModel character;
   final String imageUrl;
+  final DioService dio;
+  final HomeStore homeStore;
+
+  Future<void> sendReport({
+    required BuildContext context,
+    required String type,
+    String? description,
+  }) async {
+    try {
+      final Response<dynamic> response = await dio.post('${homeStore.server}/api/reports', data: {
+        'user_uid': homeStore.authenticatedUser!.uid,
+        'character_uid': character.uid,
+        'type': type,
+      });
+
+      if (response.statusCode == 201) {
+        Navigator.pop(context);
+        context.showSnackBarSuccess(message: 'Report sent successfully');
+      }
+    } catch (e) {
+      context.showSnackBarError(message: 'Something went wrong, please try again later');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -67,14 +95,14 @@ class CardWidget extends StatelessWidget {
                         contentPadding: const EdgeInsets.symmetric(horizontal: 24),
                         title: const Text('Inappropriate content'),
                         leading: const Icon(Icons.no_adult_content_outlined),
-                        onTap: () {},
+                        onTap: () async => sendReport(context: context, type: 'inappropriate content'),
                       ),
                       const SizedBox(height: 10),
                       ListTile(
                         contentPadding: const EdgeInsets.symmetric(horizontal: 24),
                         title: const Text('Bug'),
                         leading: const Icon(Icons.bug_report_outlined),
-                        onTap: () {},
+                        onTap: () async => sendReport(context: context, type: 'bug'),
                       ),
                       const SizedBox(height: 10),
                       ListTile(
@@ -92,7 +120,11 @@ class CardWidget extends StatelessWidget {
                                 title: const Text('Report'),
                                 actions: [
                                   TextButton(
-                                    onPressed: () {},
+                                    onPressed: () async => sendReport(
+                                      context: context,
+                                      type: 'other',
+                                      description: _controller.text.trim(),
+                                    ),
                                     child: const Text('Send Report'),
                                   ),
                                 ],
