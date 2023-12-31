@@ -71,6 +71,30 @@ class ProfileDrawer extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 10),
+              if (store.character!.status != 'normal')
+                Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      width: double.maxFinite,
+                      decoration: BoxDecoration(
+                        color: store.character!.status == 'banned' ? Colors.red : Colors.yellow,
+                        borderRadius: BorderRadius.circular(5),
+                      ),
+                      padding: const EdgeInsets.all(10),
+                      child: Text(
+                        'This character was ${store.character!.status} for ${store.character!.statusReason}.',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 15,
+                          color: store.character!.status == 'banned' ? Colors.white : Colors.black,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                  ],
+                ),
               Wrap(
                 runSpacing: 5,
                 children: [
