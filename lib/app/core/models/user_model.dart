@@ -29,6 +29,9 @@ class UserModel {
     this.active,
     this.relationshipGoal,
     this.hobbies,
+    this.status,
+    this.statusReason,
+    this.statusUntil,
     this.preferences,
   });
 
@@ -63,6 +66,9 @@ class UserModel {
       pronoun: map['pronoun'] != null ? Pronoun.fromMap(map['pronoun']) : null,
       hobbies: (map['hobbies'] as List<dynamic>?)?.map((hobbyMap) => Hobby.fromMap(hobbyMap)).toList(),
       preferences: map['preferences'] != null ? Preferences.fromMap(map['preferences']) : null,
+      status: map['status'],
+      statusReason: map['status_reason'],
+      statusUntil: map['status_until'] != null ? DateTime.parse(map['status_until']) : null,
     );
   }
 
@@ -86,6 +92,9 @@ class UserModel {
   final String? imageUrl;
   final int? availableSwipes;
   final bool? active;
+  final String? status;
+  final String? statusReason;
+  final DateTime? statusUntil;
   final DateTime? lastSwipe;
   final BaseModel? relationshipGoal;
   final List<Hobby>? hobbies;
@@ -109,6 +118,9 @@ class UserModel {
       'available_swipes': availableSwipes ?? 20,
       'last_swipe': lastSwipe?.toIso8601String(),
       'active': active ?? false,
+      'status': status,
+      'status_reason': statusReason,
+      'status_until': statusUntil?.toIso8601String(),
       'relationship_goal': relationshipGoal?.toMap(),
       'hobbies': hobbies?.map((Hobby hobby) => hobby.toMap()).toList(),
       'preferences': preferences?.toMap(),
