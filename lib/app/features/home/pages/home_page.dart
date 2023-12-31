@@ -6,7 +6,6 @@ import 'package:flutter_modular/flutter_modular.dart';
 import 'package:mobx/mobx.dart';
 import 'package:thisdatedoesnotexist/app/core/models/base_model.dart';
 import 'package:thisdatedoesnotexist/app/core/models/user_model.dart';
-import 'package:thisdatedoesnotexist/app/core/services/dio_service.dart';
 import 'package:thisdatedoesnotexist/app/core/store/connectivity_store.dart';
 import 'package:thisdatedoesnotexist/app/core/util.dart';
 import 'package:thisdatedoesnotexist/app/features/home/store/home_store.dart';
