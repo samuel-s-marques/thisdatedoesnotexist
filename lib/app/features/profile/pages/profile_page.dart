@@ -90,6 +90,30 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                   ),
                   const SizedBox(height: 10),
+                  if (user.status != 'normal')
+                    Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          width: double.maxFinite,
+                          decoration: BoxDecoration(
+                            color: user.status == 'banned' ? Colors.red : Colors.yellow,
+                            borderRadius: BorderRadius.circular(5),
+                          ),
+                          padding: const EdgeInsets.all(10),
+                          child: Text(
+                            'This user was ${user.status} for ${user.statusReason}.',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 15,
+                              color: user.status == 'banned' ? Colors.white : Colors.black,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                      ],
+                    ),
                   Wrap(
                     runSpacing: 5,
                     children: [
