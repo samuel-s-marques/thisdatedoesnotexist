@@ -6,6 +6,7 @@ import 'package:flutter_modular/flutter_modular.dart';
 import 'package:mobx/mobx.dart';
 import 'package:thisdatedoesnotexist/app/core/models/base_model.dart';
 import 'package:thisdatedoesnotexist/app/core/models/user_model.dart';
+import 'package:thisdatedoesnotexist/app/core/services/dio_service.dart';
 import 'package:thisdatedoesnotexist/app/core/store/connectivity_store.dart';
 import 'package:thisdatedoesnotexist/app/core/util.dart';
 import 'package:thisdatedoesnotexist/app/features/home/store/home_store.dart';
@@ -358,6 +359,8 @@ class _HomePageState extends State<HomePage> {
                               final UserModel character = store.cards[index];
 
                               return CardWidget(
+                                homeStore: store,
+                                dio: store.dio,
                                 character: character,
                                 imageUrl: '${store.server}/uploads/characters/${character.uid}.png',
                               );
