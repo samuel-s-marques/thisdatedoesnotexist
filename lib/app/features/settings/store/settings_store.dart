@@ -1,8 +1,11 @@
+import 'package:dio/dio.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:mobx/mobx.dart';
 import 'package:thisdatedoesnotexist/app/core/enum/auth_status_enum.dart';
 import 'package:thisdatedoesnotexist/app/core/services/auth_service.dart';
 import 'package:thisdatedoesnotexist/app/core/services/cache_service.dart';
+import 'package:thisdatedoesnotexist/app/core/services/dio_service.dart';
 import 'package:thisdatedoesnotexist/app/core/util.dart';
 
 part 'settings_store.g.dart';
@@ -11,6 +14,8 @@ class SettingsStore = SettingsStoreBase with _$SettingsStore;
 
 abstract class SettingsStoreBase with Store {
   AuthService authService = AuthService();
+  User? authenticatedUser;
+  DioService dio = DioService();
   String server = const String.fromEnvironment('SERVER');
 
   // TODO: move to JSON file
@@ -71,5 +76,17 @@ abstract class SettingsStoreBase with Store {
     } else {
       context.showSnackBarError(message: 'Error logging out. Try again later.');
     }
+  }
+
+  @action
+  Future<dynamic> getReportedCharacters() async {
+    authenticatedUser ??= authService.getUser();
+
+    final Response<dynamic> response = await dio.get(
+      '$server/api/reports?uid=${authenticatedUser?.uid}',
+      options: DioOptions(),
+    );
+
+    return response.data;
   }
 }
