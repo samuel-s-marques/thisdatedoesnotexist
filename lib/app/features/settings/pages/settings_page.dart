@@ -39,7 +39,7 @@ class _SettingsPageState extends State<SettingsPage> {
               title: 'Security',
               leading: const Icon(Icons.security),
               trailing: const Icon(Icons.arrow_forward_ios),
-              onTap: () {},
+              onTap: () => Modular.to.pushNamed('security'),
             ),
             SettingsTile(
               title: 'Notifications',
