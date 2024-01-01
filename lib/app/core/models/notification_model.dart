@@ -5,6 +5,7 @@ class NotificationModel {
     this.subtitle,
     this.image,
     this.updatedAt,
+    this.type,
   });
 
   factory NotificationModel.fromMap(Map<dynamic, dynamic> map) {
@@ -13,6 +14,7 @@ class NotificationModel {
       title: map['title'] as String,
       subtitle: map['subtitle'] as String,
       image: map['image'] as String,
+      type: map['type'] as String,
       updatedAt: DateTime.parse(map['updated_at']),
     );
   }
@@ -23,6 +25,7 @@ class NotificationModel {
       'title': title,
       'subtitle': subtitle,
       'image': image,
+      'type': type,
     };
   }
 
@@ -36,7 +39,13 @@ class NotificationModel {
       return false;
     }
 
-    return other is NotificationModel && other.id == id && other.title == title && other.subtitle == subtitle && other.image == image && other.updatedAt == updatedAt;
+    return other is NotificationModel &&
+        other.id == id &&
+        other.title == title &&
+        other.subtitle == subtitle &&
+        other.image == image &&
+        other.type == type &&
+        other.updatedAt == updatedAt;
   }
 
   @override
@@ -47,4 +56,5 @@ class NotificationModel {
   final String? subtitle;
   final String? image;
   final DateTime? updatedAt;
+  final String? type;
 }
