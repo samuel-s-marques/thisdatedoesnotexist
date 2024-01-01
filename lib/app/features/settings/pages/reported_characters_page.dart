@@ -28,9 +28,10 @@ class ReportedCharactersPage extends StatelessWidget {
                   ),
                 ),
                 ListView.builder(
-                  itemCount: 0,
+                  itemCount: snapshot.data.length,
+                  shrinkWrap: true,
                   itemBuilder: (BuildContext context, int index) {
-                    final Map<String, dynamic> data = snapshot.data[index];
+                    final Map<String, dynamic> data = snapshot.data['data'][index];
                     final String type = data['type'];
                     final UserModel character = UserModel.fromMap(data['character']);
 
@@ -42,7 +43,7 @@ class ReportedCharactersPage extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           CircleAvatar(
-                            backgroundImage: CachedNetworkImageProvider('${store.server}/uploads/${character.uid}.png'),
+                            backgroundImage: CachedNetworkImageProvider('${store.server}/uploads/characters/${character.uid}.png'),
                           )
                         ],
                       ),
