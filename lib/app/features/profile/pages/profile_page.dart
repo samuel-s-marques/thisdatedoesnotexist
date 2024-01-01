@@ -103,7 +103,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           ),
                           padding: const EdgeInsets.all(10),
                           child: Text(
-                            'This user was ${user.status} for ${user.statusReason}.',
+                            'This user was ${user.status} for ${user.statusReason}. ${user.statusUntil != null ? 'It will expire on ${user.statusUntil}' : ''}',
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 15,
