@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_modular/flutter_modular.dart';
 import 'package:thisdatedoesnotexist/app/features/settings/store/settings_store.dart';
 import 'package:thisdatedoesnotexist/app/features/settings/widgets/settings_tile.dart';
 
@@ -34,7 +35,7 @@ class SecurityPage extends StatelessWidget {
           SettingsTile(
             title: 'Reported Characters',
             trailing: const Icon(Icons.arrow_forward_ios),
-            onTap: () {},
+            onTap: () => Modular.to.pushNamed('reported-characters')
           ),
         ],
       ),
