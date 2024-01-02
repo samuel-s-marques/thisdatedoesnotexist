@@ -12,7 +12,7 @@ class SecurityPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Help & Support'),
+        title: const Text('Security'),
       ),
       body: ListView(
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 15),
