@@ -1,5 +1,6 @@
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:thisdatedoesnotexist/app/features/settings/pages/account_information_page.dart';
+import 'package:thisdatedoesnotexist/app/features/settings/pages/account_status_page.dart';
 import 'package:thisdatedoesnotexist/app/features/settings/pages/faq_page.dart';
 import 'package:thisdatedoesnotexist/app/features/settings/pages/help_and_support_page.dart';
 import 'package:thisdatedoesnotexist/app/features/settings/pages/reported_characters_page.dart';
@@ -21,5 +22,6 @@ class SettingsModule extends Module {
     r.child('/faq', child: (context) => const FaqPage());
     r.child('/security', child: (context) => SecurityPage());
     r.child('/reported-characters', child: (context) => ReportedCharactersPage());
+    r.child('/account-status', child: (context) => AccountStatusPage());
   }
 }
