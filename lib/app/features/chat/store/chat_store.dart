@@ -95,6 +95,8 @@ abstract class ChatStoreBase with Store {
 
       if (response.statusCode == 200) {
         context.showSnackBarSuccess(message: 'Report sent successfully');
+      } else {
+        context.showSnackBarError(message: response.data['error'] ?? 'Something went wrong, please try again later');
       }
 
       Navigator.pop(context);
