@@ -35,7 +35,12 @@ class SecurityPage extends StatelessWidget {
           SettingsTile(
             title: 'Reported Characters',
             trailing: const Icon(Icons.arrow_forward_ios),
-            onTap: () => Modular.to.pushNamed('reported-characters')
+            onTap: () => Modular.to.pushNamed('reported-characters'),
+          ),
+          SettingsTile(
+            title: 'Account Status',
+            trailing: const Icon(Icons.arrow_forward_ios),
+            onTap: () => Modular.to.pushNamed('account-status'),
           ),
         ],
       ),
