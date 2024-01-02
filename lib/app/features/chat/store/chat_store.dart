@@ -94,9 +94,10 @@ abstract class ChatStoreBase with Store {
       });
 
       if (response.statusCode == 200) {
-        Navigator.pop(context);
         context.showSnackBarSuccess(message: 'Report sent successfully');
       }
+
+      Navigator.pop(context);
     } catch (e) {
       context.showSnackBarError(message: 'Something went wrong, please try again later');
     }
