@@ -10,8 +10,11 @@ class AccountStatusPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+        title: const Text('Account Status'),
+      ),
       body: SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 15),
         child: FutureBuilder(
           future: store.getAccountStatus(),
           builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
