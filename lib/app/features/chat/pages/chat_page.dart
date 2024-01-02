@@ -150,10 +150,26 @@ class _ChatPageState extends State<ChatPage> {
               ),
               titleSpacing: 0,
               actions: [
-                IconButton(
-                  onPressed: () {},
-                  icon: const Icon(Icons.more_vert),
-                )
+                MenuAnchor(
+                  builder: (BuildContext context, MenuController controller, Widget? child) {
+                    return IconButton(
+                      onPressed: () {
+                        if (controller.isOpen) {
+                          controller.close();
+                        } else {
+                          controller.open();
+                        }
+                      },
+                      icon: const Icon(Icons.more_vert),
+                    );
+                  },
+                  menuChildren: [
+                    MenuItemButton(
+                      child: const Text('Report'),
+                      onPressed: () {},
+                    ),
+                  ],
+                ),
               ],
             ),
             body: Chat(
