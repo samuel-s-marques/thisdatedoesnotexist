@@ -166,7 +166,88 @@ class _ChatPageState extends State<ChatPage> {
                   menuChildren: [
                     MenuItemButton(
                       child: const Text('Report'),
-                      onPressed: () {},
+                      onPressed: () {
+                        showModalBottomSheet(
+                          context: context,
+                          enableDrag: true,
+                          useSafeArea: true,
+                          showDragHandle: true,
+                          builder: (BuildContext context) {
+                            return ListView(
+                              children: [
+                                const Padding(
+                                  padding: EdgeInsets.symmetric(horizontal: 24),
+                                  child: Text(
+                                    'Report',
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(height: 20),
+                                ListTile(
+                                  contentPadding: const EdgeInsets.symmetric(horizontal: 24),
+                                  title: const Text('Inappropriate content'),
+                                  leading: const Icon(Icons.no_adult_content_outlined),
+                                  onTap: () async => store.sendReport(context: context, type: 'inappropriate content'),
+                                ),
+                                const SizedBox(height: 10),
+                                ListTile(
+                                  contentPadding: const EdgeInsets.symmetric(horizontal: 24),
+                                  title: const Text('Bug'),
+                                  leading: const Icon(Icons.bug_report_outlined),
+                                  onTap: () async => store.sendReport(context: context, type: 'bug'),
+                                ),
+                                const SizedBox(height: 10),
+                                ListTile(
+                                  contentPadding: const EdgeInsets.symmetric(horizontal: 24),
+                                  title: const Text('Other'),
+                                  leading: const Icon(Icons.report_outlined),
+                                  onTap: () {
+                                    Navigator.pop(context);
+                                    final TextEditingController _controller = TextEditingController();
+
+                                    showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        return AlertDialog(
+                                          title: const Text('Report'),
+                                          actions: [
+                                            TextButton(
+                                              onPressed: () async => store.sendReport(
+                                                context: context,
+                                                type: 'other',
+                                                description: _controller.text.trim(),
+                                              ),
+                                              child: const Text('Send Report'),
+                                            ),
+                                          ],
+                                          content: Column(
+                                            mainAxisSize: MainAxisSize.min,
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              const Text('Please describe the issue:'),
+                                              const SizedBox(height: 10),
+                                              TextField(
+                                                controller: _controller,
+                                                textCapitalization: TextCapitalization.sentences,
+                                                decoration: const InputDecoration(
+                                                  hintText: 'Description',
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        );
+                                      },
+                                    );
+                                  },
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      },
                     ),
                   ],
                 ),
