@@ -13,7 +13,7 @@ class NotificationModel {
       id: map['id'] as int,
       title: map['title'] as String,
       subtitle: map['subtitle'] as String,
-      image: map['image'] as String,
+      image: map['image'] != null ? map['image'] as String : null,
       type: map['type'] as String,
       updatedAt: DateTime.parse(map['updated_at']),
     );
