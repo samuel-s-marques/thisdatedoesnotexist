@@ -45,7 +45,7 @@ class _NotificationPageState extends State<NotificationPage> {
                   subtitle: notification.subtitle != null ? Text(notification.subtitle!) : null,
                   trailing: Text(timeago.format(notification.updatedAt!, locale: 'en_short')),
                   onTap: () {
-                    if (notification.type == 'suspend' || notification.type == 'banned') {
+                    if (notification.type == 'suspended' || notification.type == 'banned') {
                       showDialog(
                         context: context,
                         builder: (BuildContext context) {
@@ -60,45 +60,58 @@ class _NotificationPageState extends State<NotificationPage> {
                                   final DateTime? statusUntil = data['status_until'] != null ? DateTime.parse(data['status_until']) : null;
                                   final List<dynamic> reportedMessages = data['messages'];
 
-                                  return Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Text(
-                                          'We regret to inform you that your account has been ${status == 'suspended' ? 'temporarily suspended' : 'banned'} due to a violation of our community guidelines. Our commitment to maintaining a safe and positive environment for all users requires us to take action against any infractions.'),
-                                      const SizedBox(height: 10),
-                                      const Text('Reason:'),
-                                      Text(statusReason.capitalize()),
-                                      const SizedBox(height: 10),
-                                      const Text('List of reported messages:'),
-                                      ListView.builder(
-                                        shrinkWrap: true,
-                                        itemCount: reportedMessages.length,
-                                        itemBuilder: (BuildContext context, int index) {
-                                          final Map<dynamic, dynamic> message = reportedMessages[index];
-
-                                          return ListTile(
-                                            title: Text(message['message']),
-                                            subtitle: Text(
-                                              store.dateFormat.format(
-                                                DateTime.parse(
-                                                  message['created_at'],
-                                                ),
-                                              ),
-                                            ),
-                                          );
-                                        },
-                                      ),
-                                      if (statusUntil != null)
-                                        Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                  return Padding(
+                                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 15),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        const Row(
+                                          mainAxisAlignment: MainAxisAlignment.end,
                                           children: [
-                                            const SizedBox(height: 10),
-                                            const Text('Your account will be unsuspended on:'),
-                                            Text(store.dateFormat.format(statusUntil)),
+                                            CloseButton(),
                                           ],
                                         ),
-                                    ],
+                                        Text(
+                                          'We regret to inform you that your account has been ${status == 'suspended' ? 'temporarily suspended' : 'banned'} due to a violation of our community guidelines. Our commitment to maintaining a safe and positive environment for all users requires us to take action against any infractions.',
+                                          style: const TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 10),
+                                        const Text('Reason:'),
+                                        Text(statusReason.capitalize()),
+                                        const SizedBox(height: 10),
+                                        const Text('List of reported messages:'),
+                                        ListView.builder(
+                                          shrinkWrap: true,
+                                          itemCount: reportedMessages.length,
+                                          itemBuilder: (BuildContext context, int index) {
+                                            final Map<dynamic, dynamic> message = reportedMessages[index];
+
+                                            return ListTile(
+                                              title: Text(message['content']),
+                                              subtitle: Text(
+                                                store.dateFormat.format(
+                                                  DateTime.parse(
+                                                    message['created_at'],
+                                                  ),
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                        ),
+                                        if (statusUntil != null)
+                                          Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              const SizedBox(height: 10),
+                                              const Text('Your account will be unsuspended on:'),
+                                              Text(store.dateFormat.format(statusUntil)),
+                                            ],
+                                          ),
+                                      ],
+                                    ),
                                   );
                                 }
 
