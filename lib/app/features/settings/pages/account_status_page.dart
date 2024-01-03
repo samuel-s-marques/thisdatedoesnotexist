@@ -30,8 +30,22 @@ class AccountStatusPage extends StatelessWidget {
                 children: [
                   Text('Account Status: $status'),
                   const SizedBox(height: 10),
-                  if (statusReason != null) Text('Reason: $statusReason'),
-                  if (statusUntil != null) Text('Until: ${store.dateFormat.format(statusUntil)}'),
+                  if (statusReason != null)
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('Reason: $statusReason'),
+                        const SizedBox(height: 10),
+                      ],
+                    ),
+                  if (statusUntil != null)
+                    Column(
+                      children: [
+                        Text('Until: ${store.dateFormat.format(statusUntil)}'),
+                        const SizedBox(height: 10),
+                      ],
+                    ),
+                  const Text('List of reported messages:'),
                   if (status != 'normal' && messages != null && messages.isNotEmpty)
                     ListView.builder(
                       shrinkWrap: true,
@@ -40,7 +54,7 @@ class AccountStatusPage extends StatelessWidget {
                         final Map<dynamic, dynamic> message = messages[index];
 
                         return ListTile(
-                          title: Text(message['message']),
+                          title: Text(message['content']),
                           subtitle: Text(
                             store.dateFormat.format(
                               DateTime.parse(
