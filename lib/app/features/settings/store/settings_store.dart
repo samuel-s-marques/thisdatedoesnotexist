@@ -18,7 +18,7 @@ abstract class SettingsStoreBase with Store {
   User? authenticatedUser;
   DioService dio = DioService();
   String server = const String.fromEnvironment('SERVER');
-  final DateFormat dateFormat = DateFormat('HH:mm:ss dd-MM-yyyy');
+  final DateFormat dateFormat = DateFormat('HH:mm:ss dd/MM/yyyy');
 
   // TODO: move to JSON file
   Map<String, String> faq = {
