@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
+import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
@@ -147,7 +148,7 @@ abstract class OnboardingStoreBase with Store {
   ObservableList<BaseModel> selectedReligionPreferences = ObservableList();
 
   @observable
-  XFile? profileImage;
+  String? profileImagePath;
 
   @action
   void selectCountry(String country) {
@@ -385,18 +386,35 @@ abstract class OnboardingStoreBase with Store {
 
   @action
   Future<void> pickProfileImage(BuildContext context) async {
-    profileImage = await imagePicker.pickImage(
+    final XFile? profileImage = await imagePicker.pickImage(
       source: ImageSource.gallery,
       imageQuality: 70,
     );
 
     if (profileImage == null) {
       allowProfileImage = null;
+      profileImagePath = null;
       return;
     }
 
+    final CroppedFile? croppedImage = await ImageCropper().cropImage(
+      sourcePath: profileImage.path,
+      aspectRatioPresets: [
+        CropAspectRatioPreset.square,
+        CropAspectRatioPreset.original,
+      ],
+    );
+
+    if (croppedImage == null) {
+      allowProfileImage = null;
+      profileImagePath = null;
+      return;
+    }
+
+    profileImagePath = croppedImage.path;
+
     final FormData formData = FormData.fromMap({
-      'profile_image': await MultipartFile.fromFile(profileImage!.path),
+      'profile_image': await MultipartFile.fromFile(croppedImage.path),
     });
 
     try {
@@ -439,7 +457,7 @@ abstract class OnboardingStoreBase with Store {
       relationshipGoal: selectedRelationshipGoal,
       sex: sex!.name,
       occupation: occupation!.name,
-      imageUrl: profileImage?.path,
+      imageUrl: profileImagePath,
       country: selectedCountry,
       pronoun: selectedPronouns,
       bio: bioController.text.trim(),
