@@ -46,7 +46,10 @@ class DioService {
           );
         } else {
           final Response<dynamic> response = await _dio.get(path, options: options);
-          await cache.saveData(path, response.data);
+
+          if (response.statusCode == 200) {
+            await cache.saveData(path, response.data);
+          }
 
           return response;
         }
