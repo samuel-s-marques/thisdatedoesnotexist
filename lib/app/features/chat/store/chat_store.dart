@@ -1,9 +1,11 @@
 import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 import 'package:mobx/mobx.dart';
 import 'package:thisdatedoesnotexist/app/core/models/user_model.dart';
 import 'package:thisdatedoesnotexist/app/core/services/auth_service.dart';
 import 'package:thisdatedoesnotexist/app/core/services/dio_service.dart';
+import 'package:thisdatedoesnotexist/app/core/util.dart';
 import 'package:uuid/uuid.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 
@@ -53,7 +55,7 @@ abstract class ChatStoreBase with Store {
     if (response.statusCode == 200) {
       final int totalPages = response.data['meta']['last_page'] - page;
       final List<dynamic> data = response.data['data'];
-      
+
       updateAvailablePages(totalPages);
 
       for (final Map<String, dynamic> item in data) {
@@ -76,5 +78,30 @@ abstract class ChatStoreBase with Store {
     }
 
     return messages;
+  }
+
+  @action
+  Future<void> sendReport({
+    required BuildContext context,
+    required String type,
+    String? description,
+  }) async {
+    try {
+      final Response<dynamic> response = await dio.post('$server/api/reports', data: {
+        'user_uid': authenticatedUser!.uid,
+        'character_uid': character!.uid,
+        'type': type,
+      });
+
+      if (response.statusCode == 200) {
+        context.showSnackBarSuccess(message: 'Report sent successfully');
+      } else {
+        context.showSnackBarError(message: response.data['error'] ?? 'Something went wrong, please try again later');
+      }
+
+      Navigator.pop(context);
+    } catch (e) {
+      context.showSnackBarError(message: 'Something went wrong, please try again later');
+    }
   }
 }

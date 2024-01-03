@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:country_code_picker/country_code_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:thisdatedoesnotexist/app/core/models/user_model.dart';
 import 'package:thisdatedoesnotexist/app/core/util.dart';
 import 'package:thisdatedoesnotexist/app/core/widgets/section_widget.dart';
@@ -90,6 +91,30 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                   ),
                   const SizedBox(height: 10),
+                  if (user.status != 'normal')
+                    Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          width: double.maxFinite,
+                          decoration: BoxDecoration(
+                            color: user.status == 'banned' ? Colors.red : Colors.yellow,
+                            borderRadius: BorderRadius.circular(5),
+                          ),
+                          padding: const EdgeInsets.all(10),
+                          child: Text(
+                            'This user was ${user.status} for ${user.statusReason}. ${user.statusUntil != null ? 'It will expire on ${DateFormat('HH:mm:ss dd/MM/yyyy').format(user.statusUntil!)}.' : ''}',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 15,
+                              color: user.status == 'banned' ? Colors.white : Colors.black,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                      ],
+                    ),
                   Wrap(
                     runSpacing: 5,
                     children: [

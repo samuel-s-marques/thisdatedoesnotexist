@@ -358,6 +358,8 @@ class _HomePageState extends State<HomePage> {
                               final UserModel character = store.cards[index];
 
                               return CardWidget(
+                                homeStore: store,
+                                dio: store.dio,
                                 character: character,
                                 imageUrl: '${store.server}/uploads/characters/${character.uid}.png',
                               );

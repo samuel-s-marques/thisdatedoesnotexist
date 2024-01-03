@@ -285,20 +285,6 @@ abstract class HomeStoreBase with Store {
               );
 
               swipes--;
-
-              await dio.put(
-                '$server/api/users',
-                data: {
-                  'swipes': swipes,
-                  'last_swipe': DateTime.now().toIso8601String(),
-                },
-                options: Options(
-                  headers: {
-                    'Authorization': 'Bearer ${await authenticatedUser!.getIdToken()}',
-                    'Content-Type': 'application/json',
-                  },
-                ),
-              );
             } catch (exception, stackTrace) {
               await Sentry.captureException(
                 exception,
