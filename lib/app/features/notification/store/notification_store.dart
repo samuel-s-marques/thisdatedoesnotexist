@@ -17,7 +17,7 @@ abstract class NotificationStoreBase with Store {
   String server = const String.fromEnvironment('SERVER');
   String wssServer = const String.fromEnvironment('WSS_SERVER');
   final DioService dio = DioService();
-  final DateFormat dateFormat = DateFormat('HH:mm:ss dd-MM-yyyy');
+  final DateFormat dateFormat = DateFormat('HH:mm:ss dd/MM/yyyy');
 
   @action
   Future<dynamic> getNotifications() async {
