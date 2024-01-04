@@ -74,6 +74,9 @@ abstract class HomeStoreBase with Store {
   @observable
   ObservableList<BaseModel> selectedSexPreferences = ObservableList();
 
+  @observable
+  bool gotPreferences = false;
+
   @action
   Future<void> selectPoliticalViewPreference({
     required bool selected,
@@ -144,7 +147,7 @@ abstract class HomeStoreBase with Store {
     final Response<dynamic> response = await dio.get('$server/api/preferences/${authenticatedUser?.uid}', options: DioOptions());
 
     if (response.statusCode == 200) {
-      final Map<String, dynamic> data = response.data;
+      final Map<dynamic, dynamic> data = response.data;
 
       final List<dynamic> sexes = data['sexes'] ?? [];
       final List<dynamic> relationshipGoals = data['relationship_goals'] ?? [];
@@ -324,7 +327,11 @@ abstract class HomeStoreBase with Store {
 
   @action
   Future<bool?> getTodayCards() async {
-    if (await getPreferences()) {
+    if (!gotPreferences) {
+      gotPreferences = await getPreferences();
+    }
+
+    if (gotPreferences) {
       String url = '$server/api/characters?uid=${authenticatedUser?.uid}&min_age=${ageValues.start.round()}&max_age=${ageValues.end.round()}&per_page=$swipes';
 
       if (selectedPoliticalViewPreferences.isNotEmpty) {
@@ -352,7 +359,7 @@ abstract class HomeStoreBase with Store {
         url += '&religion=${religions.join(',')}';
       }
 
-      final Response<dynamic> response = await Dio().get(
+      final Response<dynamic> response = await dio.get(
         url,
         options: DioOptions(
           cache: false,
@@ -365,10 +372,6 @@ abstract class HomeStoreBase with Store {
         if (cards.isEmpty) {
           return false;
         }
-
-        await Future.delayed(const Duration(seconds: 1)).then((_) {
-          shakeCards();
-        });
 
         return true;
       } else {
