@@ -92,11 +92,13 @@ class _HomePageState extends State<HomePage> {
                                             ),
                                           ),
                                           TextButton(
-                                            onPressed: () {
-                                              store.savePreferences().then((_) {
-                                                setState(() {});
-                                                Navigator.pop(context);
-                                              });
+                                            onPressed: () async {
+                                              if (store.hasChanges) {
+                                                if (await store.savePreferences()) {
+                                                  setState(() {});
+                                                  Navigator.pop(context);
+                                                }
+                                              }
                                             },
                                             style: TextButton.styleFrom(
                                               shape: RoundedRectangleBorder(
