@@ -75,6 +75,57 @@ abstract class HomeStoreBase with Store {
   ObservableList<BaseModel> selectedSexPreferences = ObservableList();
 
   @observable
+  RangeValues lastSelectedAgeValues = const RangeValues(18, 70);
+
+  @observable
+  ObservableList<BaseModel> lastSelectedSexPreferences = ObservableList();
+
+  @observable
+  ObservableList<BaseModel> lastSelectedReligionPreferences = ObservableList();
+
+  @observable
+  ObservableList<BaseModel> lastSelectedRelationshipGoalPreferences = ObservableList();
+
+  @observable
+  ObservableList<BaseModel> lastSelectedBodyTypePreferences = ObservableList();
+
+  @observable
+  ObservableList<BaseModel> lastSelectedPoliticalViewPreferences = ObservableList();
+
+  @computed
+  bool get hasChanges {
+    return _listChanged(selectedSexPreferences, lastSelectedSexPreferences) ||
+        _listChanged(selectedReligionPreferences, lastSelectedReligionPreferences) ||
+        _listChanged(selectedRelationshipGoalPreferences, lastSelectedRelationshipGoalPreferences) ||
+        _listChanged(selectedBodyTypePreferences, lastSelectedBodyTypePreferences) ||
+        _listChanged(selectedPoliticalViewPreferences, lastSelectedPoliticalViewPreferences) || ageValues != lastSelectedAgeValues;
+  }
+
+  bool _listChanged(List<BaseModel> currentList, List<BaseModel> lastList) {
+    if (currentList.length != lastList.length) {
+      return true;
+    }
+
+    for (int index = 0; index < currentList.length; index++) {
+      if (currentList[index] != lastList[index]) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  @action
+  void updateLastSelectedLists() {
+    lastSelectedSexPreferences = ObservableList.of(selectedSexPreferences);
+    lastSelectedReligionPreferences = ObservableList.of(selectedReligionPreferences);
+    lastSelectedRelationshipGoalPreferences = ObservableList.of(selectedRelationshipGoalPreferences);
+    lastSelectedBodyTypePreferences = ObservableList.of(selectedBodyTypePreferences);
+    lastSelectedPoliticalViewPreferences = ObservableList.of(selectedPoliticalViewPreferences);
+    lastSelectedAgeValues = ageValues;
+  }
+
+  @observable
   bool gotPreferences = false;
 
   @action
@@ -163,6 +214,8 @@ abstract class HomeStoreBase with Store {
       selectedSexPreferences = ObservableList.of(sexes.map((sex) => BaseModel.fromMap(sex)).toList());
       selectedReligionPreferences = ObservableList.of(religions.map((religion) => BaseModel.fromMap(religion)).toList());
       ageValues = RangeValues(minAge, maxAge);
+
+      updateLastSelectedLists();
 
       return true;
     }
@@ -302,7 +355,7 @@ abstract class HomeStoreBase with Store {
   }
 
   @action
-  Future<void> savePreferences() async {
+  Future<bool> savePreferences() async {
     final Preferences preferences = Preferences(
       sexes: selectedSexPreferences,
       relationshipGoals: selectedRelationshipGoalPreferences,
@@ -313,7 +366,7 @@ abstract class HomeStoreBase with Store {
       maxAge: ageValues.end,
     );
 
-    await dio.put(
+    final Response<dynamic> response = await dio.put(
       '$server/api/preferences/${authenticatedUser?.uid}',
       data: preferences.toMap(),
       options: Options(
@@ -323,10 +376,21 @@ abstract class HomeStoreBase with Store {
         },
       ),
     );
+
+    if (response.statusCode == 200) {
+      updateLastSelectedLists();
+      return true;
+    }
+
+    return false;
   }
 
   @action
   Future<bool?> getTodayCards() async {
+    if (selectedIndex != 0) {
+      return null;
+    }
+
     if (!gotPreferences) {
       gotPreferences = await getPreferences();
     }
