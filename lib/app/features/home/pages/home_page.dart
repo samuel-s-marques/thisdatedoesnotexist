@@ -333,7 +333,7 @@ class _HomePageState extends State<HomePage> {
                 future: store.getTodayCards(),
                 builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
                   if (snapshot.hasData) {
-                    if (snapshot.data == false) {
+                    if (snapshot.data == false || store.swipes == 0) {
                       return const Center(
                         child: Text('No more cards for today!'),
                       );
@@ -351,7 +351,7 @@ class _HomePageState extends State<HomePage> {
                             allowUnSwipe: false,
                             allowUnlimitedUnSwipe: false,
                             backgroundCardCount: 0,
-                            onSwipeEnd: store.onSwipe,
+                            onSwipeEnd: (int index, int direction, SwiperActivity activity) => store.onSwipe(index, direction, activity, context),
                             controller: store.cardSwiperController,
                             cardBuilder: (BuildContext context, int index) {
                               final UserModel character = store.cards[index];
