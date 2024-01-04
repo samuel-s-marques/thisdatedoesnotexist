@@ -23,7 +23,6 @@ class _HomePageState extends State<HomePage> {
   HomeStore store = HomeStore();
   NotificationStore notificationStore = Modular.get<NotificationStore>();
   ConnectivityStore connectivityStore = Modular.get<ConnectivityStore>();
-  Future<bool?>? _future;
 
   @override
   void dispose() {
@@ -36,8 +35,6 @@ class _HomePageState extends State<HomePage> {
     super.initState();
 
     UserModel(uid: store.authService.getUser().uid).getSwipes().then((swipes) => store.setSwipes(swipes));
-
-    _future = store.getTodayCards();
 
     store.setIndex(0);
     store.getReligions();
@@ -97,7 +94,7 @@ class _HomePageState extends State<HomePage> {
                                           TextButton(
                                             onPressed: () {
                                               store.savePreferences().then((_) {
-                                                _future = store.getTodayCards();
+                                                setState(() {});
                                                 Navigator.pop(context);
                                               });
                                             },
@@ -331,7 +328,7 @@ class _HomePageState extends State<HomePage> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 15),
               child: FutureBuilder(
-                future: _future,
+                future: store.getTodayCards(),
                 builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
                   if (snapshot.hasData) {
                     if (snapshot.data == false) {
