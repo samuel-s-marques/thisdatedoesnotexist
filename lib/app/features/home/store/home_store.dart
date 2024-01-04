@@ -98,7 +98,8 @@ abstract class HomeStoreBase with Store {
         _listChanged(selectedReligionPreferences, lastSelectedReligionPreferences) ||
         _listChanged(selectedRelationshipGoalPreferences, lastSelectedRelationshipGoalPreferences) ||
         _listChanged(selectedBodyTypePreferences, lastSelectedBodyTypePreferences) ||
-        _listChanged(selectedPoliticalViewPreferences, lastSelectedPoliticalViewPreferences) || ageValues != lastSelectedAgeValues;
+        _listChanged(selectedPoliticalViewPreferences, lastSelectedPoliticalViewPreferences) ||
+        ageValues != lastSelectedAgeValues;
   }
 
   bool _listChanged(List<BaseModel> currentList, List<BaseModel> lastList) {
@@ -315,6 +316,7 @@ abstract class HomeStoreBase with Store {
     int previousIndex,
     int? currentIndex,
     SwiperActivity activity,
+    BuildContext context,
   ) async {
     authenticatedUser ??= authService.getUser();
 
@@ -325,7 +327,7 @@ abstract class HomeStoreBase with Store {
             try {
               final String direction = activity.direction == AxisDirection.right ? 'right' : 'left';
 
-              await dio.post(
+              final Response<dynamic> response = await dio.post(
                 '$server/api/swipes',
                 data: {
                   'target_id': cards[previousIndex].uid,
@@ -340,7 +342,20 @@ abstract class HomeStoreBase with Store {
                 ),
               );
 
-              swipes--;
+              if (response.statusCode == 201) {
+                swipes--;
+
+                if (currentIndex != null && currentIndex == cards.length - 1) {
+                  if (meta['current_page'] == meta['last_page']) {
+                    return;
+                  }
+
+                  currentPage++;
+                  await getTodayCards();
+                }
+              } else {
+                context.showSnackBarError(message: response.data['error']);
+              }
             } catch (exception, stackTrace) {
               await Sentry.captureException(
                 exception,
@@ -385,6 +400,12 @@ abstract class HomeStoreBase with Store {
     return false;
   }
 
+  @observable
+  int currentPage = 1;
+
+  @observable
+  ObservableMap<String, dynamic> meta = ObservableMap();
+
   @action
   Future<bool?> getTodayCards() async {
     if (selectedIndex != 0) {
@@ -396,7 +417,7 @@ abstract class HomeStoreBase with Store {
     }
 
     if (gotPreferences) {
-      String url = '$server/api/characters?uid=${authenticatedUser?.uid}&min_age=${ageValues.start.round()}&max_age=${ageValues.end.round()}&per_page=$swipes';
+      String url = '$server/api/characters?uid=${authenticatedUser?.uid}&min_age=${ageValues.start.round()}&max_age=${ageValues.end.round()}&page=$currentPage';
 
       if (selectedPoliticalViewPreferences.isNotEmpty) {
         final List<String?> politicalViews = selectedPoliticalViewPreferences.map((e) => e.name).toList();
@@ -432,6 +453,7 @@ abstract class HomeStoreBase with Store {
 
       if (response.statusCode == 200) {
         cards = ObservableList.of((response.data['data'] as List<dynamic>).map((e) => UserModel.fromMap(e['profile'])).toList());
+        meta = ObservableMap.of(response.data['meta']);
 
         if (cards.isEmpty) {
           return false;
