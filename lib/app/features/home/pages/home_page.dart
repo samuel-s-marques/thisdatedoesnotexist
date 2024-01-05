@@ -23,7 +23,6 @@ class _HomePageState extends State<HomePage> {
   HomeStore store = HomeStore();
   NotificationStore notificationStore = Modular.get<NotificationStore>();
   ConnectivityStore connectivityStore = Modular.get<ConnectivityStore>();
-  Future<bool?>? _future;
 
   @override
   void dispose() {
@@ -36,8 +35,6 @@ class _HomePageState extends State<HomePage> {
     super.initState();
 
     UserModel(uid: store.authService.getUser().uid).getSwipes().then((swipes) => store.setSwipes(swipes));
-
-    _future = store.getTodayCards();
 
     store.setIndex(0);
     store.getReligions();
@@ -95,11 +92,13 @@ class _HomePageState extends State<HomePage> {
                                             ),
                                           ),
                                           TextButton(
-                                            onPressed: () {
-                                              store.savePreferences().then((_) {
-                                                _future = store.getTodayCards();
-                                                Navigator.pop(context);
-                                              });
+                                            onPressed: () async {
+                                              if (store.hasChanges) {
+                                                if (await store.savePreferences()) {
+                                                  setState(() {});
+                                                  Navigator.pop(context);
+                                                }
+                                              }
                                             },
                                             style: TextButton.styleFrom(
                                               shape: RoundedRectangleBorder(
@@ -331,10 +330,10 @@ class _HomePageState extends State<HomePage> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 15),
               child: FutureBuilder(
-                future: _future,
+                future: store.getTodayCards(),
                 builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
                   if (snapshot.hasData) {
-                    if (snapshot.data == false) {
+                    if (snapshot.data == false || store.swipes == 0) {
                       return const Center(
                         child: Text('No more cards for today!'),
                       );
@@ -352,7 +351,7 @@ class _HomePageState extends State<HomePage> {
                             allowUnSwipe: false,
                             allowUnlimitedUnSwipe: false,
                             backgroundCardCount: 0,
-                            onSwipeEnd: store.onSwipe,
+                            onSwipeEnd: (int index, int direction, SwiperActivity activity) => store.onSwipe(index, direction, activity, context),
                             controller: store.cardSwiperController,
                             cardBuilder: (BuildContext context, int index) {
                               final UserModel character = store.cards[index];

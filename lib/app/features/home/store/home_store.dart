@@ -74,6 +74,61 @@ abstract class HomeStoreBase with Store {
   @observable
   ObservableList<BaseModel> selectedSexPreferences = ObservableList();
 
+  @observable
+  RangeValues lastSelectedAgeValues = const RangeValues(18, 70);
+
+  @observable
+  ObservableList<BaseModel> lastSelectedSexPreferences = ObservableList();
+
+  @observable
+  ObservableList<BaseModel> lastSelectedReligionPreferences = ObservableList();
+
+  @observable
+  ObservableList<BaseModel> lastSelectedRelationshipGoalPreferences = ObservableList();
+
+  @observable
+  ObservableList<BaseModel> lastSelectedBodyTypePreferences = ObservableList();
+
+  @observable
+  ObservableList<BaseModel> lastSelectedPoliticalViewPreferences = ObservableList();
+
+  @computed
+  bool get hasChanges {
+    return _listChanged(selectedSexPreferences, lastSelectedSexPreferences) ||
+        _listChanged(selectedReligionPreferences, lastSelectedReligionPreferences) ||
+        _listChanged(selectedRelationshipGoalPreferences, lastSelectedRelationshipGoalPreferences) ||
+        _listChanged(selectedBodyTypePreferences, lastSelectedBodyTypePreferences) ||
+        _listChanged(selectedPoliticalViewPreferences, lastSelectedPoliticalViewPreferences) ||
+        ageValues != lastSelectedAgeValues;
+  }
+
+  bool _listChanged(List<BaseModel> currentList, List<BaseModel> lastList) {
+    if (currentList.length != lastList.length) {
+      return true;
+    }
+
+    for (int index = 0; index < currentList.length; index++) {
+      if (currentList[index] != lastList[index]) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  @action
+  void updateLastSelectedLists() {
+    lastSelectedSexPreferences = ObservableList.of(selectedSexPreferences);
+    lastSelectedReligionPreferences = ObservableList.of(selectedReligionPreferences);
+    lastSelectedRelationshipGoalPreferences = ObservableList.of(selectedRelationshipGoalPreferences);
+    lastSelectedBodyTypePreferences = ObservableList.of(selectedBodyTypePreferences);
+    lastSelectedPoliticalViewPreferences = ObservableList.of(selectedPoliticalViewPreferences);
+    lastSelectedAgeValues = ageValues;
+  }
+
+  @observable
+  bool gotPreferences = false;
+
   @action
   Future<void> selectPoliticalViewPreference({
     required bool selected,
@@ -144,7 +199,7 @@ abstract class HomeStoreBase with Store {
     final Response<dynamic> response = await dio.get('$server/api/preferences/${authenticatedUser?.uid}', options: DioOptions());
 
     if (response.statusCode == 200) {
-      final Map<String, dynamic> data = response.data;
+      final Map<dynamic, dynamic> data = response.data;
 
       final List<dynamic> sexes = data['sexes'] ?? [];
       final List<dynamic> relationshipGoals = data['relationship_goals'] ?? [];
@@ -160,6 +215,8 @@ abstract class HomeStoreBase with Store {
       selectedSexPreferences = ObservableList.of(sexes.map((sex) => BaseModel.fromMap(sex)).toList());
       selectedReligionPreferences = ObservableList.of(religions.map((religion) => BaseModel.fromMap(religion)).toList());
       ageValues = RangeValues(minAge, maxAge);
+
+      updateLastSelectedLists();
 
       return true;
     }
@@ -259,6 +316,7 @@ abstract class HomeStoreBase with Store {
     int previousIndex,
     int? currentIndex,
     SwiperActivity activity,
+    BuildContext context,
   ) async {
     authenticatedUser ??= authService.getUser();
 
@@ -269,7 +327,7 @@ abstract class HomeStoreBase with Store {
             try {
               final String direction = activity.direction == AxisDirection.right ? 'right' : 'left';
 
-              await dio.post(
+              final Response<dynamic> response = await dio.post(
                 '$server/api/swipes',
                 data: {
                   'target_id': cards[previousIndex].uid,
@@ -284,7 +342,20 @@ abstract class HomeStoreBase with Store {
                 ),
               );
 
-              swipes--;
+              if (response.statusCode == 200) {
+                swipes--;
+
+                if (currentIndex != null && currentIndex == cards.length - 2) {
+                  if (meta['current_page'] == meta['last_page']) {
+                    return;
+                  }
+
+                  currentPage++;
+                  await getTodayCards();
+                }
+              } else {
+                context.showSnackBarError(message: response.data['error']);
+              }
             } catch (exception, stackTrace) {
               await Sentry.captureException(
                 exception,
@@ -299,7 +370,7 @@ abstract class HomeStoreBase with Store {
   }
 
   @action
-  Future<void> savePreferences() async {
+  Future<bool> savePreferences() async {
     final Preferences preferences = Preferences(
       sexes: selectedSexPreferences,
       relationshipGoals: selectedRelationshipGoalPreferences,
@@ -310,7 +381,7 @@ abstract class HomeStoreBase with Store {
       maxAge: ageValues.end,
     );
 
-    await dio.put(
+    final Response<dynamic> response = await dio.put(
       '$server/api/preferences/${authenticatedUser?.uid}',
       data: preferences.toMap(),
       options: Options(
@@ -320,12 +391,34 @@ abstract class HomeStoreBase with Store {
         },
       ),
     );
+
+    if (response.statusCode == 200) {
+      updateLastSelectedLists();
+      return true;
+    }
+
+    return false;
   }
+
+  @observable
+  int currentPage = 1;
+
+  @observable
+  ObservableMap<String, dynamic> meta = ObservableMap();
 
   @action
   Future<bool?> getTodayCards() async {
-    if (await getPreferences()) {
-      String url = '$server/api/characters?uid=${authenticatedUser?.uid}&min_age=${ageValues.start.round()}&max_age=${ageValues.end.round()}&per_page=$swipes';
+    if (selectedIndex != 0) {
+      currentPage = 1;
+      return null;
+    }
+
+    if (!gotPreferences) {
+      gotPreferences = await getPreferences();
+    }
+
+    if (gotPreferences) {
+      String url = '$server/api/characters?uid=${authenticatedUser?.uid}&min_age=${ageValues.start.round()}&max_age=${ageValues.end.round()}&page=$currentPage';
 
       if (selectedPoliticalViewPreferences.isNotEmpty) {
         final List<String?> politicalViews = selectedPoliticalViewPreferences.map((e) => e.name).toList();
@@ -352,7 +445,7 @@ abstract class HomeStoreBase with Store {
         url += '&religion=${religions.join(',')}';
       }
 
-      final Response<dynamic> response = await Dio().get(
+      final Response<dynamic> response = await dio.get(
         url,
         options: DioOptions(
           cache: false,
@@ -361,14 +454,11 @@ abstract class HomeStoreBase with Store {
 
       if (response.statusCode == 200) {
         cards = ObservableList.of((response.data['data'] as List<dynamic>).map((e) => UserModel.fromMap(e['profile'])).toList());
+        meta = ObservableMap.of(response.data['meta']);
 
         if (cards.isEmpty) {
           return false;
         }
-
-        await Future.delayed(const Duration(seconds: 1)).then((_) {
-          shakeCards();
-        });
 
         return true;
       } else {
