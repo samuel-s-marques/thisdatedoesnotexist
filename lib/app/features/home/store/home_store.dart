@@ -342,10 +342,10 @@ abstract class HomeStoreBase with Store {
                 ),
               );
 
-              if (response.statusCode == 201) {
+              if (response.statusCode == 200) {
                 swipes--;
 
-                if (currentIndex != null && currentIndex == cards.length - 1) {
+                if (currentIndex != null && currentIndex == cards.length - 2) {
                   if (meta['current_page'] == meta['last_page']) {
                     return;
                   }
@@ -409,6 +409,7 @@ abstract class HomeStoreBase with Store {
   @action
   Future<bool?> getTodayCards() async {
     if (selectedIndex != 0) {
+      currentPage = 1;
       return null;
     }
 
