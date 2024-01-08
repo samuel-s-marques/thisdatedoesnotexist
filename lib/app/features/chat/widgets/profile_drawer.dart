@@ -4,6 +4,7 @@ import 'package:flutter_modular/flutter_modular.dart';
 import 'package:thisdatedoesnotexist/app/core/util.dart';
 import 'package:thisdatedoesnotexist/app/core/widgets/section_widget.dart';
 import 'package:thisdatedoesnotexist/app/features/chat/store/chat_store.dart';
+import 'package:thisdatedoesnotexist/app/features/chat/widgets/interactive_viewer_widget.dart';
 
 class ProfileDrawer extends StatelessWidget {
   ProfileDrawer({super.key});
@@ -12,6 +13,8 @@ class ProfileDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final String image = '${store.server}/uploads/characters/${store.character!.uid}.png';
+
     return Drawer(
       child: Scaffold(
         appBar: AppBar(
@@ -38,11 +41,21 @@ class ProfileDrawer extends StatelessWidget {
                       color: Colors.black26,
                     ),
                   ),
-                  child: ClipRRect(
+                  child: InkWell(
+                    onTap: () => Modular.to.push(
+                      MaterialPageRoute(
+                        builder: (_) => InteractiveViewerWidget(
+                          imageUrl: image,
+                        ),
+                      ),
+                    ),
                     borderRadius: BorderRadius.circular(24),
-                    child: CachedNetworkImage(
-                      imageUrl: '${store.server}/uploads/characters/${store.character!.uid}.png',
-                      fit: BoxFit.cover,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(24),
+                      child: CachedNetworkImage(
+                        imageUrl: image,
+                        fit: BoxFit.cover,
+                      ),
                     ),
                   ),
                 ),
