@@ -23,7 +23,7 @@ abstract class NotificationStoreBase with Store {
   Future<dynamic> getNotifications() async {
     authenticatedUser ??= authService.getUser();
 
-    final Response<dynamic> response = await dio.get('$server/api/notifications?uid=${authenticatedUser?.uid}', options: DioOptions());
+    final Response<dynamic> response = await dio.get('$server/api/notifications?uid=${authenticatedUser?.uid}', options: DioOptions(cache: false));
 
     return response.data;
   }
