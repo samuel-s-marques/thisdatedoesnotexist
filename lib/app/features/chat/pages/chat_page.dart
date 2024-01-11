@@ -11,7 +11,6 @@ import 'package:thisdatedoesnotexist/app/core/util.dart';
 import 'package:thisdatedoesnotexist/app/features/chat/store/chat_store.dart';
 import 'package:thisdatedoesnotexist/app/features/chat/widgets/profile_drawer.dart';
 import 'package:uuid/uuid.dart';
-import 'package:web_socket_channel/web_socket_channel.dart';
 
 class ChatPage extends StatefulWidget {
   const ChatPage({
@@ -31,7 +30,6 @@ class _ChatPageState extends State<ChatPage> {
   List<types.Message> _messages = [];
   types.User? _user;
   Uuid uuid = const Uuid();
-  WebSocketChannel? channel;
   int page = 1;
   int availablePages = 1;
   final GlobalKey<ScaffoldState> key = GlobalKey<ScaffoldState>();
@@ -39,23 +37,18 @@ class _ChatPageState extends State<ChatPage> {
   @override
   void initState() {
     super.initState();
-    channel = WebSocketChannel.connect(
-      Uri.parse(store.wssServer),
-    );
     future = store.getCharacterById(widget.id);
     _user = types.User(id: store.authenticatedUser!.uid);
     _handleEndReached();
-    channel!.stream.listen(_handleWebSocketMessage);
   }
 
   @override
   void dispose() {
-    channel!.sink.close();
     super.dispose();
   }
 
   void _addMessage(types.Message message, String roomId) {
-    channel!.sink.add(jsonEncode(message.copyWith(roomId: roomId).toJson()));
+    store.channel!.sink.add(jsonEncode(message.copyWith(roomId: roomId).toJson()));
   }
 
   void _handleSendPressed(types.PartialText message, String roomId) {
