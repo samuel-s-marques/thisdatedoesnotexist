@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:thisdatedoesnotexist/app/core/models/user_model.dart';
-import 'package:thisdatedoesnotexist/app/features/chat/models/chat_model.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:flutter_modular/flutter_modular.dart';
 import 'package:thisdatedoesnotexist/app/features/chat/store/chat_store.dart';
 import 'package:thisdatedoesnotexist/app/features/chat/widgets/chat_list_tile.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
 
 class ChatListPage extends StatefulWidget {
   const ChatListPage({super.key});
@@ -12,44 +13,49 @@ class ChatListPage extends StatefulWidget {
 }
 
 class _ChatListPageState extends State<ChatListPage> {
-  ChatStore store = ChatStore();
+  ChatStore store = Modular.get<ChatStore>();
+  bool authenticated = false;
+
+  @override
+  void initState() {
+    super.initState();
+    store.channel = WebSocketChannel.connect(
+      Uri.parse(store.wssServer),
+    );
+    store.channel!.stream.listen(store.handleWebSocketMessage);
+  }
+
+  @override
+  void dispose() {
+    store.timer?.cancel();
+    store.timer = null;
+
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: FutureBuilder(
-        future: store.getChats(),
-        builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
-          if (snapshot.hasData) {
-            final List<dynamic> data = snapshot.data['data'];
-
-            return ListView.builder(
-              itemCount: data.length,
-              itemBuilder: (BuildContext context, int index) {
-                final UserModel character = UserModel.fromMap(data[index]['character']);
-                final ChatModel chat = ChatModel(
-                  name: '${character.name} ${character.surname}',
-                  lastMessage: data[index]['last_message'],
-                  seen: data[index]['seen'] != 0,
-                  updatedAt: DateTime.parse(data[index]['updated_at']),
-                );
-
-                return ChatListTile(
-                  id: character.uid,
-                  name: '${character.name} ${character.surname}',
-                  time: chat.updatedAt,
-                  message: chat.lastMessage,
-                  avatarUrl: '${store.server}/uploads/characters/${character.uid}.png',
-                );
-              },
-            );
-          }
-
+      body: Observer(builder: (_) {
+        if (store.chats.isEmpty) {
           return const Center(
             child: CircularProgressIndicator(),
           );
-        },
-      ),
+        }
+
+        return ListView.builder(
+          itemCount: store.chats.length,
+          itemBuilder: (BuildContext context, int index) {
+            return ChatListTile(
+              id: store.chats[index].uid,
+              name: store.chats[index].name,
+              time: store.chats[index].updatedAt,
+              message: store.chats[index].lastMessage,
+              avatarUrl: store.chats[index].avatarUrl,
+            );
+          },
+        );
+      }),
     );
   }
 }
