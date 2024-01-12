@@ -30,12 +30,63 @@ abstract class ChatStoreBase with Store {
   Timer? timer;
   bool requestedChats = false;
   bool firstRequest = false;
+  final GlobalKey<ScaffoldState> key = GlobalKey<ScaffoldState>();
+
+  @observable
+  ObservableList<types.Message> messages = ObservableList();
+
+  @observable
+  int availablePages = 1;
+
+  @observable
+  int currentPage = 1;
 
   @observable
   UserModel? character;
 
   @observable
+  types.User? user;
+
+  @observable
   ObservableList<ChatModel> chats = ObservableList();
+
+  @action
+  Future<void> handleEndReached(String uid) async {
+    if (availablePages >= currentPage) {
+      final List<types.Message> newMessages = await getMessages(uid, currentPage, (updatedAvailablePages) {
+        availablePages = updatedAvailablePages;
+      });
+
+      final List<types.Message> updatedMessages = [...messages, ...newMessages];
+      messages = ObservableList.of(updatedMessages);
+      currentPage++;
+    }
+  }
+
+  @action
+  void _addMessage(types.Message message, String roomId) {
+    channel!.sink.add(
+      jsonEncode(
+        message.copyWith(roomId: roomId).toJson(),
+      ),
+    );
+  }
+
+  @action
+  void handleSendPressed(types.PartialText message, String roomId) {
+    final types.Message newMessage = types.TextMessage(
+      author: user!,
+      id: uuid.v4(),
+      text: message.text,
+      createdAt: DateTime.now().millisecondsSinceEpoch,
+      updatedAt: DateTime.now().millisecondsSinceEpoch,
+    );
+
+    _addMessage(newMessage, roomId);
+    key.currentState!.setState(() {
+      messages.insert(0, newMessage);
+    });
+  }
 
   Future<void> authenticateUser() async {
     authenticatedUser ??= authService.getUser();
@@ -113,6 +164,11 @@ abstract class ChatStoreBase with Store {
           chats.clear();
           chats.addAll(tempChats);
           requestedChats = false;
+        }
+
+        if (json['type'] == 'text') {
+          final types.Message message = types.Message.fromJson(json);
+          messages.insert(0, message);
         }
       }
     }
