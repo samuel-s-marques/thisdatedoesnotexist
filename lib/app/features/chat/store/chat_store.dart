@@ -55,8 +55,7 @@ abstract class ChatStoreBase with Store {
         availablePages = updatedAvailablePages;
       });
 
-      final List<Message> reversedNewMessages = List.from(newMessages.reversed);
-      final List<Message> updatedMessages = [...reversedNewMessages, ...messages];
+      final List<Message> updatedMessages = [...newMessages, ...messages];
       messages = ObservableList.of(updatedMessages);
       currentPage++;
     }
