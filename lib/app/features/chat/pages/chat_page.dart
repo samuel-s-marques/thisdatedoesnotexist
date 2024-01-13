@@ -186,18 +186,26 @@ class _ChatPageState extends State<ChatPage> {
                 ],
               ),
               body: Observer(
-                builder: (_) => ListView.builder(
-                  reverse: true,
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 15),
-                  itemCount: store.messages.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    final Message message = store.messages[index];
+                builder: (_) => Column(
+                  children: [
+                    Expanded(
+                      child: ListView.builder(
+                        shrinkWrap: true,
+                        reverse: true,
+                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 5),
+                        itemCount: store.messages.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          final Message message = store.messages[index];
 
-                    return ChatBubble(
-                      type: message.type!,
-                      message: message.text ?? '',
-                    );
-                  },
+                          return ChatBubble(
+                            type: message.type!,
+                            message: message.text ?? '',
+                          );
+                        },
+                      ),
+                    ),
+                    TextField(),
+                  ],
                 ),
               ),
             );
