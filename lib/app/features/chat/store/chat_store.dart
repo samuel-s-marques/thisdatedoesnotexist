@@ -1,10 +1,10 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:chatview/chatview.dart';
 import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:mobx/mobx.dart';
 import 'package:thisdatedoesnotexist/app/core/models/user_model.dart';
 import 'package:thisdatedoesnotexist/app/core/services/auth_service.dart';
@@ -33,9 +33,6 @@ abstract class ChatStoreBase with Store {
   final GlobalKey<ScaffoldState> key = GlobalKey<ScaffoldState>();
 
   @observable
-  ObservableList<types.Message> messages = ObservableList();
-
-  @observable
   int availablePages = 1;
 
   @observable
@@ -45,7 +42,21 @@ abstract class ChatStoreBase with Store {
   UserModel? character;
 
   @observable
-  types.User? user;
+  ChatUser? user;
+
+  @observable
+  ChatViewState chatViewState = ChatViewState.noData;
+
+  void dispose() {
+    chatController.initialMessageList.clear();
+    chatController.dispose();
+  }
+
+  ChatController chatController = ChatController(
+    initialMessageList: [],
+    scrollController: ScrollController(),
+    chatUsers: [],
+  );
 
   @observable
   ObservableList<ChatModel> chats = ObservableList();
@@ -53,39 +64,42 @@ abstract class ChatStoreBase with Store {
   @action
   Future<void> handleEndReached(String uid) async {
     if (availablePages >= currentPage) {
-      final List<types.Message> newMessages = await getMessages(uid, currentPage, (updatedAvailablePages) {
+      final List<Message> newMessages = await getMessages(uid, currentPage, (updatedAvailablePages) {
         availablePages = updatedAvailablePages;
       });
 
-      final List<types.Message> updatedMessages = [...messages, ...newMessages];
-      messages = ObservableList.of(updatedMessages);
+      final List<Message> reversedNewMessages = List.from(newMessages.reversed);
+      final List<Message> updatedMessages = [...reversedNewMessages, ...chatController.initialMessageList];
+      chatController.initialMessageList = updatedMessages;
       currentPage++;
+
+      if (chatController.initialMessageList.isNotEmpty) {
+        chatViewState = ChatViewState.hasMessages;
+      }
     }
   }
 
   @action
-  void _addMessage(types.Message message, String roomId) {
+  void _addMessage(Message message) {
     channel!.sink.add(
       jsonEncode(
-        message.copyWith(roomId: roomId).toJson(),
+        message.toJson(),
       ),
     );
   }
 
   @action
-  void handleSendPressed(types.PartialText message, String roomId) {
-    final types.Message newMessage = types.TextMessage(
-      author: user!,
+  void onSendTap(String message, ReplyMessage replyMessage, MessageType messageType) {
+    final Message newMessage = Message(
       id: uuid.v4(),
-      text: message.text,
-      createdAt: DateTime.now().millisecondsSinceEpoch,
-      updatedAt: DateTime.now().millisecondsSinceEpoch,
+      message: message,
+      sendBy: user!.id,
+      replyMessage: replyMessage,
+      createdAt: DateTime.now(),
     );
 
-    _addMessage(newMessage, roomId);
-    key.currentState!.setState(() {
-      messages.insert(0, newMessage);
-    });
+    _addMessage(newMessage);
+    chatController.addMessage(newMessage);
   }
 
   Future<void> authenticateUser() async {
@@ -167,8 +181,16 @@ abstract class ChatStoreBase with Store {
         }
 
         if (json['type'] == 'text') {
-          final types.Message message = types.Message.fromJson(json);
-          messages.insert(0, message);
+          final String content = json['content'];
+          final DateTime createdAt = DateTime.parse(json['created_at']);
+          final Message message = Message(
+            id: uuid.v4(),
+            message: content,
+            createdAt: createdAt,
+            sendBy: json['user']['uid'],
+          );
+
+          chatController.addMessage(message);
         }
       }
     }
@@ -180,14 +202,18 @@ abstract class ChatStoreBase with Store {
 
     if (response.statusCode == 200) {
       character = UserModel.fromMap(response.data);
+
+      chatController.chatUsers = [
+        ChatUser(id: id, name: character!.name!),
+      ];
     }
 
     return character;
   }
 
   @action
-  Future<List<types.Message>> getMessages(String id, int page, void Function(int) updateAvailablePages) async {
-    final List<types.Message> messages = [];
+  Future<List<Message>> getMessages(String id, int page, void Function(int) updateAvailablePages) async {
+    final List<Message> messages = [];
     final Response<dynamic> response = await dio.get('$server/api/messages?uid=$id&page=$page', options: DioOptions(cache: false));
 
     if (response.statusCode == 200) {
@@ -199,16 +225,11 @@ abstract class ChatStoreBase with Store {
       for (final Map<String, dynamic> item in data) {
         final String content = item['content'];
         final DateTime createdAt = DateTime.parse(item['created_at']);
-        final DateTime updatedAt = DateTime.parse(item['updated_at']);
-
-        final types.User author = types.User(id: item['user']['uid']);
-        final types.Message message = types.TextMessage(
+        final Message message = Message(
           id: uuid.v4(),
-          text: content,
-          type: types.MessageType.text,
-          author: author,
-          createdAt: createdAt.millisecondsSinceEpoch,
-          updatedAt: updatedAt.millisecondsSinceEpoch,
+          message: content,
+          createdAt: createdAt,
+          sendBy: item['user']['uid'],
         );
 
         messages.add(message);
