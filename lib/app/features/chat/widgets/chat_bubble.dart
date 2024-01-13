@@ -16,15 +16,18 @@ class ChatBubble extends StatelessWidget {
     final Map<MessageType, Map<String, dynamic>> details = {
       MessageType.system: {
         'alignment': MainAxisAlignment.center,
-        'color': Colors.grey,
+        'bubbleColor': Colors.grey,
+        'textColor': Colors.white,
       },
       MessageType.sender: {
         'alignment': MainAxisAlignment.start,
-        'color': Theme.of(context).primaryColor,
+        'bubbleColor': Colors.white,
+        'textColor': Colors.black,
       },
       MessageType.user: {
         'alignment': MainAxisAlignment.end,
-        'color': Theme.of(context).secondaryHeaderColor,
+        'bubbleColor': Colors.deepPurple,
+        'textColor': Colors.white,
       },
     };
 
@@ -39,13 +42,13 @@ class ChatBubble extends StatelessWidget {
             ),
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: details[type]!['color']!,
+              color: details[type]!['bubbleColor']!,
               borderRadius: BorderRadius.circular(10),
             ),
             child: SelectableText(
               message,
-              style: const TextStyle(
-                color: Colors.white,
+              style: TextStyle(
+                color: details[type]!['textColor']!,
               ),
             ),
           ),
