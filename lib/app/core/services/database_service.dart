@@ -1,8 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 // ignore: depend_on_referenced_packages
-import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
-import 'package:flutter_firebase_chat_core/flutter_firebase_chat_core.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:thisdatedoesnotexist/app/core/enum/database_status_enum.dart';
@@ -20,14 +18,6 @@ class DatabaseService {
     final User authenticatedUser = authService.getUser();
 
     try {
-      await FirebaseChatCore.instance.createUserInFirestore(
-        types.User(
-          id: authenticatedUser.uid,
-          firstName: authenticatedUser.displayName,
-          imageUrl: authenticatedUser.photoURL,
-        ),
-      );
-
       if (user.imageUrl == null) {
         return DatabaseStatus.failure;
       }
