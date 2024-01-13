@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 // ignore: depend_on_referenced_packages
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_modular/flutter_modular.dart';
+import 'package:thisdatedoesnotexist/app/core/models/message_model.dart';
 import 'package:thisdatedoesnotexist/app/core/models/user_model.dart';
 import 'package:thisdatedoesnotexist/app/features/chat/store/chat_store.dart';
 import 'package:thisdatedoesnotexist/app/features/chat/widgets/chat_bubble.dart';
-import 'package:thisdatedoesnotexist/app/features/chat/widgets/message_type_enum.dart';
 import 'package:thisdatedoesnotexist/app/features/chat/widgets/profile_drawer.dart';
 import 'package:uuid/uuid.dart';
 
@@ -31,7 +31,7 @@ class _ChatPageState extends State<ChatPage> {
   void initState() {
     super.initState();
     future = store.getCharacterById(widget.id);
-    // store.handleEndReached(widget.id);
+    store.handleEndReached(widget.id);
   }
 
   @override
@@ -42,6 +42,7 @@ class _ChatPageState extends State<ChatPage> {
         store.character = null;
         store.currentPage = 1;
         store.availablePages = 1;
+        store.messages.clear();
 
         Modular.to.pop();
       },
@@ -185,11 +186,13 @@ class _ChatPageState extends State<ChatPage> {
               ),
               body: Observer(
                 builder: (_) => ListView.builder(
-                  itemCount: 2,
+                  itemCount: store.messages.length,
                   itemBuilder: (BuildContext context, int index) {
+                    final Message message = store.messages[index];
+                    
                     return ChatBubble(
-                      type: index % 2 == 0 ? MessageType.user : MessageType.sender,
-                      message: 'Hi',
+                      type: message.type!,
+                      message: message.text ?? '',
                     );
                   },
                 ),
