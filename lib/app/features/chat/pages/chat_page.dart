@@ -186,6 +186,7 @@ class _ChatPageState extends State<ChatPage> {
               ),
               body: Observer(
                 builder: (_) => ListView.builder(
+                  reverse: true,
                   itemCount: store.messages.length,
                   itemBuilder: (BuildContext context, int index) {
                     final Message message = store.messages[index];
