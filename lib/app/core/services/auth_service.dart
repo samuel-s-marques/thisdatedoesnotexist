@@ -1,6 +1,5 @@
 import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter_firebase_chat_core/flutter_firebase_chat_core.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
@@ -112,7 +111,6 @@ class AuthService {
         ),
       );
 
-      await FirebaseChatCore.instance.deleteUserFromFirestore(_auth.currentUser!.uid);
       await _auth.currentUser!.delete();
       await OneSignal.logout();
 
