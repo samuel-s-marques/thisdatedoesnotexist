@@ -166,7 +166,7 @@ abstract class ChatStoreBase with Store {
         if (json['type'] == 'text') {
           final Map<String, dynamic> messageData = json['type']['message'];
 
-          final String id = messageData['id'];
+          final String id = messageData['id'].toString();
           final String text = messageData['text'];
           final MessageType type = MessageType.values.byName(messageData['type']);
           final String sendBy = messageData['send_by'];
@@ -209,7 +209,7 @@ abstract class ChatStoreBase with Store {
       updateAvailablePages(totalPages);
 
       for (final Map<String, dynamic> item in data) {
-        final String id = item['id'];
+        final String id = item['id'].toString();
         final String content = item['content'];
         final DateTime createdAt = DateTime.parse(item['created_at']);
         final MessageType type = item['user']['uid'] == authenticatedUser!.uid ? MessageType.user : MessageType.sender;
