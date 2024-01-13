@@ -53,6 +53,7 @@ class _ChatPageState extends State<ChatPage> {
             final UserModel character = snapshot.data;
 
             return Scaffold(
+              backgroundColor: const Color(0xFFf8f8f8),
               key: store.key,
               endDrawer: SizedBox(
                 width: double.infinity,
@@ -191,7 +192,7 @@ class _ChatPageState extends State<ChatPage> {
                   itemCount: store.messages.length,
                   itemBuilder: (BuildContext context, int index) {
                     final Message message = store.messages[index];
-                    
+
                     return ChatBubble(
                       type: message.type!,
                       message: message.text ?? '',
