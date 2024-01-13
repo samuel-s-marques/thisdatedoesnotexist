@@ -1,16 +1,17 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:chatview/chatview.dart';
 import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:mobx/mobx.dart';
+import 'package:thisdatedoesnotexist/app/core/models/message_model.dart';
 import 'package:thisdatedoesnotexist/app/core/models/user_model.dart';
 import 'package:thisdatedoesnotexist/app/core/services/auth_service.dart';
 import 'package:thisdatedoesnotexist/app/core/services/dio_service.dart';
 import 'package:thisdatedoesnotexist/app/core/util.dart';
 import 'package:thisdatedoesnotexist/app/features/chat/models/chat_model.dart';
+import 'package:thisdatedoesnotexist/app/features/chat/widgets/message_type_enum.dart';
 import 'package:uuid/uuid.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
@@ -42,24 +43,10 @@ abstract class ChatStoreBase with Store {
   UserModel? character;
 
   @observable
-  ChatUser? user;
-
-  @observable
-  ChatViewState chatViewState = ChatViewState.noData;
-
-  void dispose() {
-    chatController.initialMessageList.clear();
-    chatController.dispose();
-  }
-
-  ChatController chatController = ChatController(
-    initialMessageList: [],
-    scrollController: ScrollController(),
-    chatUsers: [],
-  );
-
-  @observable
   ObservableList<ChatModel> chats = ObservableList();
+
+  @observable
+  ObservableList<Message> messages = ObservableList();
 
   @action
   Future<void> handleEndReached(String uid) async {
@@ -69,13 +56,9 @@ abstract class ChatStoreBase with Store {
       });
 
       final List<Message> reversedNewMessages = List.from(newMessages.reversed);
-      final List<Message> updatedMessages = [...reversedNewMessages, ...chatController.initialMessageList];
-      chatController.initialMessageList = updatedMessages;
+      final List<Message> updatedMessages = [...reversedNewMessages, ...messages];
+      messages = ObservableList.of(updatedMessages);
       currentPage++;
-
-      if (chatController.initialMessageList.isNotEmpty) {
-        chatViewState = ChatViewState.hasMessages;
-      }
     }
   }
 
@@ -83,23 +66,23 @@ abstract class ChatStoreBase with Store {
   void _addMessage(Message message) {
     channel!.sink.add(
       jsonEncode(
-        message.toJson(),
+        message.toMap(),
       ),
     );
   }
 
   @action
-  void onSendTap(String message, ReplyMessage replyMessage, MessageType messageType) {
+  void onSendTap(String message) {
     final Message newMessage = Message(
       id: uuid.v4(),
-      message: message,
-      sendBy: user!.id,
-      replyMessage: replyMessage,
+      text: message,
+      type: MessageType.user,
+      sendBy: authenticatedUser?.uid,
       createdAt: DateTime.now(),
     );
 
     _addMessage(newMessage);
-    chatController.addMessage(newMessage);
+    messages.add(newMessage);
   }
 
   Future<void> authenticateUser() async {
@@ -181,16 +164,23 @@ abstract class ChatStoreBase with Store {
         }
 
         if (json['type'] == 'text') {
-          final String content = json['content'];
-          final DateTime createdAt = DateTime.parse(json['created_at']);
+          final Map<String, dynamic> messageData = json['type']['message'];
+
+          final String id = messageData['id'];
+          final String text = messageData['text'];
+          final MessageType type = MessageType.values.byName(messageData['type']);
+          final String sendBy = messageData['send_by'];
+          final DateTime createdAt = DateTime.parse(messageData['created_at']);
+
           final Message message = Message(
-            id: uuid.v4(),
-            message: content,
+            id: id,
+            text: text,
+            type: type,
+            sendBy: sendBy,
             createdAt: createdAt,
-            sendBy: json['user']['uid'],
           );
 
-          chatController.addMessage(message);
+          messages.add(message);
         }
       }
     }
@@ -202,10 +192,6 @@ abstract class ChatStoreBase with Store {
 
     if (response.statusCode == 200) {
       character = UserModel.fromMap(response.data);
-
-      chatController.chatUsers = [
-        ChatUser(id: id, name: character!.name!),
-      ];
     }
 
     return character;
@@ -223,11 +209,14 @@ abstract class ChatStoreBase with Store {
       updateAvailablePages(totalPages);
 
       for (final Map<String, dynamic> item in data) {
+        final String id = item['id'];
         final String content = item['content'];
         final DateTime createdAt = DateTime.parse(item['created_at']);
+        final MessageType type = item['user']['uid'] == authenticatedUser!.uid ? MessageType.user : MessageType.sender;
         final Message message = Message(
-          id: uuid.v4(),
-          message: content,
+          id: id,
+          text: content,
+          type: type,
           createdAt: createdAt,
           sendBy: item['user']['uid'],
         );
