@@ -50,6 +50,7 @@ class _ChatListPageState extends State<ChatListPage> {
               id: store.chats[index].uid,
               name: store.chats[index].name,
               time: store.chats[index].updatedAt,
+              draft: store.chats[index].draft,
               message: store.chats[index].lastMessage,
               avatarUrl: store.chats[index].avatarUrl,
             );
