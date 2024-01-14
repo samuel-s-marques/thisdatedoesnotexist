@@ -7,10 +7,12 @@ class ChatBubble extends StatelessWidget {
     super.key,
     required this.type,
     required this.message,
+    required this.createdAt,
   });
 
   final MessageType type;
   final String message;
+  final DateTime createdAt;
 
   @override
   Widget build(BuildContext context) {
@@ -108,11 +110,12 @@ class ChatBubble extends StatelessWidget {
               ),
               child: Theme(
                 data: ThemeData(
-                    textSelectionTheme: TextSelectionThemeData(
-                  cursorColor: details[type]!['selectionColor']!,
-                  selectionColor: details[type]!['selectionColor']!,
-                  selectionHandleColor: details[type]!['selectionColor']!,
-                )),
+                  textSelectionTheme: TextSelectionThemeData(
+                    cursorColor: details[type]!['selectionColor']!,
+                    selectionColor: details[type]!['selectionColor']!,
+                    selectionHandleColor: details[type]!['selectionColor']!,
+                  ),
+                ),
                 child: SelectableText(
                   message,
                   style: TextStyle(
