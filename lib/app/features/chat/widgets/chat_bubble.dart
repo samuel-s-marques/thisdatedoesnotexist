@@ -8,12 +8,12 @@ class ChatBubble extends StatelessWidget {
     super.key,
     required this.type,
     required this.message,
-    required this.createdAt,
+    this.createdAt,
   });
 
   final MessageType type;
   final String message;
-  final DateTime createdAt;
+  final DateTime? createdAt;
 
   @override
   Widget build(BuildContext context) {
@@ -135,7 +135,7 @@ class ChatBubble extends StatelessWidget {
                       children: [
                         const SizedBox(height: 5),
                         Text(
-                          DateFormat.Hm().format(createdAt),
+                          DateFormat.Hm().format(createdAt!),
                           style: TextStyle(
                             color: details[type]!['textColor']!.withOpacity(0.5),
                             fontSize: 12,
