@@ -36,35 +36,73 @@ class ChatBubble extends StatelessWidget {
 
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 10),
-      child: Row(
-        mainAxisAlignment: details[type]!['alignment']!,
-        children: [
-          Container(
-            constraints: BoxConstraints(
-              maxWidth: MediaQuery.of(context).size.width * 0.7,
-            ),
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: details[type]!['bubbleColor']!,
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Theme(
-              data: ThemeData(
-                textSelectionTheme: TextSelectionThemeData(
+      child: InkWell(
+        borderRadius: BorderRadius.circular(10),
+        onTap: () {
+          if (type == MessageType.system) {
+            return;
+          }
+
+          final RenderBox renderBox = context.findRenderObject() as RenderBox;
+          final Offset offset = renderBox.localToGlobal(Offset.zero);
+          final Size size = renderBox.size;
+
+          final double y = offset.dy;
+          final double x = offset.dx;
+
+          final double width = size.width;
+          final double height = size.height;
+
+          double left = width / 2;
+          double right = width / 2;
+
+          if (type == MessageType.sender) {
+            right = x;
+          } else {
+            left = x;
+          }
+
+          showMenu(
+            context: context,
+            position: RelativeRect.fromLTRB(left, y + height, right, 0),
+            items: [
+              PopupMenuItem(
+                child: ListTile(
+                  title: Text('data'),
+                ),
+              ),
+            ],
+          );
+        },
+        child: Row(
+          mainAxisAlignment: details[type]!['alignment']!,
+          children: [
+            Container(
+              constraints: BoxConstraints(
+                maxWidth: MediaQuery.of(context).size.width * 0.7,
+              ),
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: details[type]!['bubbleColor']!,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Theme(
+                data: ThemeData(
+                    textSelectionTheme: TextSelectionThemeData(
                   cursorColor: details[type]!['selectionColor']!,
                   selectionColor: details[type]!['selectionColor']!,
                   selectionHandleColor: details[type]!['selectionColor']!,
-                )
-              ),
-              child: SelectableText(
-                message,
-                style: TextStyle(
-                  color: details[type]!['textColor']!,
+                )),
+                child: SelectableText(
+                  message,
+                  style: TextStyle(
+                    color: details[type]!['textColor']!,
+                  ),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
