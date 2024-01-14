@@ -197,39 +197,57 @@ class _ChatPageState extends State<ChatPage> {
                     Expanded(
                       child: Skeletonizer(
                         enabled: store.loading,
-                        child: GroupedListView<Message, String>(
-                          shrinkWrap: true,
-                          reverse: true,
-                          floatingHeader: true,
-                          useStickyGroupSeparators: true,
-                          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 5),
-                          groupSeparatorBuilder: (String separator) => ChatBubble(
-                            type: MessageType.system,
-                            message: separator,
-                            bubbleColor: Colors.black.withOpacity(0.3),
-                            textColor: Colors.white,
-                          ),
-                          order: GroupedListOrder.DESC,
-                          sort: false,
-                          groupBy: (element) => DateFormat('dd/MM/yyyy').format(element.createdAt!),
-                          indexedItemBuilder: (BuildContext context, Message message, int index) {
-                            return ChatBubble(
-                              type: message.type!,
-                              message: message.text ?? '',
-                              createdAt: message.createdAt!,
-                            );
+                        child: NotificationListener<ScrollNotification>(
+                          onNotification: (ScrollNotification scrollNotification) {
+                            final ScrollMetrics metrics = scrollNotification.metrics;
+
+                            if (metrics.atEdge) {
+                              final bool isTop = metrics.pixels == 0;
+
+                              if (isTop) {
+                                store.handleEndReached(widget.id);
+
+                                // TODO: show scroll to bottom button
+                              }
+                            }
+
+                            return true;
                           },
-                          elements: store.loading
-                              ? List.generate(
-                                  10,
-                                  (index) => Message(
-                                    id: index.toString(),
-                                    text: 'This index is $index',
-                                    createdAt: DateTime.now(),
-                                    type: index.isEven ? MessageType.sender : MessageType.user,
-                                  ),
-                                )
-                              : store.messages,
+                          child: GroupedListView<Message, String>(
+                            controller: store.scrollController,
+                            shrinkWrap: true,
+                            reverse: true,
+                            floatingHeader: true,
+                            useStickyGroupSeparators: true,
+                            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 5),
+                            groupSeparatorBuilder: (String separator) => ChatBubble(
+                              type: MessageType.system,
+                              message: separator,
+                              bubbleColor: Colors.black.withOpacity(0.3),
+                              textColor: Colors.white,
+                            ),
+                            order: GroupedListOrder.DESC,
+                            sort: false,
+                            groupBy: (element) => DateFormat('dd/MM/yyyy').format(element.createdAt!),
+                            indexedItemBuilder: (BuildContext context, Message message, int index) {
+                              return ChatBubble(
+                                type: message.type!,
+                                message: message.text ?? '',
+                                createdAt: message.createdAt!,
+                              );
+                            },
+                            elements: store.loading
+                                ? List.generate(
+                                    10,
+                                    (index) => Message(
+                                      id: index.toString(),
+                                      text: 'This index is $index',
+                                      createdAt: DateTime.now(),
+                                      type: index.isEven ? MessageType.sender : MessageType.user,
+                                    ),
+                                  )
+                                : store.messages,
+                          ),
                         ),
                       ),
                     ),
