@@ -48,6 +48,9 @@ abstract class ChatStoreBase with Store {
   @observable
   ObservableList<Message> messages = ObservableList();
 
+  @observable
+  bool loading = true;
+
   @action
   Future<void> handleEndReached(String uid) async {
     if (availablePages >= currentPage) {
@@ -59,6 +62,8 @@ abstract class ChatStoreBase with Store {
       messages = ObservableList.of(updatedMessages);
       currentPage++;
     }
+
+    loading = false;
   }
 
   @action
