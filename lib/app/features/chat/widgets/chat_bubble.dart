@@ -129,12 +129,19 @@ class ChatBubble extends StatelessWidget {
                     ),
                   ),
                   if (type != MessageType.system)
-                    Text(
-                      DateFormat.Hm().format(createdAt),
-                      style: TextStyle(
-                        color: details[type]!['textColor']!.withOpacity(0.5),
-                        fontSize: 12,
-                      ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const SizedBox(height: 5),
+                        Text(
+                          DateFormat.Hm().format(createdAt),
+                          style: TextStyle(
+                            color: details[type]!['textColor']!.withOpacity(0.5),
+                            fontSize: 12,
+                          ),
+                        ),
+                      ],
                     ),
                 ],
               ),
