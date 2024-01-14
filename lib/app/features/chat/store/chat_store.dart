@@ -31,6 +31,7 @@ abstract class ChatStoreBase with Store {
   Timer? timer;
   bool requestedChats = false;
   bool firstRequest = false;
+  ScrollController scrollController = ScrollController();  
   final GlobalKey<ScaffoldState> key = GlobalKey<ScaffoldState>();
 
   @observable
