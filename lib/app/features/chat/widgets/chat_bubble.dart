@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:thisdatedoesnotexist/app/features/chat/widgets/message_type_enum.dart';
 
 class ChatBubble extends StatelessWidget {
@@ -67,8 +68,24 @@ class ChatBubble extends StatelessWidget {
             position: RelativeRect.fromLTRB(left, y + height, right, 0),
             items: [
               PopupMenuItem(
+                padding: EdgeInsets.zero,
                 child: ListTile(
-                  title: Text('data'),
+                  title: const Text('Copy'),
+                  onTap: () {
+                    Clipboard.setData(ClipboardData(text: message));
+                    Navigator.pop(context);
+                  },
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 10),
+                ),
+              ),
+              PopupMenuItem(
+                padding: EdgeInsets.zero,
+                child: ListTile(
+                  title: const Text('Report'),
+                  onTap: () {
+                    Navigator.pop(context);
+                  },
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 10),
                 ),
               ),
             ],
