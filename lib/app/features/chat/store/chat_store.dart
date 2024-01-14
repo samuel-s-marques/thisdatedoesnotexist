@@ -9,6 +9,7 @@ import 'package:mobx/mobx.dart';
 import 'package:thisdatedoesnotexist/app/core/models/message_model.dart';
 import 'package:thisdatedoesnotexist/app/core/models/user_model.dart';
 import 'package:thisdatedoesnotexist/app/core/services/auth_service.dart';
+import 'package:thisdatedoesnotexist/app/core/services/cache_service.dart';
 import 'package:thisdatedoesnotexist/app/core/services/dio_service.dart';
 import 'package:thisdatedoesnotexist/app/core/util.dart';
 import 'package:thisdatedoesnotexist/app/features/chat/models/chat_model.dart';
@@ -32,8 +33,10 @@ abstract class ChatStoreBase with Store {
   Timer? timer;
   bool requestedChats = false;
   bool firstRequest = false;
-  ScrollController scrollController = ScrollController();  
+  ScrollController scrollController = ScrollController();
   final GlobalKey<ScaffoldState> key = GlobalKey<ScaffoldState>();
+  TextEditingController messageController = TextEditingController();
+  CacheService cacheService = CacheService();
 
   @observable
   bool showScrollToBottom = false;
@@ -88,11 +91,21 @@ abstract class ChatStoreBase with Store {
     );
   }
 
+  void onChanged(String? value) {
+    if (value != null && value.isNotEmpty) {
+      cacheService.saveData('${character?.uid}-chat', value.trim());
+    }
+  }
+
   @action
-  void onSendTap(String message) {
+  void onSendTap() {
+    if (messageController.text.isEmpty) {
+      return;
+    }
+
     final Message newMessage = Message(
       id: uuid.v4(),
-      text: message,
+      text: messageController.text.trim(),
       type: MessageType.user,
       sendBy: authenticatedUser?.uid,
       createdAt: DateTime.now(),
@@ -209,6 +222,10 @@ abstract class ChatStoreBase with Store {
 
     if (response.statusCode == 200) {
       character = UserModel.fromMap(response.data);
+
+      if (await cacheService.getData('${character?.uid}-chat') != null) {
+        messageController.text = await cacheService.getData('${character?.uid}-chat');
+      }
     }
 
     return character;
