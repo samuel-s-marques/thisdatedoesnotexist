@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:mobx/mobx.dart';
 import 'package:thisdatedoesnotexist/app/core/models/message_model.dart';
 import 'package:thisdatedoesnotexist/app/core/models/user_model.dart';
@@ -35,6 +36,12 @@ abstract class ChatStoreBase with Store {
   final GlobalKey<ScaffoldState> key = GlobalKey<ScaffoldState>();
 
   @observable
+  bool showScrollToBottom = false;
+
+  @observable
+  ScrollDirection lastScrollDirection = ScrollDirection.idle;
+
+  @observable
   int availablePages = 1;
 
   @observable
@@ -51,6 +58,11 @@ abstract class ChatStoreBase with Store {
 
   @observable
   bool loading = true;
+
+  @action
+  void setLastScrollDirection(ScrollDirection scrollDirection) {
+    lastScrollDirection = scrollDirection;
+  }
 
   @action
   Future<void> handleEndReached(String uid) async {
