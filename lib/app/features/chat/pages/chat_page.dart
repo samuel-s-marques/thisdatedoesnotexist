@@ -201,7 +201,12 @@ class _ChatPageState extends State<ChatPage> {
                           shrinkWrap: true,
                           reverse: true,
                           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 5),
-                          groupSeparatorBuilder: (String separator) => ChatBubble(type: MessageType.system, message: separator),
+                          groupSeparatorBuilder: (String separator) => ChatBubble(
+                            type: MessageType.system,
+                            message: separator,
+                            bubbleColor: Colors.transparent,
+                            textColor: Colors.black.withOpacity(0.5),
+                          ),
                           order: GroupedListOrder.DESC,
                           sort: false,
                           groupBy: (element) => DateFormat('dd/MM/yyyy').format(element.createdAt!),
