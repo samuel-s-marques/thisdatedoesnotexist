@@ -205,23 +205,34 @@ class _ChatPageState extends State<ChatPage> {
                       ),
                     ),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 15),
+                      padding: const EdgeInsets.only(left: 24, right: 14, top: 15, bottom: 15,),
                       color: Colors.white,
-                      child: TextField(
-                        textCapitalization: TextCapitalization.sentences,
-                        minLines: 1,
-                        maxLines: 5,
-                        keyboardType: TextInputType.multiline,
-                        decoration: InputDecoration(
-                          filled: true,
-                          isDense: true,
-                          fillColor: const Color(0xFFf4f4f9),
-                          contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(30),
-                            borderSide: BorderSide.none,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Flexible(
+                            child: TextField(
+                              textCapitalization: TextCapitalization.sentences,
+                              minLines: 1,
+                              maxLines: 5,
+                              keyboardType: TextInputType.multiline,
+                              decoration: InputDecoration(
+                                filled: true,
+                                isDense: true,
+                                fillColor: const Color(0xFFf4f4f9),
+                                contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(30),
+                                  borderSide: BorderSide.none,
+                                ),
+                              ),
+                            ),
                           ),
-                        ),
+                          IconButton(
+                            onPressed: () {},
+                            icon: const Icon(Icons.send),
+                          ),
+                        ],
                       ),
                     ),
                   ],
