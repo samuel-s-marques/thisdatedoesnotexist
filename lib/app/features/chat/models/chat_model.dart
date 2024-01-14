@@ -4,6 +4,7 @@ class ChatModel {
     required this.avatarUrl,
     required this.name,
     this.lastMessage,
+    this.draft,
     this.seen = false,
     required this.updatedAt,
   });
@@ -15,6 +16,7 @@ class ChatModel {
       name: map['name'],
       lastMessage: map['last_message'],
       seen: map['seen'],
+      draft: map['draft'],
       updatedAt: DateTime.parse(map['updated_at']),
     );
   }
@@ -23,6 +25,7 @@ class ChatModel {
   final String avatarUrl;
   final String name;
   final String? lastMessage;
+  final String? draft;
   final bool seen;
   final DateTime updatedAt;
 
@@ -38,6 +41,7 @@ class ChatModel {
       name: name ?? this.name,
       lastMessage: lastMessage ?? this.lastMessage,
       seen: seen ?? this.seen,
+      draft: draft,
       updatedAt: updatedAt ?? this.updatedAt,
     );
   }
@@ -49,6 +53,7 @@ class ChatModel {
       'name': name,
       'last_message': lastMessage,
       'seen': seen,
+      'draft': draft,
       'updated_at': updatedAt.millisecondsSinceEpoch,
     };
   }
