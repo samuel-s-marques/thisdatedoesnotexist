@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 // ignore: depend_on_referenced_packages
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_modular/flutter_modular.dart';
+import 'package:grouped_list/grouped_list.dart';
+import 'package:intl/intl.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:thisdatedoesnotexist/app/core/models/message_model.dart';
 import 'package:thisdatedoesnotexist/app/core/models/user_model.dart';
@@ -195,28 +197,32 @@ class _ChatPageState extends State<ChatPage> {
                     Expanded(
                       child: Skeletonizer(
                         enabled: store.loading,
-                        child: ListView.builder(
+                        child: GroupedListView<Message, String>(
                           shrinkWrap: true,
                           reverse: true,
                           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 5),
-                          itemCount: store.loading ? 10 : store.messages.length,
-                          itemBuilder: (BuildContext context, int index) {
-                            if (store.loading) {
-                              return ChatBubble(
-                                type: index.isEven ? MessageType.sender : MessageType.user,
-                                message: 'Item number $index',
-                                createdAt: DateTime.now(),
-                              );
-                            }
-
-                            final Message message = store.messages[index];
-
+                          groupSeparatorBuilder: (String separator) => ChatBubble(type: MessageType.system, message: separator),
+                          order: GroupedListOrder.DESC,
+                          sort: false,
+                          groupBy: (element) => DateFormat('dd/MM/yyyy').format(element.createdAt!),
+                          indexedItemBuilder: (BuildContext context, Message message, int index) {
                             return ChatBubble(
                               type: message.type!,
                               message: message.text ?? '',
                               createdAt: message.createdAt!,
                             );
                           },
+                          elements: store.loading
+                              ? List.generate(
+                                  10,
+                                  (index) => Message(
+                                    id: index.toString(),
+                                    text: 'This index is $index',
+                                    createdAt: DateTime.now(),
+                                    type: index.isEven ? MessageType.sender : MessageType.user,
+                                  ),
+                                )
+                              : store.messages,
                         ),
                       ),
                     ),
