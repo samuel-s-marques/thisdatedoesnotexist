@@ -18,16 +18,19 @@ class ChatBubble extends StatelessWidget {
         'alignment': MainAxisAlignment.center,
         'bubbleColor': Colors.grey,
         'textColor': Colors.white,
+        'selectionColor': Theme.of(context).primaryColorLight,
       },
       MessageType.sender: {
         'alignment': MainAxisAlignment.start,
         'bubbleColor': Colors.white,
         'textColor': Colors.black,
+        'selectionColor': Theme.of(context).primaryColorLight,
       },
       MessageType.user: {
         'alignment': MainAxisAlignment.end,
         'bubbleColor': Colors.deepPurple,
         'textColor': Colors.white,
+        'selectionColor': Colors.deepPurple[200],
       },
     };
 
@@ -45,10 +48,19 @@ class ChatBubble extends StatelessWidget {
               color: details[type]!['bubbleColor']!,
               borderRadius: BorderRadius.circular(10),
             ),
-            child: SelectableText(
-              message,
-              style: TextStyle(
-                color: details[type]!['textColor']!,
+            child: Theme(
+              data: ThemeData(
+                textSelectionTheme: TextSelectionThemeData(
+                  cursorColor: details[type]!['selectionColor']!,
+                  selectionColor: details[type]!['selectionColor']!,
+                  selectionHandleColor: details[type]!['selectionColor']!,
+                )
+              ),
+              child: SelectableText(
+                message,
+                style: TextStyle(
+                  color: details[type]!['textColor']!,
+                ),
               ),
             ),
           ),
