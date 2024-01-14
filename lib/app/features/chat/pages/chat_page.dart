@@ -46,6 +46,7 @@ class _ChatPageState extends State<ChatPage> {
     store.availablePages = 1;
     store.messages.clear();
     store.loading = true;
+    store.messageController.clear();
     super.dispose();
   }
 
@@ -279,9 +280,11 @@ class _ChatPageState extends State<ChatPage> {
                       children: [
                         Flexible(
                           child: TextField(
+                            controller: store.messageController,
                             textCapitalization: TextCapitalization.sentences,
                             minLines: 1,
                             maxLines: 5,
+                            onChanged: store.onChanged,
                             keyboardType: TextInputType.multiline,
                             decoration: InputDecoration(
                               filled: true,
@@ -296,7 +299,7 @@ class _ChatPageState extends State<ChatPage> {
                           ),
                         ),
                         IconButton(
-                          onPressed: () {},
+                          onPressed: store.onSendTap,
                           icon: const Icon(Icons.send),
                         ),
                       ],
