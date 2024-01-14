@@ -70,6 +70,7 @@ class ChatBubble extends StatelessWidget {
               PopupMenuItem(
                 padding: EdgeInsets.zero,
                 child: ListTile(
+                  leading: const Icon(Icons.copy_outlined),
                   title: const Text('Copy'),
                   onTap: () {
                     Clipboard.setData(ClipboardData(text: message));
@@ -81,6 +82,7 @@ class ChatBubble extends StatelessWidget {
               PopupMenuItem(
                 padding: EdgeInsets.zero,
                 child: ListTile(
+                  leading: const Icon(Icons.report_outlined),
                   title: const Text('Report'),
                   onTap: () {
                     Navigator.pop(context);
