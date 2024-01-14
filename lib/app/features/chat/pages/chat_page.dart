@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 // ignore: depend_on_referenced_packages
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_modular/flutter_modular.dart';
@@ -200,15 +201,30 @@ class _ChatPageState extends State<ChatPage> {
                         child: NotificationListener<ScrollNotification>(
                           onNotification: (ScrollNotification scrollNotification) {
                             final ScrollMetrics metrics = scrollNotification.metrics;
+                            final ScrollDirection scrollDirection = store.scrollController.position.userScrollDirection;
 
                             if (metrics.atEdge) {
                               final bool isTop = metrics.pixels == 0;
 
                               if (isTop) {
                                 store.handleEndReached(widget.id);
-
-                                // TODO: show scroll to bottom button
                               }
+                            }
+
+                            // Going up
+                            if (scrollDirection == ScrollDirection.reverse) {
+                              store.showScrollToBottom = false;
+                              store.setLastScrollDirection(scrollDirection);
+                            }
+
+                            // Going down
+                            if (scrollDirection == ScrollDirection.forward) {
+                              store.setLastScrollDirection(scrollDirection);
+                            }
+
+                            if (scrollDirection == ScrollDirection.idle && store.lastScrollDirection == ScrollDirection.forward) {
+                              store.setLastScrollDirection(scrollDirection);
+                              store.showScrollToBottom = true;
                             }
 
                             return true;
@@ -288,6 +304,25 @@ class _ChatPageState extends State<ChatPage> {
                       ),
                     ),
                   ],
+                ),
+              ),
+              floatingActionButton: Observer(
+                builder: (_) => Visibility(
+                  visible: store.showScrollToBottom,
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: 150),
+                    child: FloatingActionButton(
+                      onPressed: () {
+                        store.showScrollToBottom = false;
+                        store.scrollController.animateTo(
+                          store.scrollController.position.minScrollExtent,
+                          duration: const Duration(milliseconds: 500),
+                          curve: Curves.fastOutSlowIn,
+                        );
+                      },
+                      child: const Icon(Icons.arrow_downward_outlined),
+                    ),
+                  ),
                 ),
               ),
             );
