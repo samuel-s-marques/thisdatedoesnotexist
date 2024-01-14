@@ -222,7 +222,7 @@ class _ChatPageState extends State<ChatPage> {
                               store.setLastScrollDirection(scrollDirection);
                             }
 
-                            if (scrollDirection == ScrollDirection.idle && store.lastScrollDirection == ScrollDirection.forward) {
+                            if (scrollDirection == ScrollDirection.idle && store.lastScrollDirection == ScrollDirection.forward && metrics.pixels > 800) {
                               store.setLastScrollDirection(scrollDirection);
                               store.showScrollToBottom = true;
                             }
