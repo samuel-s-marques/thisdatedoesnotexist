@@ -86,6 +86,7 @@ class ChatBubble extends StatelessWidget {
                   title: const Text('Report'),
                   onTap: () {
                     Navigator.pop(context);
+                    // TODO: Implement report
                   },
                   contentPadding: const EdgeInsets.symmetric(horizontal: 10),
                 ),
