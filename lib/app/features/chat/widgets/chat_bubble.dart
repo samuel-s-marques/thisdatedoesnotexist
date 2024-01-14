@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 import 'package:thisdatedoesnotexist/app/features/chat/widgets/message_type_enum.dart';
 
 class ChatBubble extends StatelessWidget {
@@ -108,20 +109,34 @@ class ChatBubble extends StatelessWidget {
                 color: details[type]!['bubbleColor']!,
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: Theme(
-                data: ThemeData(
-                  textSelectionTheme: TextSelectionThemeData(
-                    cursorColor: details[type]!['selectionColor']!,
-                    selectionColor: details[type]!['selectionColor']!,
-                    selectionHandleColor: details[type]!['selectionColor']!,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Theme(
+                    data: ThemeData(
+                      textSelectionTheme: TextSelectionThemeData(
+                        cursorColor: details[type]!['selectionColor']!,
+                        selectionColor: details[type]!['selectionColor']!,
+                        selectionHandleColor: details[type]!['selectionColor']!,
+                      ),
+                    ),
+                    child: SelectableText(
+                      message,
+                      style: TextStyle(
+                        color: details[type]!['textColor']!,
+                      ),
+                    ),
                   ),
-                ),
-                child: SelectableText(
-                  message,
-                  style: TextStyle(
-                    color: details[type]!['textColor']!,
-                  ),
-                ),
+                  if (type != MessageType.system)
+                    Text(
+                      DateFormat.Hm().format(createdAt),
+                      style: TextStyle(
+                        color: details[type]!['textColor']!.withOpacity(0.5),
+                        fontSize: 12,
+                      ),
+                    ),
+                ],
               ),
             ),
           ],
