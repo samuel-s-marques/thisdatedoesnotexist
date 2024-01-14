@@ -9,31 +9,35 @@ class ChatBubble extends StatelessWidget {
     required this.type,
     required this.message,
     this.createdAt,
-  });
+    this.bubbleColor,
+    this.textColor,
+  }) : assert(type != MessageType.system || createdAt == null, 'System messages cannot have a createdAt value.');
 
   final MessageType type;
   final String message;
   final DateTime? createdAt;
+  final Color? bubbleColor;
+  final Color? textColor;
 
   @override
   Widget build(BuildContext context) {
     final Map<MessageType, Map<String, dynamic>> details = {
       MessageType.system: {
         'alignment': MainAxisAlignment.center,
-        'bubbleColor': Colors.grey,
-        'textColor': Colors.white,
+        'bubbleColor': bubbleColor ?? Colors.grey,
+        'textColor': textColor ?? Colors.white,
         'selectionColor': Theme.of(context).primaryColorLight,
       },
       MessageType.sender: {
         'alignment': MainAxisAlignment.start,
-        'bubbleColor': Colors.white,
-        'textColor': Colors.black,
+        'bubbleColor': bubbleColor ?? Colors.white,
+        'textColor': textColor ?? Colors.black,
         'selectionColor': Theme.of(context).primaryColorLight,
       },
       MessageType.user: {
         'alignment': MainAxisAlignment.end,
-        'bubbleColor': Colors.deepPurple,
-        'textColor': Colors.white,
+        'bubbleColor': bubbleColor ?? Colors.deepPurple,
+        'textColor': textColor ?? Colors.white,
         'selectionColor': Colors.deepPurple[200],
       },
     };
