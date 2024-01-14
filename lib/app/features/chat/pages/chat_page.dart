@@ -3,10 +3,12 @@ import 'package:flutter/material.dart';
 // ignore: depend_on_referenced_packages
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_modular/flutter_modular.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 import 'package:thisdatedoesnotexist/app/core/models/message_model.dart';
 import 'package:thisdatedoesnotexist/app/core/models/user_model.dart';
 import 'package:thisdatedoesnotexist/app/features/chat/store/chat_store.dart';
 import 'package:thisdatedoesnotexist/app/features/chat/widgets/chat_bubble.dart';
+import 'package:thisdatedoesnotexist/app/features/chat/widgets/message_type_enum.dart';
 import 'package:thisdatedoesnotexist/app/features/chat/widgets/profile_drawer.dart';
 import 'package:uuid/uuid.dart';
 
@@ -43,6 +45,7 @@ class _ChatPageState extends State<ChatPage> {
         store.currentPage = 1;
         store.availablePages = 1;
         store.messages.clear();
+        store.loading = true;
 
         Modular.to.pop();
       },
@@ -190,23 +193,38 @@ class _ChatPageState extends State<ChatPage> {
                 builder: (_) => Column(
                   children: [
                     Expanded(
-                      child: ListView.builder(
-                        shrinkWrap: true,
-                        reverse: true,
-                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 5),
-                        itemCount: store.messages.length,
-                        itemBuilder: (BuildContext context, int index) {
-                          final Message message = store.messages[index];
+                      child: Skeletonizer(
+                        enabled: store.loading,
+                        child: ListView.builder(
+                          shrinkWrap: true,
+                          reverse: true,
+                          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 5),
+                          itemCount: store.loading ? 10 : store.messages.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            if (store.loading) {
+                              return ChatBubble(
+                                type: index.isEven ? MessageType.sender : MessageType.user,
+                                message: 'Item number $index',
+                              );
+                            }
 
-                          return ChatBubble(
-                            type: message.type!,
-                            message: message.text ?? '',
-                          );
-                        },
+                            final Message message = store.messages[index];
+
+                            return ChatBubble(
+                              type: message.type!,
+                              message: message.text ?? '',
+                            );
+                          },
+                        ),
                       ),
                     ),
                     Container(
-                      padding: const EdgeInsets.only(left: 24, right: 14, top: 15, bottom: 15,),
+                      padding: const EdgeInsets.only(
+                        left: 24,
+                        right: 14,
+                        top: 15,
+                        bottom: 15,
+                      ),
                       color: Colors.white,
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
