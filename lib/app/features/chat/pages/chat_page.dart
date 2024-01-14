@@ -205,6 +205,7 @@ class _ChatPageState extends State<ChatPage> {
                               return ChatBubble(
                                 type: index.isEven ? MessageType.sender : MessageType.user,
                                 message: 'Item number $index',
+                                createdAt: DateTime.now(),
                               );
                             }
 
@@ -213,6 +214,7 @@ class _ChatPageState extends State<ChatPage> {
                             return ChatBubble(
                               type: message.type!,
                               message: message.text ?? '',
+                              createdAt: message.createdAt!,
                             );
                           },
                         ),
