@@ -92,9 +92,7 @@ abstract class ChatStoreBase with Store {
   }
 
   void onChanged(String? value) {
-    if (value != null && value.isNotEmpty) {
-      cacheService.saveData('${character?.uid}-chat', value.trim());
-    }
+    cacheService.saveData('${character?.uid}-chat', value);
   }
 
   @action
@@ -182,6 +180,7 @@ abstract class ChatStoreBase with Store {
               name: '${character.name} ${character.surname}',
               lastMessage: data['last_message'],
               seen: data['seen'] != 0,
+              draft: await cacheService.getData('${character.uid}-chat'),
               updatedAt: DateTime.parse(data['updated_at']),
             );
 
