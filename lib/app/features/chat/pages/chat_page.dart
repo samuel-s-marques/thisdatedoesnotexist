@@ -200,12 +200,14 @@ class _ChatPageState extends State<ChatPage> {
                         child: GroupedListView<Message, String>(
                           shrinkWrap: true,
                           reverse: true,
+                          floatingHeader: true,
+                          useStickyGroupSeparators: true,
                           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 5),
                           groupSeparatorBuilder: (String separator) => ChatBubble(
                             type: MessageType.system,
                             message: separator,
-                            bubbleColor: Colors.transparent,
-                            textColor: Colors.black.withOpacity(0.5),
+                            bubbleColor: Colors.black.withOpacity(0.3),
+                            textColor: Colors.white,
                           ),
                           order: GroupedListOrder.DESC,
                           sort: false,
