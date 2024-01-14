@@ -97,6 +97,7 @@ class _ChatPageState extends State<ChatPage> {
                     },
                     menuChildren: [
                       MenuItemButton(
+                        leadingIcon: const Icon(Icons.report_outlined),
                         child: const Text('Report'),
                         onPressed: () {
                           showModalBottomSheet(
