@@ -23,7 +23,7 @@ class Message {
     return {
       'id': id,
       'text': text,
-      'type': type,
+      'type': type?.name,
       'send_by': sendBy,
       'created_at': createdAt?.toIso8601String(),
     };
