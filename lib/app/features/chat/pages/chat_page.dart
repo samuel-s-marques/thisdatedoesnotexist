@@ -50,6 +50,7 @@ class _ChatPageState extends State<ChatPage> {
     store.messages.clear();
     store.state = ChatState.loading;
     store.messageController.clear();
+    store.key = GlobalKey<ScaffoldState>();
     super.dispose();
   }
 
