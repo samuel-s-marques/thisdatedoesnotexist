@@ -36,7 +36,7 @@ abstract class ChatStoreBase with Store {
   bool requestedChats = false;
   bool firstRequest = false;
   ScrollController scrollController = ScrollController();
-  final GlobalKey<ScaffoldState> key = GlobalKey<ScaffoldState>();
+  GlobalKey<ScaffoldState> key = GlobalKey<ScaffoldState>();
   TextEditingController messageController = TextEditingController();
   CacheService cacheService = CacheService();
 
