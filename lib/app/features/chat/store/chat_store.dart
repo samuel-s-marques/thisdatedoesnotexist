@@ -5,6 +5,7 @@ import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:intl/intl.dart';
 import 'package:mobx/mobx.dart';
 import 'package:thisdatedoesnotexist/app/core/models/message_model.dart';
 import 'package:thisdatedoesnotexist/app/core/models/user_model.dart';
@@ -122,10 +123,29 @@ abstract class ChatStoreBase with Store {
     );
 
     _addMessage(newMessage);
-    messages.add(newMessage);
+    messages.insert(0, newMessage);
 
     messageController.clear();
     cacheService.deleteData('${character?.uid}-chat');
+    scrollToBottom();
+  }
+
+  @action
+  void scrollToBottom() {
+    showScrollToBottom = false;
+    scrollController.animateTo(
+      scrollController.position.minScrollExtent,
+      duration: const Duration(milliseconds: 500),
+      curve: Curves.fastOutSlowIn,
+    );
+  }
+
+  @action
+  bool isSameDate(Message current, Message next) {
+    final DateFormat formatter = DateFormat('dd/MM/yyyy');
+    final String currentDateFormatted = formatter.format(current.createdAt!);
+    final String nextDateFormatted = formatter.format(next.createdAt!);
+    return currentDateFormatted == nextDateFormatted;
   }
 
   Future<void> authenticateUser() async {
@@ -208,8 +228,6 @@ abstract class ChatStoreBase with Store {
         }
 
         if (json['type'] == 'text') {
-          print(json);
-
           final Map<String, dynamic> messageData = json['message'];
 
           final String? id = messageData['id'].toString();
@@ -226,8 +244,7 @@ abstract class ChatStoreBase with Store {
             createdAt: createdAt,
           );
 
-          messages.add(message);
-          print(messages);
+          messages.insert(0, message);
         }
       }
     }
