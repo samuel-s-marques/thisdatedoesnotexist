@@ -236,6 +236,7 @@ class _ChatPageState extends State<ChatPage> {
                           floatingHeader: true,
                           useStickyGroupSeparators: true,
                           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 5),
+                          itemComparator: (Message message1, Message message2) => message1.createdAt!.compareTo(message2.createdAt!),
                           groupSeparatorBuilder: (String separator) => ChatBubble(
                             type: MessageType.system,
                             message: separator,
@@ -243,7 +244,6 @@ class _ChatPageState extends State<ChatPage> {
                             textColor: Colors.white,
                           ),
                           order: GroupedListOrder.DESC,
-                          sort: false,
                           groupBy: (element) => DateFormat('dd/MM/yyyy').format(element.createdAt!),
                           indexedItemBuilder: (BuildContext context, Message message, int index) {
                             return ChatBubble(
