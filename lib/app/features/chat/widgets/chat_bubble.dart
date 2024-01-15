@@ -8,14 +8,14 @@ class ChatBubble extends StatelessWidget {
     super.key,
     required this.type,
     required this.message,
-    this.createdAt,
+    required this.createdAt,
     this.bubbleColor,
     this.textColor,
   });
 
   final MessageType type;
   final String message;
-  final DateTime? createdAt;
+  final DateTime createdAt;
   final Color? bubbleColor;
   final Color? textColor;
 
@@ -137,7 +137,7 @@ class ChatBubble extends StatelessWidget {
                         children: [
                           const SizedBox(height: 5),
                           Text(
-                            DateFormat.Hm().format(createdAt!),
+                            DateFormat.Hm().format(createdAt),
                             style: TextStyle(
                               color: details[type]!['textColor']!.withOpacity(0.5),
                               fontSize: 12,
