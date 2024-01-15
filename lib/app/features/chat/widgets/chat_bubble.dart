@@ -11,7 +11,7 @@ class ChatBubble extends StatelessWidget {
     this.createdAt,
     this.bubbleColor,
     this.textColor,
-  }) : assert(type != MessageType.system || createdAt == null, 'System messages cannot have a createdAt value.');
+  });
 
   final MessageType type;
   final String message;
