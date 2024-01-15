@@ -86,7 +86,11 @@ abstract class ChatStoreBase with Store {
   void _addMessage(Message message) {
     channel!.sink.add(
       jsonEncode(
-        message.toMap(),
+        {
+          'type': 'text',
+          'room_uid': character?.uid,
+          'message': message.toMap(),
+        },
       ),
     );
   }
@@ -111,6 +115,9 @@ abstract class ChatStoreBase with Store {
 
     _addMessage(newMessage);
     messages.add(newMessage);
+
+    messageController.clear();
+    cacheService.deleteData('${character?.uid}-chat');
   }
 
   Future<void> authenticateUser() async {
@@ -193,13 +200,15 @@ abstract class ChatStoreBase with Store {
         }
 
         if (json['type'] == 'text') {
-          final Map<String, dynamic> messageData = json['type']['message'];
+          print(json);
 
-          final String id = messageData['id'].toString();
-          final String text = messageData['text'];
-          final MessageType type = MessageType.values.byName(messageData['type']);
-          final String sendBy = messageData['send_by'];
-          final DateTime createdAt = DateTime.parse(messageData['created_at']);
+          final Map<String, dynamic> messageData = json['message'];
+
+          final String? id = messageData['id'].toString();
+          final String? text = messageData['text'];
+          final MessageType? type = MessageType.values.byName(messageData['type']);
+          final String? sendBy = messageData['send_by'];
+          final DateTime? createdAt = DateTime.parse(messageData['created_at']);
 
           final Message message = Message(
             id: id,
@@ -210,6 +219,7 @@ abstract class ChatStoreBase with Store {
           );
 
           messages.add(message);
+          print(messages);
         }
       }
     }
