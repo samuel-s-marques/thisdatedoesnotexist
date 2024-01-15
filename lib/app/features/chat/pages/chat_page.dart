@@ -1,16 +1,19 @@
+import 'dart:math';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 // ignore: depend_on_referenced_packages
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_modular/flutter_modular.dart';
-import 'package:grouped_list/grouped_list.dart';
 import 'package:intl/intl.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:thisdatedoesnotexist/app/core/models/message_model.dart';
 import 'package:thisdatedoesnotexist/app/core/models/user_model.dart';
 import 'package:thisdatedoesnotexist/app/features/chat/store/chat_store.dart';
 import 'package:thisdatedoesnotexist/app/features/chat/widgets/chat_bubble.dart';
+import 'package:thisdatedoesnotexist/app/features/chat/widgets/chat_state_enum.dart';
+import 'package:thisdatedoesnotexist/app/features/chat/widgets/grouped_listview.dart';
 import 'package:thisdatedoesnotexist/app/features/chat/widgets/message_type_enum.dart';
 import 'package:thisdatedoesnotexist/app/features/chat/widgets/profile_drawer.dart';
 import 'package:uuid/uuid.dart';
@@ -45,7 +48,7 @@ class _ChatPageState extends State<ChatPage> {
     store.currentPage = 1;
     store.availablePages = 1;
     store.messages.clear();
-    store.loading = true;
+    store.state = ChatState.loading;
     store.messageController.clear();
     super.dispose();
   }
@@ -57,7 +60,7 @@ class _ChatPageState extends State<ChatPage> {
       builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
         if (snapshot.hasData) {
           final UserModel character = snapshot.data;
-    
+
           return Scaffold(
             backgroundColor: const Color(0xFFf8f8f8),
             key: store.key,
@@ -146,7 +149,7 @@ class _ChatPageState extends State<ChatPage> {
                                   onTap: () {
                                     Navigator.pop(context);
                                     final TextEditingController _controller = TextEditingController();
-    
+
                                     showDialog(
                                       context: context,
                                       builder: (BuildContext context) {
@@ -196,74 +199,121 @@ class _ChatPageState extends State<ChatPage> {
               builder: (_) => Column(
                 children: [
                   Expanded(
-                    child: Skeletonizer(
-                      enabled: store.loading,
-                      child: NotificationListener<ScrollNotification>(
-                        onNotification: (ScrollNotification scrollNotification) {
-                          final ScrollMetrics metrics = scrollNotification.metrics;
-                          final ScrollDirection scrollDirection = store.scrollController.position.userScrollDirection;
-    
-                          if (metrics.atEdge) {
-                            final bool isTop = metrics.pixels == 0;
-    
-                            if (isTop) {
-                              store.handleEndReached(widget.id);
-                            }
+                    child: NotificationListener<ScrollNotification>(
+                      onNotification: (ScrollNotification scrollNotification) {
+                        final ScrollMetrics metrics = scrollNotification.metrics;
+                        final ScrollDirection scrollDirection = store.scrollController.position.userScrollDirection;
+
+                        if (metrics.atEdge) {
+                          final bool isTop = metrics.pixels == 0;
+
+                          if (isTop) {
+                            store.handleEndReached(widget.id);
                           }
-    
-                          // Going up
-                          if (scrollDirection == ScrollDirection.reverse) {
-                            store.showScrollToBottom = false;
-                            store.setLastScrollDirection(scrollDirection);
-                          }
-    
-                          // Going down
-                          if (scrollDirection == ScrollDirection.forward) {
-                            store.setLastScrollDirection(scrollDirection);
-                          }
-    
-                          if (scrollDirection == ScrollDirection.idle && store.lastScrollDirection == ScrollDirection.forward && metrics.pixels > 800) {
-                            store.setLastScrollDirection(scrollDirection);
-                            store.showScrollToBottom = true;
-                          }
-    
-                          return true;
+                        }
+
+                        // Going up
+                        if (scrollDirection == ScrollDirection.reverse) {
+                          store.showScrollToBottom = false;
+                          store.setLastScrollDirection(scrollDirection);
+                        }
+
+                        // Going down
+                        if (scrollDirection == ScrollDirection.forward) {
+                          store.setLastScrollDirection(scrollDirection);
+                        }
+
+                        if (scrollDirection == ScrollDirection.idle && store.lastScrollDirection == ScrollDirection.forward && metrics.pixels > 800) {
+                          store.setLastScrollDirection(scrollDirection);
+                          store.showScrollToBottom = true;
+                        }
+
+                        return true;
+                      },
+                      child: GroupedListView(
+                        controller: store.scrollController,
+                        shrinkWrap: true,
+                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 5),
+                        itemCount: store.messages.length,
+                        state: store.state,
+                        emptyBuilder: (BuildContext context) {
+                          return const Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text('No messages yet. Be the first to send a message!'),
+                            ],
+                          );
                         },
-                        child: GroupedListView<Message, String>(
-                          controller: store.scrollController,
-                          shrinkWrap: true,
-                          reverse: true,
-                          floatingHeader: true,
-                          useStickyGroupSeparators: true,
-                          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 5),
-                          itemComparator: (Message message1, Message message2) => message1.createdAt!.compareTo(message2.createdAt!),
-                          groupSeparatorBuilder: (String separator) => ChatBubble(
-                            type: MessageType.system,
-                            message: separator,
-                            bubbleColor: Colors.black.withOpacity(0.3),
-                            textColor: Colors.white,
-                          ),
-                          order: GroupedListOrder.DESC,
-                          groupBy: (element) => DateFormat('dd/MM/yyyy').format(element.createdAt!),
-                          indexedItemBuilder: (BuildContext context, Message message, int index) {
+                        errorBuilder: (BuildContext context) {
+                          return Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(store.errorMessage!),
+                            ],
+                          );
+                        },
+                        loadingBuilder: (BuildContext context) {
+                          return Skeletonizer(
+                            child: ListView.builder(
+                              itemCount: Random().nextInt(10) + 1,
+                              shrinkWrap: true,
+                              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 5),
+                              itemBuilder: (BuildContext context, int index) {
+                                return ChatBubble(
+                                  type: index.isEven ? MessageType.sender : MessageType.user,
+                                  message: 'Hello! This is a message! My index is $index',
+                                  createdAt: DateTime.now(),
+                                );
+                              },
+                            ),
+                          );
+                        },
+                        itemBuilder: (BuildContext context, int index) {
+                          final Message message = store.messages[index];
+                          bool isSameDate = true;
+
+                          if (index == 0) {
+                            isSameDate = false;
+                          } else {
+                            final Message message = store.messages[index];
+                            final Message previousMessage = store.messages[index - 1];
+
+                            final DateTime messageDate = message.createdAt!;
+                            final DateTime previousMessageDate = previousMessage.createdAt!;
+
+                            final DateFormat formatter = DateFormat('dd/MM/yyyy');
+
+                            final String messageDateFormatted = formatter.format(messageDate);
+                            final String previousMessageDateFormatted = formatter.format(previousMessageDate);
+
+                            isSameDate = messageDateFormatted == previousMessageDateFormatted;
+                          }
+
+                          if (index == 0 || (!isSameDate)) {
+                            return Column(
+                              children: [
+                                ChatBubble(
+                                  type: MessageType.system,
+                                  message: DateFormat('dd/MM/yyyy').format(message.createdAt!),
+                                  bubbleColor: Colors.black.withOpacity(0.3),
+                                  textColor: Colors.white,
+                                  createdAt: DateTime.now(),
+                                ),
+                                ChatBubble(
+                                  type: message.type!,
+                                  message: message.text ?? '',
+                                  createdAt: message.createdAt!,
+                                ),
+                              ],
+                            );
+                          } else {
                             return ChatBubble(
                               type: message.type!,
                               message: message.text ?? '',
                               createdAt: message.createdAt!,
                             );
-                          },
-                          elements: store.loading
-                              ? List.generate(
-                                  10,
-                                  (index) => Message(
-                                    id: index.toString(),
-                                    text: 'This index is $index',
-                                    createdAt: DateTime.now(),
-                                    type: index.isEven ? MessageType.sender : MessageType.user,
-                                  ),
-                                )
-                              : store.messages,
-                        ),
+                          }
+                        },
                       ),
                     ),
                   ),
@@ -329,7 +379,7 @@ class _ChatPageState extends State<ChatPage> {
             ),
           );
         }
-    
+
         return const Center(
           child: CircularProgressIndicator(),
         );
