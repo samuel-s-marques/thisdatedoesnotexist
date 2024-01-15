@@ -13,6 +13,7 @@ import 'package:thisdatedoesnotexist/app/core/services/cache_service.dart';
 import 'package:thisdatedoesnotexist/app/core/services/dio_service.dart';
 import 'package:thisdatedoesnotexist/app/core/util.dart';
 import 'package:thisdatedoesnotexist/app/features/chat/models/chat_model.dart';
+import 'package:thisdatedoesnotexist/app/features/chat/widgets/chat_state_enum.dart';
 import 'package:thisdatedoesnotexist/app/features/chat/widgets/message_type_enum.dart';
 import 'package:uuid/uuid.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
@@ -39,6 +40,9 @@ abstract class ChatStoreBase with Store {
   CacheService cacheService = CacheService();
 
   @observable
+  ChatState state = ChatState.loading;
+
+  @observable
   bool showScrollToBottom = false;
 
   @observable
@@ -54,13 +58,13 @@ abstract class ChatStoreBase with Store {
   UserModel? character;
 
   @observable
+  String? errorMessage;
+
+  @observable
   ObservableList<ChatModel> chats = ObservableList();
 
   @observable
   ObservableList<Message> messages = ObservableList();
-
-  @observable
-  bool loading = true;
 
   @action
   void setLastScrollDirection(ScrollDirection scrollDirection) {
@@ -79,7 +83,11 @@ abstract class ChatStoreBase with Store {
       currentPage++;
     }
 
-    loading = false;
+    if (messages.isEmpty) {
+      state = ChatState.empty;
+    } else {
+      state = ChatState.idle;
+    }
   }
 
   @action
@@ -266,6 +274,9 @@ abstract class ChatStoreBase with Store {
 
         messages.add(message);
       }
+    } else {
+      errorMessage = response.data['error'] ?? 'Something went wrong, please try again later';
+      state = ChatState.error;
     }
 
     return messages;
