@@ -236,6 +236,7 @@ class _ChatPageState extends State<ChatPage> {
                         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 5),
                         itemCount: store.messages.length,
                         state: store.state,
+                        reverse: true,
                         emptyBuilder: (BuildContext context) {
                           return const Column(
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -257,6 +258,7 @@ class _ChatPageState extends State<ChatPage> {
                             child: ListView.builder(
                               itemCount: Random().nextInt(10) + 1,
                               shrinkWrap: true,
+                              reverse: true,
                               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 5),
                               itemBuilder: (BuildContext context, int index) {
                                 return ChatBubble(
@@ -270,28 +272,11 @@ class _ChatPageState extends State<ChatPage> {
                         },
                         itemBuilder: (BuildContext context, int index) {
                           final Message message = store.messages[index];
-                          bool isSameDate = true;
+                          final bool isLastMessage = index == store.messages.length - 1;
 
-                          if (index == 0) {
-                            isSameDate = false;
-                          } else {
-                            final Message message = store.messages[index];
-                            final Message previousMessage = store.messages[index - 1];
-
-                            final DateTime messageDate = message.createdAt!;
-                            final DateTime previousMessageDate = previousMessage.createdAt!;
-
-                            final DateFormat formatter = DateFormat('dd/MM/yyyy');
-
-                            final String messageDateFormatted = formatter.format(messageDate);
-                            final String previousMessageDateFormatted = formatter.format(previousMessageDate);
-
-                            isSameDate = messageDateFormatted == previousMessageDateFormatted;
-                          }
-
-                          if (index == 0 || (!isSameDate)) {
-                            return Column(
-                              children: [
+                          return Column(
+                            children: [
+                              if (isLastMessage || !store.isSameDate(store.messages[index], store.messages[index + 1]))
                                 ChatBubble(
                                   type: MessageType.system,
                                   message: DateFormat('dd/MM/yyyy').format(message.createdAt!),
@@ -299,20 +284,13 @@ class _ChatPageState extends State<ChatPage> {
                                   textColor: Colors.white,
                                   createdAt: DateTime.now(),
                                 ),
-                                ChatBubble(
-                                  type: message.type!,
-                                  message: message.text ?? '',
-                                  createdAt: message.createdAt!,
-                                ),
-                              ],
-                            );
-                          } else {
-                            return ChatBubble(
-                              type: message.type!,
-                              message: message.text ?? '',
-                              createdAt: message.createdAt!,
-                            );
-                          }
+                              ChatBubble(
+                                type: message.type!,
+                                message: message.text ?? '',
+                                createdAt: message.createdAt!,
+                              ),
+                            ],
+                          );
                         },
                       ),
                     ),
@@ -364,14 +342,7 @@ class _ChatPageState extends State<ChatPage> {
                 child: Padding(
                   padding: const EdgeInsets.only(bottom: 150),
                   child: FloatingActionButton(
-                    onPressed: () {
-                      store.showScrollToBottom = false;
-                      store.scrollController.animateTo(
-                        store.scrollController.position.minScrollExtent,
-                        duration: const Duration(milliseconds: 500),
-                        curve: Curves.fastOutSlowIn,
-                      );
-                    },
+                    onPressed: store.scrollToBottom,
                     child: const Icon(Icons.arrow_downward_outlined),
                   ),
                 ),
