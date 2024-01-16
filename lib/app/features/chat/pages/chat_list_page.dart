@@ -37,14 +37,35 @@ class _ChatListPageState extends State<ChatListPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Chat'),
-        actions: [
-          IconButton(
-            onPressed: () {},
-            icon: const Icon(Icons.search),
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(kToolbarHeight),
+        child: Observer(
+          builder: (_) => AppBar(
+            title: AnimatedSwitcher(
+              duration: const Duration(milliseconds: 400),
+              child: store.isSearching
+                  ? SizedBox(
+                    width: MediaQuery.of(context).size.width - 56.0,
+                    child: const TextField(
+                      autofocus: true,
+                      decoration: InputDecoration(
+                        hintText: 'Search',
+                        prefixIcon: Icon(Icons.search),
+                      ),
+                    ),
+                  )
+                  : const Text('Chats'),
+            ),
+            actions: [
+              IconButton(
+                onPressed: () {
+                  store.isSearching = !store.isSearching;
+                },
+                icon: Icon(store.isSearching ? Icons.close : Icons.search),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
       body: Observer(builder: (_) {
         return Skeletonizer(
