@@ -58,7 +58,7 @@ class _ChatListPageState extends State<ChatListPage> {
                   name: 'Chat name $index',
                   message: 'Message $index',
                   time: DateTime.now(),
-                  avatarUrl: index.toString(),
+                  avatarUrl: 'https://placehold.co/256x256.png',
                 );
               }
 
