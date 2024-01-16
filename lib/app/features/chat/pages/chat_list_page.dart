@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_modular/flutter_modular.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 import 'package:thisdatedoesnotexist/app/features/chat/store/chat_store.dart';
 import 'package:thisdatedoesnotexist/app/features/chat/widgets/chat_list_tile.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
@@ -46,24 +47,30 @@ class _ChatListPageState extends State<ChatListPage> {
         ],
       ),
       body: Observer(builder: (_) {
-        if (store.chats.isEmpty) {
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
-        }
+        return Skeletonizer(
+          enabled: store.areChatsLoading,
+          child: ListView.builder(
+            itemCount: store.areChatsLoading ? 10 : store.chats.length,
+            itemBuilder: (BuildContext context, int index) {
+              if (store.areChatsLoading) {
+                return ChatListTile(
+                  id: index.toString(),
+                  name: 'Chat name $index',
+                  time: DateTime.now(),
+                  avatarUrl: index.toString(),
+                );
+              }
 
-        return ListView.builder(
-          itemCount: store.chats.length,
-          itemBuilder: (BuildContext context, int index) {
-            return ChatListTile(
-              id: store.chats[index].uid,
-              name: store.chats[index].name,
-              time: store.chats[index].updatedAt,
-              draft: store.chats[index].draft,
-              message: store.chats[index].lastMessage,
-              avatarUrl: store.chats[index].avatarUrl,
-            );
-          },
+              return ChatListTile(
+                id: store.chats[index].uid,
+                name: store.chats[index].name,
+                time: store.chats[index].updatedAt,
+                draft: store.chats[index].draft,
+                message: store.chats[index].lastMessage,
+                avatarUrl: store.chats[index].avatarUrl,
+              );
+            },
+          ),
         );
       }),
     );
