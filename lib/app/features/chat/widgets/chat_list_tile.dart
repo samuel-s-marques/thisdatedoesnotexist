@@ -38,12 +38,11 @@ class ChatListTile extends StatelessWidget {
                       ),
                       children: [
                         TextSpan(
-                          text: draft,
-                          style: const TextStyle(
-                            fontWeight: FontWeight.normal,
-                            color: Colors.black,
-                          )
-                        ),
+                            text: draft,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.normal,
+                              color: Colors.black,
+                            )),
                       ],
                     )
                   else
@@ -55,8 +54,17 @@ class ChatListTile extends StatelessWidget {
             )
           : null,
       trailing: Text(timeago.format(time, locale: 'en_short')),
-      leading: CircleAvatar(
-        backgroundImage: CachedNetworkImageProvider(avatarUrl),
+      leading: ClipOval(
+        child: SizedBox.fromSize(
+          size: const Size.fromRadius(24),
+          child: CachedNetworkImage(
+            imageUrl: avatarUrl,
+            fit: BoxFit.cover,
+            errorWidget: (context, url, error) => const Icon(Icons.error),
+            alignment: Alignment.topCenter,
+            placeholder: (context, url) => const CircularProgressIndicator(),
+          ),
+        ),
       ),
       onTap: () => Modular.to.pushNamed('/chat/$id'),
     );
