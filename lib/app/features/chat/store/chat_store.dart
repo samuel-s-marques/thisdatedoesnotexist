@@ -40,8 +40,27 @@ abstract class ChatStoreBase with Store {
   TextEditingController messageController = TextEditingController();
   CacheService cacheService = CacheService();
 
+  @computed
+  ChatState get state => getChatState();
+
   @observable
-  ChatState state = ChatState.loading;
+  bool isLoading = false;
+
+  ChatState getChatState() {
+    if (isLoading) {
+      return ChatState.loading;
+    } else if (errorMessage != null) {
+      return ChatState.error;
+    } else if (messages.isNotEmpty) {
+      return ChatState.idle;
+    } else if (isLoading) {
+      return ChatState.loading;
+    } else if (messages.isEmpty) {
+      return ChatState.empty;
+    }
+
+    return ChatState.loading;
+  }
 
   @observable
   bool showScrollToBottom = false;
@@ -84,11 +103,7 @@ abstract class ChatStoreBase with Store {
       currentPage++;
     }
 
-    if (messages.isEmpty) {
-      state = ChatState.empty;
-    } else {
-      state = ChatState.idle;
-    }
+    isLoading = false;
   }
 
   @action
@@ -293,7 +308,6 @@ abstract class ChatStoreBase with Store {
       }
     } else {
       errorMessage = response.data['error'] ?? 'Something went wrong, please try again later';
-      state = ChatState.error;
     }
 
     return messages;
