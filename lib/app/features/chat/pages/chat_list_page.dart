@@ -56,6 +56,7 @@ class _ChatListPageState extends State<ChatListPage> {
                 return ChatListTile(
                   id: index.toString(),
                   name: 'Chat name $index',
+                  message: 'Message $index',
                   time: DateTime.now(),
                   avatarUrl: index.toString(),
                 );
