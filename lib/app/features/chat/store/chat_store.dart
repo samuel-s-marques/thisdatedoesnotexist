@@ -69,6 +69,9 @@ abstract class ChatStoreBase with Store {
   bool showScrollToBottom = false;
 
   @observable
+  bool isSearching = false;
+
+  @observable
   ScrollDirection lastScrollDirection = ScrollDirection.idle;
 
   @observable
