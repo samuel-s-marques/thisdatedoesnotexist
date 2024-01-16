@@ -63,6 +63,9 @@ abstract class ChatStoreBase with Store {
   }
 
   @observable
+  bool areChatsLoading = true;
+
+  @observable
   bool showScrollToBottom = false;
 
   @observable
@@ -187,6 +190,7 @@ abstract class ChatStoreBase with Store {
           }),
         );
         firstRequest = true;
+        areChatsLoading = false;
       }
 
       if (!requestedChats) {
