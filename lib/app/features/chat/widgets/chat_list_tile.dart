@@ -38,11 +38,12 @@ class ChatListTile extends StatelessWidget {
                       ),
                       children: [
                         TextSpan(
-                            text: draft,
-                            style: const TextStyle(
-                              fontWeight: FontWeight.normal,
-                              color: Colors.black,
-                            )),
+                          text: draft,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.normal,
+                            color: Colors.black,
+                          ),
+                        ),
                       ],
                     )
                   else
@@ -62,7 +63,6 @@ class ChatListTile extends StatelessWidget {
             fit: BoxFit.cover,
             errorWidget: (context, url, error) => const Icon(Icons.error),
             alignment: Alignment.topCenter,
-            placeholder: (context, url) => const CircularProgressIndicator(),
           ),
         ),
       ),
