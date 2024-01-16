@@ -28,6 +28,19 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: const Text('Profile'),
+        actions: [
+          IconButton(
+            onPressed: () {},
+            icon: const Icon(Icons.edit),
+          ),
+          IconButton(
+            onPressed: () => Navigator.pushNamed(context, '/settings/'),
+            icon: const Icon(Icons.settings),
+          ),
+        ],
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(
           horizontal: 24,
