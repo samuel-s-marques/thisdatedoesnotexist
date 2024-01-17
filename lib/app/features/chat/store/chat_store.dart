@@ -195,7 +195,12 @@ abstract class ChatStoreBase with Store {
     );
   }
 
-  void initializeWebSocket() => channel!.stream.listen(handleWebSocketMessage);
+  void initializeWebSocket() {
+    channel = WebSocketChannel.connect(
+      Uri.parse(wssServer),
+    );
+    channel!.stream.listen(handleWebSocketMessage);
+  }
 
   @action
   Future<void> handleWebSocketMessage(dynamic data) async {
