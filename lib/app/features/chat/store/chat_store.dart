@@ -186,20 +186,26 @@ abstract class ChatStoreBase with Store {
   Future<void> authenticateUser() async {
     authenticatedUser ??= authService.getUser();
 
-    channel!.sink.add(jsonEncode({
-      'type': 'auth',
-      'user_id': authenticatedUser!.uid,
-      'token': await authenticatedUser!.getIdToken(),
-    }));
+    channel!.sink.add(
+      jsonEncode({
+        'type': 'auth',
+        'user_id': authenticatedUser!.uid,
+        'token': await authenticatedUser!.getIdToken(),
+      }),
+    );
   }
+
+  void initializeWebSocket() => channel!.stream.listen(handleWebSocketMessage);
 
   @action
   Future<void> handleWebSocketMessage(dynamic data) async {
-    if (authenticatedUser == null) {
+    final Map<String, dynamic> json = jsonDecode(data ?? {});
+
+    if (authenticatedUser == null || json['message'] == 'Unauthorized.') {
       await authenticateUser();
     }
 
-    if (authenticatedUser != null) {
+    if (authenticatedUser != null && json['message'] != 'Unauthorized') {
       if (!firstRequest) {
         channel!.sink.add(
           jsonEncode({
@@ -226,8 +232,6 @@ abstract class ChatStoreBase with Store {
       }
 
       if (data != null) {
-        final Map<String, dynamic> json = jsonDecode(data);
-
         if (json['type'] == 'system') {
           switch (json['status']) {
             case 'error':
