@@ -11,6 +11,7 @@ class ChatBubble extends StatelessWidget {
     required this.createdAt,
     this.bubbleColor,
     this.textColor,
+    this.onReport,
   });
 
   final MessageType type;
@@ -18,6 +19,7 @@ class ChatBubble extends StatelessWidget {
   final DateTime createdAt;
   final Color? bubbleColor;
   final Color? textColor;
+  final void Function()? onReport;
 
   @override
   Widget build(BuildContext context) {
@@ -80,18 +82,6 @@ class ChatBubble extends StatelessWidget {
                     onTap: () {
                       Clipboard.setData(ClipboardData(text: message));
                       Navigator.pop(context);
-                    },
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 10),
-                  ),
-                ),
-                PopupMenuItem(
-                  padding: EdgeInsets.zero,
-                  child: ListTile(
-                    leading: const Icon(Icons.report_outlined),
-                    title: const Text('Report'),
-                    onTap: () {
-                      Navigator.pop(context);
-                      // TODO: Implement report
                     },
                     contentPadding: const EdgeInsets.symmetric(horizontal: 10),
                   ),
