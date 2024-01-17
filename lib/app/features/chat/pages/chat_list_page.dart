@@ -25,7 +25,8 @@ class _ChatListPageState extends State<ChatListPage> {
     store.channel = WebSocketChannel.connect(
       Uri.parse(store.wssServer),
     );
-    store.channel!.stream.listen(store.handleWebSocketMessage);
+
+    store.initializeWebSocket();
   }
 
   @override
@@ -33,6 +34,8 @@ class _ChatListPageState extends State<ChatListPage> {
     store.timer?.cancel();
     store.timer = null;
     store.debounce?.cancel();
+    store.requestedChats = false;
+    store.firstRequest = false;
 
     super.dispose();
   }
