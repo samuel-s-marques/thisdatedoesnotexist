@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+import 'package:thisdatedoesnotexist/app/features/chat/models/chat_model.dart';
 import 'package:thisdatedoesnotexist/app/features/chat/store/chat_store.dart';
 import 'package:thisdatedoesnotexist/app/features/chat/widgets/chat_list_tile.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
@@ -16,6 +17,7 @@ class ChatListPage extends StatefulWidget {
 class _ChatListPageState extends State<ChatListPage> {
   ChatStore store = Modular.get<ChatStore>();
   bool authenticated = false;
+  final TextEditingController searchController = TextEditingController();
 
   @override
   void initState() {
@@ -30,6 +32,7 @@ class _ChatListPageState extends State<ChatListPage> {
   void dispose() {
     store.timer?.cancel();
     store.timer = null;
+    store.debounce?.cancel();
 
     super.dispose();
   }
@@ -45,21 +48,28 @@ class _ChatListPageState extends State<ChatListPage> {
               duration: const Duration(milliseconds: 400),
               child: store.isSearching
                   ? SizedBox(
-                    width: MediaQuery.of(context).size.width - 56.0,
-                    child: const TextField(
-                      autofocus: true,
-                      decoration: InputDecoration(
-                        hintText: 'Search',
-                        prefixIcon: Icon(Icons.search),
+                      width: MediaQuery.of(context).size.width - 56.0,
+                      child: TextField(
+                        controller: searchController,
+                        autofocus: true,
+                        textCapitalization: TextCapitalization.sentences,
+                        onChanged: store.onSearch,
+                        decoration: const InputDecoration(
+                          hintText: 'Search',
+                          prefixIcon: Icon(Icons.search),
+                        ),
                       ),
-                    ),
-                  )
+                    )
                   : const Text('Chats'),
             ),
             actions: [
               IconButton(
                 onPressed: () {
                   store.isSearching = !store.isSearching;
+
+                  if (!store.isSearching) {
+                    searchController.clear();
+                  }
                 },
                 icon: Icon(store.isSearching ? Icons.close : Icons.search),
               ),
@@ -83,13 +93,15 @@ class _ChatListPageState extends State<ChatListPage> {
                 );
               }
 
+              final ChatModel chat = store.chats[index];
+
               return ChatListTile(
-                id: store.chats[index].uid,
-                name: store.chats[index].name,
-                time: store.chats[index].updatedAt,
-                draft: store.chats[index].draft,
-                message: store.chats[index].lastMessage,
-                avatarUrl: store.chats[index].avatarUrl,
+                id: chat.uid,
+                name: chat.name,
+                time: chat.updatedAt,
+                draft: chat.draft,
+                message: chat.lastMessage,
+                avatarUrl: chat.avatarUrl,
               );
             },
           ),
