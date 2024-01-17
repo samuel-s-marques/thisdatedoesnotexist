@@ -314,15 +314,8 @@ class _ChatPageState extends State<ChatPage> {
                             maxLines: 5,
                             onChanged: store.onChanged,
                             keyboardType: TextInputType.multiline,
-                            decoration: InputDecoration(
-                              filled: true,
-                              isDense: true,
-                              fillColor: const Color(0xFFf4f4f9),
-                              contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(30),
-                                borderSide: BorderSide.none,
-                              ),
+                            decoration: const InputDecoration(
+                              fillColor: Color(0xFFf4f4f9),
                             ),
                           ),
                         ),
