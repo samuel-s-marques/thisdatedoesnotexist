@@ -11,7 +11,6 @@ class ChatBubble extends StatelessWidget {
     required this.createdAt,
     this.bubbleColor,
     this.textColor,
-    this.onReport,
   });
 
   final MessageType type;
@@ -19,7 +18,6 @@ class ChatBubble extends StatelessWidget {
   final DateTime createdAt;
   final Color? bubbleColor;
   final Color? textColor;
-  final void Function()? onReport;
 
   @override
   Widget build(BuildContext context) {
