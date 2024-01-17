@@ -57,4 +57,9 @@ class ChatModel {
       'updated_at': updatedAt.millisecondsSinceEpoch,
     };
   }
+
+  @override
+  String toString() {
+    return name.toString();
+  }
 }
