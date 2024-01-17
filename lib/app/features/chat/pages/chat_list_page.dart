@@ -5,7 +5,6 @@ import 'package:skeletonizer/skeletonizer.dart';
 import 'package:thisdatedoesnotexist/app/features/chat/models/chat_model.dart';
 import 'package:thisdatedoesnotexist/app/features/chat/store/chat_store.dart';
 import 'package:thisdatedoesnotexist/app/features/chat/widgets/chat_list_tile.dart';
-import 'package:web_socket_channel/web_socket_channel.dart';
 
 class ChatListPage extends StatefulWidget {
   const ChatListPage({super.key});
@@ -22,10 +21,6 @@ class _ChatListPageState extends State<ChatListPage> {
   @override
   void initState() {
     super.initState();
-    store.channel = WebSocketChannel.connect(
-      Uri.parse(store.wssServer),
-    );
-
     store.initializeWebSocket();
   }
 
@@ -34,6 +29,7 @@ class _ChatListPageState extends State<ChatListPage> {
     store.timer?.cancel();
     store.timer = null;
     store.debounce?.cancel();
+    store.channel?.sink.close();
     store.requestedChats = false;
     store.firstRequest = false;
 
