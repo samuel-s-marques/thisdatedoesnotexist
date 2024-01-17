@@ -39,12 +39,16 @@ abstract class ChatStoreBase with Store {
   GlobalKey<ScaffoldState> key = GlobalKey<ScaffoldState>();
   TextEditingController messageController = TextEditingController();
   CacheService cacheService = CacheService();
+  Timer? debounce;
 
   @computed
   ChatState get state => getChatState();
 
   @observable
   bool isLoading = false;
+
+  @observable
+  String? searchQuery;
 
   ChatState getChatState() {
     if (isLoading) {
@@ -129,6 +133,16 @@ abstract class ChatStoreBase with Store {
     cacheService.saveData('${character?.uid}-chat', value);
   }
 
+  void onSearch(String? value) {
+    if (debounce?.isActive ?? false) {
+      debounce?.cancel();
+    }
+
+    debounce = Timer(const Duration(milliseconds: 300), () {
+      searchQuery = value;
+    });
+  }
+
   @action
   void onSendTap() {
     if (messageController.text.isEmpty) {
@@ -190,10 +204,11 @@ abstract class ChatStoreBase with Store {
         channel!.sink.add(
           jsonEncode({
             'type': 'chats',
+            'search': searchQuery,
+            'searching': isSearching,
           }),
         );
         firstRequest = true;
-        areChatsLoading = false;
       }
 
       if (!requestedChats) {
@@ -202,6 +217,8 @@ abstract class ChatStoreBase with Store {
           channel!.sink.add(
             jsonEncode({
               'type': 'chats',
+              'search': searchQuery,
+              'searching': isSearching,
             }),
           );
           requestedChats = true;
@@ -246,6 +263,7 @@ abstract class ChatStoreBase with Store {
 
           chats.clear();
           chats.addAll(tempChats);
+          areChatsLoading = false;
           requestedChats = false;
         }
 
