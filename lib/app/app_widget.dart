@@ -17,6 +17,14 @@ class AppWidget extends StatelessWidget {
         drawerTheme: const DrawerThemeData(
           endShape: RoundedRectangleBorder(),
         ),
+        inputDecorationTheme: InputDecorationTheme(
+          filled: true,
+          contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(30),
+            borderSide: BorderSide.none,
+          ),
+        ),
       ),
     );
   }

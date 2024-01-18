@@ -36,8 +36,6 @@ abstract class HomeStoreBase with Store {
   @observable
   ObservableList<UserModel> cards = ObservableList();
 
-  List<String> appbars = ['Home', 'Chat', 'Profile'];
-
   AppinioSwiperController cardSwiperController = AppinioSwiperController();
 
   @observable
