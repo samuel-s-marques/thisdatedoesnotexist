@@ -237,7 +237,7 @@ abstract class ChatStoreBase with Store {
       }
 
       if (data != null) {
-        if (json['type'] == 'system') {
+        if (json['type'] == 'system' && json['show']) {
           switch (json['status']) {
             case 'error':
               buildContext!.showSnackBarError(message: json['message']);
@@ -247,6 +247,7 @@ abstract class ChatStoreBase with Store {
               break;
             default:
               buildContext!.showSnackBar(message: json['message']);
+              break;
           }
         }
 
