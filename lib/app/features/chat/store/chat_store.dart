@@ -209,8 +209,6 @@ abstract class ChatStoreBase with Store {
   Future<void> handleWebSocketMessage(dynamic data) async {
     final Map<String, dynamic> json = jsonDecode(data ?? {});
 
-    print(json);
-
     if (authenticatedUser == null || json['message'] == 'Unauthorized.') {
       await authenticateUser();
     }
@@ -223,7 +221,6 @@ abstract class ChatStoreBase with Store {
           'searching': isSearching,
         }),
       );
-      print('requesting chats');
       firstRequest = true;
     }
 
