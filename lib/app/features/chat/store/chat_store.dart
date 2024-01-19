@@ -32,10 +32,9 @@ abstract class ChatStoreBase with Store {
   final DioService dio = DioService();
   WebSocketChannel? channel;
   BuildContext? buildContext;
-  Timer? timer;
   bool requestedChats = false;
-  bool firstRequest = false;
-  ScrollController scrollController = ScrollController();
+  ScrollController chatScrollController = ScrollController();
+  ScrollController chatListScrollController = ScrollController();
   GlobalKey<ScaffoldState> key = GlobalKey<ScaffoldState>();
   TextEditingController messageController = TextEditingController();
   CacheService cacheService = CacheService();
@@ -46,6 +45,9 @@ abstract class ChatStoreBase with Store {
 
   @observable
   bool isLoading = false;
+
+  @observable
+  bool firstRequest = false;
 
   @observable
   String? searchQuery;
@@ -168,8 +170,8 @@ abstract class ChatStoreBase with Store {
   @action
   void scrollToBottom() {
     showScrollToBottom = false;
-    scrollController.animateTo(
-      scrollController.position.minScrollExtent,
+    chatScrollController.animateTo(
+      chatScrollController.position.minScrollExtent,
       duration: const Duration(milliseconds: 500),
       curve: Curves.fastOutSlowIn,
     );
@@ -195,10 +197,11 @@ abstract class ChatStoreBase with Store {
     );
   }
 
-  void initializeWebSocket() {
+  Future<void> initializeWebSocket() async {
     channel = WebSocketChannel.connect(
       Uri.parse(wssServer),
     );
+    await authenticateUser();
     channel!.stream.listen(handleWebSocketMessage);
   }
 
@@ -206,96 +209,83 @@ abstract class ChatStoreBase with Store {
   Future<void> handleWebSocketMessage(dynamic data) async {
     final Map<String, dynamic> json = jsonDecode(data ?? {});
 
+    print(json);
+
     if (authenticatedUser == null || json['message'] == 'Unauthorized.') {
       await authenticateUser();
     }
 
-    if (authenticatedUser != null && json['message'] != 'Unauthorized') {
-      if (!firstRequest) {
-        channel!.sink.add(
-          jsonEncode({
-            'type': 'chats',
-            'search': searchQuery,
-            'searching': isSearching,
-          }),
+    if (!firstRequest) {
+      channel!.sink.add(
+        jsonEncode({
+          'type': 'chats',
+          'search': searchQuery,
+          'searching': isSearching,
+        }),
+      );
+      print('requesting chats');
+      firstRequest = true;
+    }
+
+    if (data != null) {
+      if (json['type'] == 'system' && json['show']) {
+        switch (json['status']) {
+          case 'error':
+            buildContext!.showSnackBarError(message: json['message']);
+            break;
+          case 'success':
+            buildContext!.showSnackBarSuccess(message: json['message']);
+            break;
+          default:
+            buildContext!.showSnackBar(message: json['message']);
+            break;
+        }
+      }
+
+      if (json['type'] == 'chats') {
+        final List<ChatModel> tempChats = [];
+
+        for (int index = 0; index < json['data']['data'].length; index++) {
+          final Map<String, dynamic> data = json['data']['data'][index];
+
+          final UserModel character = UserModel.fromMap(data['character']);
+          final ChatModel chat = ChatModel(
+            uid: character.uid,
+            avatarUrl: '$server/uploads/characters/${character.uid}.png',
+            name: '${character.name} ${character.surname}',
+            lastMessage: data['last_message'],
+            seen: data['seen'] != 0,
+            draft: await cacheService.getData('${character.uid}-chat'),
+            updatedAt: DateTime.parse(data['updated_at']),
+          );
+
+          tempChats.add(chat);
+        }
+
+        chats.clear();
+        chats.addAll(tempChats);
+        areChatsLoading = false;
+        requestedChats = false;
+      }
+
+      if (json['type'] == 'text') {
+        final Map<String, dynamic> messageData = json['message'];
+
+        final String? id = messageData['id'].toString();
+        final String? text = messageData['text'];
+        final MessageType? type = MessageType.values.byName(messageData['type']);
+        final String? sendBy = messageData['send_by'];
+        final DateTime? createdAt = DateTime.parse(messageData['created_at']);
+
+        final Message message = Message(
+          id: id,
+          text: text,
+          type: type,
+          sendBy: sendBy,
+          createdAt: createdAt,
         );
-        firstRequest = true;
-      }
 
-      if (!requestedChats) {
-        timer?.cancel();
-        timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-          channel!.sink.add(
-            jsonEncode({
-              'type': 'chats',
-              'search': searchQuery,
-              'searching': isSearching,
-            }),
-          );
-          requestedChats = true;
-        });
-      }
-
-      if (data != null) {
-        if (json['type'] == 'system' && json['show']) {
-          switch (json['status']) {
-            case 'error':
-              buildContext!.showSnackBarError(message: json['message']);
-              break;
-            case 'success':
-              buildContext!.showSnackBarSuccess(message: json['message']);
-              break;
-            default:
-              buildContext!.showSnackBar(message: json['message']);
-              break;
-          }
-        }
-
-        if (json['type'] == 'chats') {
-          final List<ChatModel> tempChats = [];
-
-          for (int index = 0; index < json['data']['data'].length; index++) {
-            final Map<String, dynamic> data = json['data']['data'][index];
-
-            final UserModel character = UserModel.fromMap(data['character']);
-            final ChatModel chat = ChatModel(
-              uid: character.uid,
-              avatarUrl: '$server/uploads/characters/${character.uid}.png',
-              name: '${character.name} ${character.surname}',
-              lastMessage: data['last_message'],
-              seen: data['seen'] != 0,
-              draft: await cacheService.getData('${character.uid}-chat'),
-              updatedAt: DateTime.parse(data['updated_at']),
-            );
-
-            tempChats.add(chat);
-          }
-
-          chats.clear();
-          chats.addAll(tempChats);
-          areChatsLoading = false;
-          requestedChats = false;
-        }
-
-        if (json['type'] == 'text') {
-          final Map<String, dynamic> messageData = json['message'];
-
-          final String? id = messageData['id'].toString();
-          final String? text = messageData['text'];
-          final MessageType? type = MessageType.values.byName(messageData['type']);
-          final String? sendBy = messageData['send_by'];
-          final DateTime? createdAt = DateTime.parse(messageData['created_at']);
-
-          final Message message = Message(
-            id: id,
-            text: text,
-            type: type,
-            sendBy: sendBy,
-            createdAt: createdAt,
-          );
-
-          messages.insert(0, message);
-        }
+        messages.insert(0, message);
       }
     }
   }
