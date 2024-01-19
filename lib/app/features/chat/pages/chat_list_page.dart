@@ -22,6 +22,10 @@ class _ChatListPageState extends State<ChatListPage> {
   void initState() {
     super.initState();
     store.initializeWebSocket();
+
+    store.chatListScrollController.addListener(() {
+      if (store.chatListScrollController.position.pixels == store.chatListScrollController.position.maxScrollExtent) {}
+    });
   }
 
   @override
@@ -82,6 +86,7 @@ class _ChatListPageState extends State<ChatListPage> {
         return Skeletonizer(
           enabled: store.areChatsLoading,
           child: ListView.builder(
+            controller: store.chatListScrollController,
             itemCount: store.areChatsLoading ? 10 : store.chats.length,
             itemBuilder: (BuildContext context, int index) {
               if (store.areChatsLoading) {
