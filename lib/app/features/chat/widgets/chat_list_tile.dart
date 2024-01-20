@@ -27,13 +27,13 @@ class ChatListTile extends StatelessWidget {
 
     if (dateTime.year == now.year && dateTime.month == now.month && dateTime.day == now.day) {
       // Today
-      return DateFormat('HH:mm').format(dateTime);
+      return DateFormat('HH:mm').format(dateTime.toLocal());
     } else if (dateTime.year == yesterday.year && dateTime.month == yesterday.month && dateTime.day == yesterday.day) {
       // Yesterday
       return 'Yesterday';
     } else {
       // Other days
-      return DateFormat('dd/MM/yyyy').format(dateTime);
+      return DateFormat('dd/MM/yyyy').format(dateTime.toLocal());
     }
   }
 
