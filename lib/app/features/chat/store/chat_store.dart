@@ -199,7 +199,6 @@ abstract class ChatStoreBase with Store {
         'token': await authenticatedUser!.getIdToken(),
       }),
     );
-    print('Authenticated user: ${authenticatedUser!.uid}');
   }
 
   Future<void> initializeWebSocket() async {
@@ -261,11 +260,7 @@ abstract class ChatStoreBase with Store {
         }
       }
 
-      print('WebSocket message: $data');
-      print('Authenticated: $authenticated');
-
       if (!firstRequest && authenticated) {
-        print('First chats request');
         requestChats();
         firstRequest = true;
       }
@@ -287,19 +282,11 @@ abstract class ChatStoreBase with Store {
             updatedAt: DateTime.parse(data['updated_at']),
           );
 
-          if (isSearching) {
-            tempChats.add(chat);
-          } else {
-            chats.add(chat);
-          }
+          tempChats.add(chat);
         }
 
-        if (isSearching) {
-          chats = ObservableList.of(tempChats);
-        } else {
-          chats = ObservableList.of(chats.toSet());
-        }
-
+        chats.clear();
+        chats.addAll(tempChats.toSet());
         areChatsLoading = false;
         requestedChats = false;
       }
