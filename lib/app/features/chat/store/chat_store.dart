@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:intl/intl.dart';
@@ -51,6 +52,9 @@ abstract class ChatStoreBase with Store {
 
   @observable
   bool firstRequest = false;
+
+  @observable
+  bool authenticated = false;
 
   ChatState getChatState() {
     if (isLoading) {
@@ -195,14 +199,21 @@ abstract class ChatStoreBase with Store {
         'token': await authenticatedUser!.getIdToken(),
       }),
     );
+    print('Authenticated user: ${authenticatedUser!.uid}');
   }
 
   Future<void> initializeWebSocket() async {
-    channel = WebSocketChannel.connect(
-      Uri.parse(wssServer),
-    );
-    await authenticateUser();
-    channel!.stream.listen(handleWebSocketMessage);
+    try {
+      channel = WebSocketChannel.connect(
+        Uri.parse(wssServer),
+      );
+      await authenticateUser();
+      channel!.stream.listen(handleWebSocketMessage);
+    } catch (e) {
+      if (kDebugMode) {
+        print('WebSocket connection error: $e');
+      }
+    }
   }
 
   @action
@@ -229,24 +240,34 @@ abstract class ChatStoreBase with Store {
       await authenticateUser();
     }
 
-    if (!firstRequest) {
-      requestChats();
-      firstRequest = true;
-    }
-
     if (data != null) {
-      if (json['type'] == 'system' && json['show']) {
-        switch (json['status']) {
-          case 'error':
-            buildContext!.showSnackBarError(message: json['message']);
-            break;
-          case 'success':
-            buildContext!.showSnackBarSuccess(message: json['message']);
-            break;
-          default:
-            buildContext!.showSnackBar(message: json['message']);
-            break;
+      if (json['type'] == 'system') {
+        if (json['message'] == 'Authorized.') {
+          authenticated = true;
         }
+
+        if (json['show']) {
+          switch (json['status']) {
+            case 'error':
+              buildContext!.showSnackBarError(message: json['message']);
+              break;
+            case 'success':
+              buildContext!.showSnackBarSuccess(message: json['message']);
+              break;
+            default:
+              buildContext!.showSnackBar(message: json['message']);
+              break;
+          }
+        }
+      }
+
+      print('WebSocket message: $data');
+      print('Authenticated: $authenticated');
+
+      if (!firstRequest && authenticated) {
+        print('First chats request');
+        requestChats();
+        firstRequest = true;
       }
 
       if (json['type'] == 'chats') {
