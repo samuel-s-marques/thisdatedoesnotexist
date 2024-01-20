@@ -40,6 +40,9 @@ abstract class ChatStoreBase with Store {
   CacheService cacheService = CacheService();
   Timer? debounce;
 
+  @observable
+  int chatListPage = 1;
+
   @computed
   ChatState get state => getChatState();
 
@@ -48,9 +51,6 @@ abstract class ChatStoreBase with Store {
 
   @observable
   bool firstRequest = false;
-
-  @observable
-  String? searchQuery;
 
   ChatState getChatState() {
     if (isLoading) {
@@ -141,7 +141,7 @@ abstract class ChatStoreBase with Store {
     }
 
     debounce = Timer(const Duration(milliseconds: 300), () {
-      searchQuery = value;
+      requestChats(isSearching: true, searchQuery: value);
     });
   }
 
@@ -206,6 +206,22 @@ abstract class ChatStoreBase with Store {
   }
 
   @action
+  void requestChats({
+    int? page = 1,
+    bool isSearching = false,
+    String? searchQuery,
+  }) {
+    channel!.sink.add(
+      jsonEncode({
+        'type': 'chats',
+        'search': searchQuery,
+        'searching': isSearching,
+        'page': chatListPage,
+      }),
+    );
+  }
+
+  @action
   Future<void> handleWebSocketMessage(dynamic data) async {
     final Map<String, dynamic> json = jsonDecode(data ?? {});
 
@@ -214,13 +230,7 @@ abstract class ChatStoreBase with Store {
     }
 
     if (!firstRequest) {
-      channel!.sink.add(
-        jsonEncode({
-          'type': 'chats',
-          'search': searchQuery,
-          'searching': isSearching,
-        }),
-      );
+      requestChats();
       firstRequest = true;
     }
 
@@ -256,11 +266,19 @@ abstract class ChatStoreBase with Store {
             updatedAt: DateTime.parse(data['updated_at']),
           );
 
-          tempChats.add(chat);
+          if (isSearching) {
+            tempChats.add(chat);
+          } else {
+            chats.add(chat);
+          }
         }
 
-        chats.clear();
-        chats.addAll(tempChats);
+        if (isSearching) {
+          chats = ObservableList.of(tempChats);
+        } else {
+          chats = ObservableList.of(chats.toSet());
+        }
+
         areChatsLoading = false;
         requestedChats = false;
       }
