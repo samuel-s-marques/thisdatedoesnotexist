@@ -24,7 +24,10 @@ class _ChatListPageState extends State<ChatListPage> {
     store.initializeWebSocket();
 
     store.chatListScrollController.addListener(() {
-      if (store.chatListScrollController.position.pixels == store.chatListScrollController.position.maxScrollExtent) {}
+      if (store.chatListScrollController.position.pixels == store.chatListScrollController.position.maxScrollExtent) {
+        store.chatListPage++;
+        store.requestChats(page: store.chatListPage);
+      }
     });
   }
 
@@ -72,6 +75,8 @@ class _ChatListPageState extends State<ChatListPage> {
 
                   if (!store.isSearching) {
                     searchController.clear();
+                    store.chats.clear();
+                    store.requestChats();
                   }
                 },
                 icon: Icon(store.isSearching ? Icons.close : Icons.search),
