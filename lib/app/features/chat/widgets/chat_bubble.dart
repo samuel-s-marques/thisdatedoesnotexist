@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
+import 'package:thisdatedoesnotexist/app/core/util.dart';
+import 'package:thisdatedoesnotexist/app/features/chat/widgets/message_status_enum.dart';
 import 'package:thisdatedoesnotexist/app/features/chat/widgets/message_type_enum.dart';
 
 class ChatBubble extends StatelessWidget {
@@ -9,6 +11,7 @@ class ChatBubble extends StatelessWidget {
     required this.type,
     required this.message,
     required this.createdAt,
+    this.status,
     this.bubbleColor,
     this.textColor,
   });
@@ -16,6 +19,7 @@ class ChatBubble extends StatelessWidget {
   final MessageType type;
   final String message;
   final DateTime createdAt;
+  final MessageStatus? status;
   final Color? bubbleColor;
   final Color? textColor;
 
@@ -124,13 +128,30 @@ class ChatBubble extends StatelessWidget {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           const SizedBox(height: 5),
-                          Text(
-                            DateFormat.Hm().format(createdAt.toLocal()),
-                            style: TextStyle(
-                              color: details[type]!['textColor']!.withOpacity(0.5),
-                              fontSize: 12,
-                            ),
-                          ),
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                DateFormat.Hm().format(createdAt.toLocal()),
+                                style: TextStyle(
+                                  color: details[type]!['textColor']!.withOpacity(0.5),
+                                  fontSize: 12,
+                                ),
+                              ),
+                              if (type == MessageType.user)
+                              Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const SizedBox(width: 5),
+                                  Icon(
+                                    status!.toIconData(),
+                                    size: 14,
+                                    color: details[type]!['textColor']!.withOpacity(0.5),
+                                  ),
+                                ],
+                              )
+                            ],
+                          )
                         ],
                       ),
                   ],
