@@ -52,6 +52,8 @@ class _ChatPageState extends State<ChatPage> {
     store.isLoading = true;
     store.messageController.clear();
     store.key = GlobalKey<ScaffoldState>();
+    store.messageDebounce?.cancel();
+    store.hideEmojiKeyboard();
     super.dispose();
   }
 
@@ -235,7 +237,7 @@ class _ChatPageState extends State<ChatPage> {
                             textCapitalization: TextCapitalization.sentences,
                             minLines: 1,
                             maxLines: 5,
-                            onChanged: store.onChanged,
+                            onChanged: store.onMessageFieldChanged,
                             keyboardType: TextInputType.multiline,
                             onTap: store.hideEmojiKeyboard,
                             decoration: InputDecoration(
