@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 // ignore: depend_on_referenced_packages
@@ -236,9 +237,16 @@ class _ChatPageState extends State<ChatPage> {
                             maxLines: 5,
                             onChanged: store.onChanged,
                             keyboardType: TextInputType.multiline,
-                            decoration: const InputDecoration(
-                              fillColor: Color(0xFFf4f4f9),
+                            onTap: store.hideEmojiKeyboard,
+                            decoration: InputDecoration(
+                              fillColor: const Color(0xFFf4f4f9),
                               hintText: 'Message...',
+                              suffixIcon: IconButton(
+                                onPressed: store.toggleEmojiKeyboard,
+                                icon: const Icon(
+                                  Icons.emoji_emotions,
+                                ),
+                              ),
                             ),
                           ),
                         ),
@@ -249,6 +257,16 @@ class _ChatPageState extends State<ChatPage> {
                       ],
                     ),
                   ),
+                  Offstage(
+                    offstage: !store.isEmojiKeyboardShowing,
+                    child: SizedBox(
+                      height: 250,
+                      child: EmojiPicker(
+                        textEditingController: store.messageController,
+                        onBackspacePressed: store.onBackspaceEmojiKeyboardPressed,
+                      ),
+                    ),
+                  )
                 ],
               ),
             ),
