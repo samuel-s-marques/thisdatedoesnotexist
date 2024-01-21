@@ -40,7 +40,8 @@ abstract class ChatStoreBase with Store {
   GlobalKey<ScaffoldState> key = GlobalKey<ScaffoldState>();
   TextEditingController messageController = TextEditingController();
   CacheService cacheService = CacheService();
-  Timer? debounce;
+  Timer? searchDebounce;
+  Timer? messageDebounce;
 
   @observable
   bool isEmojiKeyboardShowing = false;
@@ -164,16 +165,23 @@ abstract class ChatStoreBase with Store {
     );
   }
 
-  void onChanged(String? value) {
-    cacheService.saveData('${character?.uid}-chat', value);
+  void onMessageFieldChanged(String? value) {
+    if (messageDebounce?.isActive ?? false) {
+      messageDebounce?.cancel();
+    }
+
+    messageDebounce = Timer(const Duration(milliseconds: 300), () {
+      cacheService.saveData('${character?.uid}-chat', value);
+      requestChats();
+    });
   }
 
   void onSearch(String? value) {
-    if (debounce?.isActive ?? false) {
-      debounce?.cancel();
+    if (searchDebounce?.isActive ?? false) {
+      searchDebounce?.cancel();
     }
 
-    debounce = Timer(const Duration(milliseconds: 300), () {
+    searchDebounce = Timer(const Duration(milliseconds: 300), () {
       requestChats(isSearching: true, searchQuery: value);
     });
   }
