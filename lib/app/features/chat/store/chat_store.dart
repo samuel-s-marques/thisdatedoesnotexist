@@ -43,6 +43,9 @@ abstract class ChatStoreBase with Store {
   Timer? debounce;
 
   @observable
+  bool isEmojiKeyboardShowing = false;
+
+  @observable
   int chatListPage = 1;
 
   @computed
@@ -102,6 +105,31 @@ abstract class ChatStoreBase with Store {
 
   @observable
   ObservableList<Message> messages = ObservableList();
+
+  @action
+  void toggleEmojiKeyboard() {
+    isEmojiKeyboardShowing = !isEmojiKeyboardShowing;
+
+    if (isEmojiKeyboardShowing) {
+      FocusManager.instance.primaryFocus?.unfocus();
+    }
+  }
+
+  @action
+  void hideEmojiKeyboard() {
+    isEmojiKeyboardShowing = false;
+  }
+
+  @action
+  void onBackspaceEmojiKeyboardPressed() {
+    messageController
+      ..text = messageController.text.characters.toString()
+      ..selection = TextSelection.fromPosition(
+        TextPosition(
+          offset: messageController.text.length,
+        ),
+      );
+  }
 
   @action
   void setLastScrollDirection(ScrollDirection scrollDirection) {
