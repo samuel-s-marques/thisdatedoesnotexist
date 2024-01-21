@@ -13,6 +13,7 @@ import 'package:thisdatedoesnotexist/app/core/models/user_model.dart';
 import 'package:thisdatedoesnotexist/app/features/chat/store/chat_store.dart';
 import 'package:thisdatedoesnotexist/app/features/chat/widgets/chat_bubble.dart';
 import 'package:thisdatedoesnotexist/app/features/chat/widgets/grouped_listview.dart';
+import 'package:thisdatedoesnotexist/app/features/chat/widgets/message_status_enum.dart';
 import 'package:thisdatedoesnotexist/app/features/chat/widgets/message_type_enum.dart';
 import 'package:thisdatedoesnotexist/app/features/chat/widgets/profile_drawer.dart';
 import 'package:uuid/uuid.dart';
@@ -184,6 +185,7 @@ class _ChatPageState extends State<ChatPage> {
                                   type: index.isEven ? MessageType.sender : MessageType.user,
                                   message: 'Hello! This is a message! My index is $index',
                                   createdAt: DateTime.now(),
+                                  status: MessageStatus.read,
                                 );
                               },
                             ),
@@ -207,6 +209,7 @@ class _ChatPageState extends State<ChatPage> {
                                 type: message.type!,
                                 message: message.text ?? '',
                                 createdAt: message.createdAt!,
+                                status: MessageStatus.read,
                               ),
                             ],
                           );
