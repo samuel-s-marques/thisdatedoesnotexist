@@ -35,13 +35,13 @@ class _ChatPageState extends State<ChatPage> {
   ChatStore store = Modular.get<ChatStore>();
   Future<dynamic>? future;
   Uuid uuid = const Uuid();
+  GlobalKey<ScaffoldState> key = GlobalKey<ScaffoldState>();
 
   @override
   void initState() {
     super.initState();
     future = store.getCharacterById(widget.id);
     store.handleEndReached(widget.id);
-    store.key = null;
   }
 
   @override
@@ -52,7 +52,6 @@ class _ChatPageState extends State<ChatPage> {
     store.messages.clear();
     store.isLoading = true;
     store.messageController.clear();
-    store.key = GlobalKey<ScaffoldState>();
     store.messageDebounce?.cancel();
     store.hideEmojiKeyboard();
     super.dispose();
@@ -68,7 +67,7 @@ class _ChatPageState extends State<ChatPage> {
 
           return Scaffold(
             backgroundColor: const Color(0xFFf8f8f8),
-            key: store.key,
+            key: key,
             endDrawer: SizedBox(
               width: double.infinity,
               child: ProfileDrawer(),
@@ -77,7 +76,9 @@ class _ChatPageState extends State<ChatPage> {
             appBar: AppBar(
               flexibleSpace: InkWell(
                 onTap: () {
-                  store.key?.currentState!.openEndDrawer();
+                  if (store.character != null) {
+                    key.currentState!.openEndDrawer();
+                  }
                 },
               ),
               title: IgnorePointer(
