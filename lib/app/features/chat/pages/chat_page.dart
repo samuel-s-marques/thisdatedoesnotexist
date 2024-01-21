@@ -209,7 +209,7 @@ class _ChatPageState extends State<ChatPage> {
                                 type: message.type!,
                                 message: message.text ?? '',
                                 createdAt: message.createdAt!,
-                                status: MessageStatus.read,
+                                status: message.status ?? MessageStatus.sending,
                               ),
                             ],
                           );
