@@ -47,7 +47,7 @@ class ChatBubble extends StatelessWidget {
       MessageType.user: {
         'alignment': MainAxisAlignment.end,
         'bubbleColor': bubbleColor ?? Colors.deepPurple,
-        'linkColor': linkColor ?? const Color(0xFFC3F73A),
+        'linkColor': linkColor ?? const Color(0xFF28E2FB),
         'textColor': textColor ?? Colors.white,
         'selectionColor': Colors.deepPurple[200],
       },
