@@ -41,6 +41,7 @@ class _ChatPageState extends State<ChatPage> {
     super.initState();
     future = store.getCharacterById(widget.id);
     store.handleEndReached(widget.id);
+    store.key = null;
   }
 
   @override
@@ -76,7 +77,7 @@ class _ChatPageState extends State<ChatPage> {
             appBar: AppBar(
               flexibleSpace: InkWell(
                 onTap: () {
-                  store.key.currentState!.openEndDrawer();
+                  store.key?.currentState!.openEndDrawer();
                 },
               ),
               title: IgnorePointer(
