@@ -121,7 +121,7 @@ class _ChatPageState extends State<ChatPage> {
                     child: NotificationListener<ScrollNotification>(
                       onNotification: (ScrollNotification scrollNotification) {
                         final ScrollMetrics metrics = scrollNotification.metrics;
-                        final ScrollDirection scrollDirection = store.scrollController.position.userScrollDirection;
+                        final ScrollDirection scrollDirection = store.chatScrollController.position.userScrollDirection;
 
                         if (metrics.atEdge) {
                           final bool isTop = metrics.pixels == 0;
@@ -150,7 +150,7 @@ class _ChatPageState extends State<ChatPage> {
                         return true;
                       },
                       child: GroupedListView(
-                        controller: store.scrollController,
+                        controller: store.chatScrollController,
                         shrinkWrap: true,
                         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 5),
                         itemCount: store.messages.length,
@@ -235,6 +235,7 @@ class _ChatPageState extends State<ChatPage> {
                             keyboardType: TextInputType.multiline,
                             decoration: const InputDecoration(
                               fillColor: Color(0xFFf4f4f9),
+                              hintText: 'Message...',
                             ),
                           ),
                         ),

@@ -125,7 +125,7 @@ class ChatBubble extends StatelessWidget {
                         children: [
                           const SizedBox(height: 5),
                           Text(
-                            DateFormat.Hm().format(createdAt),
+                            DateFormat.Hm().format(createdAt.toLocal()),
                             style: TextStyle(
                               color: details[type]!['textColor']!.withOpacity(0.5),
                               fontSize: 12,

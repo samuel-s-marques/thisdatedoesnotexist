@@ -22,12 +22,17 @@ class _ChatListPageState extends State<ChatListPage> {
   void initState() {
     super.initState();
     store.initializeWebSocket();
+
+    store.chatListScrollController.addListener(() {
+      if (store.chatListScrollController.position.pixels == store.chatListScrollController.position.maxScrollExtent) {
+        store.chatListPage++;
+        store.requestChats(page: store.chatListPage);
+      }
+    });
   }
 
   @override
   void dispose() {
-    store.timer?.cancel();
-    store.timer = null;
     store.debounce?.cancel();
     store.channel?.sink.close();
     store.requestedChats = false;
@@ -70,6 +75,8 @@ class _ChatListPageState extends State<ChatListPage> {
 
                   if (!store.isSearching) {
                     searchController.clear();
+                    store.chats.clear();
+                    store.requestChats();
                   }
                 },
                 icon: Icon(store.isSearching ? Icons.close : Icons.search),
@@ -82,6 +89,7 @@ class _ChatListPageState extends State<ChatListPage> {
         return Skeletonizer(
           enabled: store.areChatsLoading,
           child: ListView.builder(
+            controller: store.chatListScrollController,
             itemCount: store.areChatsLoading ? 10 : store.chats.length,
             itemBuilder: (BuildContext context, int index) {
               if (store.areChatsLoading) {
