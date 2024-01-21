@@ -235,6 +235,7 @@ class _ChatPageState extends State<ChatPage> {
                             keyboardType: TextInputType.multiline,
                             decoration: const InputDecoration(
                               fillColor: Color(0xFFf4f4f9),
+                              hintText: 'Message...',
                             ),
                           ),
                         ),
