@@ -16,6 +16,7 @@ import 'package:thisdatedoesnotexist/app/core/services/dio_service.dart';
 import 'package:thisdatedoesnotexist/app/core/util.dart';
 import 'package:thisdatedoesnotexist/app/features/chat/models/chat_model.dart';
 import 'package:thisdatedoesnotexist/app/features/chat/widgets/chat_state_enum.dart';
+import 'package:thisdatedoesnotexist/app/features/chat/widgets/message_status_enum.dart';
 import 'package:thisdatedoesnotexist/app/features/chat/widgets/message_type_enum.dart';
 import 'package:uuid/uuid.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
@@ -160,6 +161,7 @@ abstract class ChatStoreBase with Store {
       text: messageController.text.trim(),
       type: MessageType.user,
       sendBy: authenticatedUser?.uid,
+      status: MessageStatus.sending,
       createdAt: DateTime.now(),
     );
 
@@ -299,12 +301,14 @@ abstract class ChatStoreBase with Store {
         final MessageType? type = MessageType.values.byName(messageData['type']);
         final String? sendBy = messageData['send_by'];
         final DateTime? createdAt = DateTime.parse(messageData['created_at']);
+        final MessageStatus? status = MessageStatus.values.byName(messageData['status'] ?? 'read');
 
         final Message message = Message(
           id: id,
           text: text,
           type: type,
           sendBy: sendBy,
+          status: status,
           createdAt: createdAt,
         );
 
@@ -344,11 +348,13 @@ abstract class ChatStoreBase with Store {
         final String content = item['content'];
         final DateTime createdAt = DateTime.parse(item['created_at']);
         final MessageType type = item['user']['uid'] == authenticatedUser!.uid ? MessageType.user : MessageType.sender;
+        final MessageStatus status = MessageStatus.values.byName(item['status'] ?? 'read');
         final Message message = Message(
           id: id,
           text: content,
           type: type,
           createdAt: createdAt,
+          status: status,
           sendBy: item['user']['uid'],
         );
 
