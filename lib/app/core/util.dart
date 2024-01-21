@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:thisdatedoesnotexist/app/core/constants.dart';
+import 'package:thisdatedoesnotexist/app/features/chat/widgets/message_status_enum.dart';
 
 AppConstants appConstants = AppConstants();
 
@@ -115,4 +116,17 @@ IconData getGenderIconByName(String sex) {
   final Map<String, IconData> genders = {'male': Icons.male_outlined, 'female': Icons.female_outlined};
 
   return genders[sex]!;
+}
+
+extension MessageStatusExtension on MessageStatus {
+  IconData toIconData() {
+    final Map<MessageStatus, IconData> icons = {
+      MessageStatus.sending: Icons.access_time,
+      MessageStatus.sent: Icons.done,
+      MessageStatus.read: Icons.done_all,
+      MessageStatus.failed: Icons.error,
+    };
+
+    return icons[this]!;
+  }
 }
