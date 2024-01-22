@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_emoji/flutter_emoji.dart';
 import 'package:thisdatedoesnotexist/app/core/constants.dart';
 import 'package:thisdatedoesnotexist/app/features/chat/widgets/message_status_enum.dart';
 
