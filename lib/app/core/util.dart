@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_emoji/flutter_emoji.dart';
 import 'package:thisdatedoesnotexist/app/core/constants.dart';
 import 'package:thisdatedoesnotexist/app/features/chat/widgets/message_status_enum.dart';
 
@@ -19,9 +20,38 @@ extension UserExtension on String {
   }
 }
 
+final emojisRegExp = RegExp(r'(\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff])');
+
 extension StringExtension on String {
   String capitalize() {
     return '${this[0].toUpperCase()}${substring(1)}';
+  }
+
+  bool isOnlyEmojis(String text) {
+    final emojis = emojisRegExp.allMatches(text);
+
+    if (emojis.isEmpty) {
+      return false;
+    }
+
+    for (final emoji in emojis) {
+      text = text.replaceAll(emoji.input.substring(emoji.start, emoji.end), '');
+    }
+
+    text = text.replaceAll(' ', '');
+
+    return text.isEmpty;
+  }
+
+  bool isLessEmojisThan(String text, int maxEmojis) {
+    final allEmojis = emojisRegExp.allMatches(text);
+    final numEmojis = allEmojis.length;
+
+    if (numEmojis < maxEmojis && isOnlyEmojis(text)) {
+      return true;
+    }
+
+    return false;
   }
 }
 
