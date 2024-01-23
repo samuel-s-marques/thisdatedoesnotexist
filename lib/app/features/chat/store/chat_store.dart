@@ -380,8 +380,6 @@ abstract class ChatStoreBase with Store {
 
     final Message message = messages.firstWhere((Message message) => message.id == id);
     message.status = status;
-
-    print(message.status);
   }
 
   @action
