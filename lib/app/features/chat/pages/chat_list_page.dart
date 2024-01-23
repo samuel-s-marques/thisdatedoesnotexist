@@ -33,7 +33,7 @@ class _ChatListPageState extends State<ChatListPage> {
 
   @override
   void dispose() {
-    store.debounce?.cancel();
+    store.searchDebounce?.cancel();
     store.channel?.sink.close();
     store.requestedChats = false;
     store.firstRequest = false;

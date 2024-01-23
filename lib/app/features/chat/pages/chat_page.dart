@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 // ignore: depend_on_referenced_packages
@@ -13,6 +14,7 @@ import 'package:thisdatedoesnotexist/app/core/models/user_model.dart';
 import 'package:thisdatedoesnotexist/app/features/chat/store/chat_store.dart';
 import 'package:thisdatedoesnotexist/app/features/chat/widgets/chat_bubble.dart';
 import 'package:thisdatedoesnotexist/app/features/chat/widgets/grouped_listview.dart';
+import 'package:thisdatedoesnotexist/app/features/chat/widgets/message_status_enum.dart';
 import 'package:thisdatedoesnotexist/app/features/chat/widgets/message_type_enum.dart';
 import 'package:thisdatedoesnotexist/app/features/chat/widgets/profile_drawer.dart';
 import 'package:uuid/uuid.dart';
@@ -33,6 +35,7 @@ class _ChatPageState extends State<ChatPage> {
   ChatStore store = Modular.get<ChatStore>();
   Future<dynamic>? future;
   Uuid uuid = const Uuid();
+  GlobalKey<ScaffoldState> key = GlobalKey<ScaffoldState>();
 
   @override
   void initState() {
@@ -49,7 +52,8 @@ class _ChatPageState extends State<ChatPage> {
     store.messages.clear();
     store.isLoading = true;
     store.messageController.clear();
-    store.key = GlobalKey<ScaffoldState>();
+    store.messageDebounce?.cancel();
+    store.hideEmojiKeyboard();
     super.dispose();
   }
 
@@ -63,7 +67,7 @@ class _ChatPageState extends State<ChatPage> {
 
           return Scaffold(
             backgroundColor: const Color(0xFFf8f8f8),
-            key: store.key,
+            key: key,
             endDrawer: SizedBox(
               width: double.infinity,
               child: ProfileDrawer(),
@@ -72,7 +76,9 @@ class _ChatPageState extends State<ChatPage> {
             appBar: AppBar(
               flexibleSpace: InkWell(
                 onTap: () {
-                  store.key.currentState!.openEndDrawer();
+                  if (store.character != null) {
+                    key.currentState!.openEndDrawer();
+                  }
                 },
               ),
               title: IgnorePointer(
@@ -184,6 +190,7 @@ class _ChatPageState extends State<ChatPage> {
                                   type: index.isEven ? MessageType.sender : MessageType.user,
                                   message: 'Hello! This is a message! My index is $index',
                                   createdAt: DateTime.now(),
+                                  status: MessageStatus.read,
                                 );
                               },
                             ),
@@ -207,6 +214,7 @@ class _ChatPageState extends State<ChatPage> {
                                 type: message.type!,
                                 message: message.text ?? '',
                                 createdAt: message.createdAt!,
+                                status: message.status ?? MessageStatus.sending,
                               ),
                             ],
                           );
@@ -231,21 +239,40 @@ class _ChatPageState extends State<ChatPage> {
                             textCapitalization: TextCapitalization.sentences,
                             minLines: 1,
                             maxLines: 5,
-                            onChanged: store.onChanged,
+                            onChanged: store.onMessageFieldChanged,
                             keyboardType: TextInputType.multiline,
-                            decoration: const InputDecoration(
-                              fillColor: Color(0xFFf4f4f9),
+                            onTap: store.hideEmojiKeyboard,
+                            decoration: InputDecoration(
+                              fillColor: const Color(0xFFf4f4f9),
                               hintText: 'Message...',
+                              suffixIcon: IconButton(
+                                onPressed: store.toggleEmojiKeyboard,
+                                icon: const Icon(
+                                  Icons.emoji_emotions,
+                                ),
+                              ),
                             ),
                           ),
                         ),
-                        IconButton(
-                          onPressed: store.onSendTap,
-                          icon: const Icon(Icons.send),
+                        Observer(
+                          builder: (_) => IconButton(
+                            onPressed: store.allowSendMessage ? store.onSendTap : null,
+                            icon: const Icon(Icons.send),
+                          ),
                         ),
                       ],
                     ),
                   ),
+                  Offstage(
+                    offstage: !store.isEmojiKeyboardShowing,
+                    child: SizedBox(
+                      height: 250,
+                      child: EmojiPicker(
+                        textEditingController: store.messageController,
+                        onBackspacePressed: store.onBackspaceEmojiKeyboardPressed,
+                      ),
+                    ),
+                  )
                 ],
               ),
             ),

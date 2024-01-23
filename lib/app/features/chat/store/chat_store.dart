@@ -16,6 +16,7 @@ import 'package:thisdatedoesnotexist/app/core/services/dio_service.dart';
 import 'package:thisdatedoesnotexist/app/core/util.dart';
 import 'package:thisdatedoesnotexist/app/features/chat/models/chat_model.dart';
 import 'package:thisdatedoesnotexist/app/features/chat/widgets/chat_state_enum.dart';
+import 'package:thisdatedoesnotexist/app/features/chat/widgets/message_status_enum.dart';
 import 'package:thisdatedoesnotexist/app/features/chat/widgets/message_type_enum.dart';
 import 'package:uuid/uuid.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
@@ -36,10 +37,13 @@ abstract class ChatStoreBase with Store {
   bool requestedChats = false;
   ScrollController chatScrollController = ScrollController();
   ScrollController chatListScrollController = ScrollController();
-  GlobalKey<ScaffoldState> key = GlobalKey<ScaffoldState>();
   TextEditingController messageController = TextEditingController();
   CacheService cacheService = CacheService();
-  Timer? debounce;
+  Timer? searchDebounce;
+  Timer? messageDebounce;
+
+  @observable
+  bool isEmojiKeyboardShowing = false;
 
   @observable
   int chatListPage = 1;
@@ -102,6 +106,40 @@ abstract class ChatStoreBase with Store {
   @observable
   ObservableList<Message> messages = ObservableList();
 
+  @computed
+  bool get allowSendMessage {
+    if (messages.isEmpty) {
+      return true;
+    } else {
+      return messages.first.type != MessageType.user;
+    }
+  }
+
+  @action
+  void toggleEmojiKeyboard() {
+    isEmojiKeyboardShowing = !isEmojiKeyboardShowing;
+
+    if (isEmojiKeyboardShowing) {
+      FocusManager.instance.primaryFocus?.unfocus();
+    }
+  }
+
+  @action
+  void hideEmojiKeyboard() {
+    isEmojiKeyboardShowing = false;
+  }
+
+  @action
+  void onBackspaceEmojiKeyboardPressed() {
+    messageController
+      ..text = messageController.text.characters.toString()
+      ..selection = TextSelection.fromPosition(
+        TextPosition(
+          offset: messageController.text.length,
+        ),
+      );
+  }
+
   @action
   void setLastScrollDirection(ScrollDirection scrollDirection) {
     lastScrollDirection = scrollDirection;
@@ -135,16 +173,23 @@ abstract class ChatStoreBase with Store {
     );
   }
 
-  void onChanged(String? value) {
-    cacheService.saveData('${character?.uid}-chat', value);
+  void onMessageFieldChanged(String? value) {
+    if (messageDebounce?.isActive ?? false) {
+      messageDebounce?.cancel();
+    }
+
+    messageDebounce = Timer(const Duration(milliseconds: 300), () {
+      cacheService.saveData('${character?.uid}-chat', value);
+      requestChats();
+    });
   }
 
   void onSearch(String? value) {
-    if (debounce?.isActive ?? false) {
-      debounce?.cancel();
+    if (searchDebounce?.isActive ?? false) {
+      searchDebounce?.cancel();
     }
 
-    debounce = Timer(const Duration(milliseconds: 300), () {
+    searchDebounce = Timer(const Duration(milliseconds: 300), () {
       requestChats(isSearching: true, searchQuery: value);
     });
   }
@@ -160,15 +205,22 @@ abstract class ChatStoreBase with Store {
       text: messageController.text.trim(),
       type: MessageType.user,
       sendBy: authenticatedUser?.uid,
+      status: MessageStatus.sending,
       createdAt: DateTime.now(),
     );
-
-    _addMessage(newMessage);
     messages.insert(0, newMessage);
-
     messageController.clear();
     cacheService.deleteData('${character?.uid}-chat');
     scrollToBottom();
+
+    try {
+      _addMessage(newMessage);
+      updateMessageStatus(newMessage.id, 'sent');
+    } catch (e) {
+      if (kDebugMode) {
+        print('WebSocket connection error: $e');
+      }
+    }
   }
 
   @action
@@ -299,18 +351,35 @@ abstract class ChatStoreBase with Store {
         final MessageType? type = MessageType.values.byName(messageData['type']);
         final String? sendBy = messageData['send_by'];
         final DateTime? createdAt = DateTime.parse(messageData['created_at']);
+        final MessageStatus? status = MessageStatus.values.byName(messageData['status'] ?? 'read');
 
         final Message message = Message(
           id: id,
           text: text,
           type: type,
           sendBy: sendBy,
+          status: status,
           createdAt: createdAt,
         );
 
         messages.insert(0, message);
       }
+
+      if (json['type'] == 'message-status') {
+        final String? id = json['message']['id'].toString();
+        final String? status = json['message']['status'];
+
+        updateMessageStatus(id, status);
+      }
     }
+  }
+
+  @action
+  void updateMessageStatus(String? id, String? newStatus) {
+    final MessageStatus? status = MessageStatus.values.byName(newStatus ?? 'read');
+
+    final Message message = messages.firstWhere((Message message) => message.id == id);
+    message.status = status;
   }
 
   @action
@@ -344,11 +413,13 @@ abstract class ChatStoreBase with Store {
         final String content = item['content'];
         final DateTime createdAt = DateTime.parse(item['created_at']);
         final MessageType type = item['user']['uid'] == authenticatedUser!.uid ? MessageType.user : MessageType.sender;
+        final MessageStatus status = MessageStatus.values.byName(item['status'] ?? 'read');
         final Message message = Message(
           id: id,
           text: content,
           type: type,
           createdAt: createdAt,
+          status: status,
           sendBy: item['user']['uid'],
         );
 

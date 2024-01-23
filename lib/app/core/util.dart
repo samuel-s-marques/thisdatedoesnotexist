@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:thisdatedoesnotexist/app/core/constants.dart';
+import 'package:thisdatedoesnotexist/app/features/chat/widgets/message_status_enum.dart';
 
 AppConstants appConstants = AppConstants();
 
@@ -18,9 +19,38 @@ extension UserExtension on String {
   }
 }
 
+final emojisRegExp = RegExp(r'(\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff])');
+
 extension StringExtension on String {
   String capitalize() {
     return '${this[0].toUpperCase()}${substring(1)}';
+  }
+
+  bool isOnlyEmojis(String text) {
+    final emojis = emojisRegExp.allMatches(text);
+
+    if (emojis.isEmpty) {
+      return false;
+    }
+
+    for (final emoji in emojis) {
+      text = text.replaceAll(emoji.input.substring(emoji.start, emoji.end), '');
+    }
+
+    text = text.replaceAll(' ', '');
+
+    return text.isEmpty;
+  }
+
+  bool isLessEmojisThan(int maxEmojis) {
+    final allEmojis = emojisRegExp.allMatches(this);
+    final numEmojis = allEmojis.length;
+
+    if (numEmojis < maxEmojis && isOnlyEmojis(this)) {
+      return true;
+    }
+
+    return false;
   }
 }
 
@@ -115,4 +145,17 @@ IconData getGenderIconByName(String sex) {
   final Map<String, IconData> genders = {'male': Icons.male_outlined, 'female': Icons.female_outlined};
 
   return genders[sex]!;
+}
+
+extension MessageStatusExtension on MessageStatus {
+  IconData toIconData() {
+    final Map<MessageStatus, IconData> icons = {
+      MessageStatus.sending: Icons.access_time,
+      MessageStatus.sent: Icons.done,
+      MessageStatus.read: Icons.done_all,
+      MessageStatus.failed: Icons.error,
+    };
+
+    return icons[this]!;
+  }
 }

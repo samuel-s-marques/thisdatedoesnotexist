@@ -83,4 +83,12 @@ class DioService {
       return e.response!;
     }
   }
+
+  Future<Response<dynamic>> download(urlPath, savePath) async {
+    try {
+      return await _dio.download(urlPath, savePath);
+    } on DioException catch (e) {
+      return e.response!;
+    }
+  }
 }

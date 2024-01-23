@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:intl/intl.dart';
+import 'package:flutter_emoji/flutter_emoji.dart';
+import 'package:thisdatedoesnotexist/app/core/util.dart';
+import 'package:thisdatedoesnotexist/app/features/chat/widgets/emoji_message_bubble.dart';
+import 'package:thisdatedoesnotexist/app/features/chat/widgets/message_status_enum.dart';
 import 'package:thisdatedoesnotexist/app/features/chat/widgets/message_type_enum.dart';
+import 'package:thisdatedoesnotexist/app/features/chat/widgets/text_message_bubble.dart';
 
 class ChatBubble extends StatelessWidget {
   const ChatBubble({
@@ -9,15 +13,19 @@ class ChatBubble extends StatelessWidget {
     required this.type,
     required this.message,
     required this.createdAt,
+    this.status,
     this.bubbleColor,
     this.textColor,
+    this.linkColor,
   });
 
   final MessageType type;
   final String message;
   final DateTime createdAt;
+  final MessageStatus? status;
   final Color? bubbleColor;
   final Color? textColor;
+  final Color? linkColor;
 
   @override
   Widget build(BuildContext context) {
@@ -26,17 +34,20 @@ class ChatBubble extends StatelessWidget {
         'alignment': MainAxisAlignment.center,
         'bubbleColor': bubbleColor ?? Colors.grey,
         'textColor': textColor ?? Colors.white,
+        'linkColor': linkColor ?? Colors.blue,
         'selectionColor': Theme.of(context).primaryColorLight,
       },
       MessageType.sender: {
         'alignment': MainAxisAlignment.start,
         'bubbleColor': bubbleColor ?? Colors.white,
+        'linkColor': linkColor ?? Colors.blue,
         'textColor': textColor ?? Colors.black,
         'selectionColor': Theme.of(context).primaryColorLight,
       },
       MessageType.user: {
         'alignment': MainAxisAlignment.end,
         'bubbleColor': bubbleColor ?? Colors.deepPurple,
+        'linkColor': linkColor ?? const Color(0xFF28E2FB),
         'textColor': textColor ?? Colors.white,
         'selectionColor': Colors.deepPurple[200],
       },
@@ -90,52 +101,41 @@ class ChatBubble extends StatelessWidget {
           child: Row(
             mainAxisAlignment: details[type]!['alignment']!,
             children: [
-              Container(
-                constraints: BoxConstraints(
-                  maxWidth: MediaQuery.of(context).size.width * 0.7,
-                ),
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: details[type]!['bubbleColor']!,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Theme(
-                      data: ThemeData(
-                        textSelectionTheme: TextSelectionThemeData(
-                          cursorColor: details[type]!['selectionColor']!,
-                          selectionColor: details[type]!['selectionColor']!,
-                          selectionHandleColor: details[type]!['selectionColor']!,
-                        ),
-                      ),
-                      child: SelectableText(
-                        message,
-                        style: TextStyle(
-                          color: details[type]!['textColor']!,
-                        ),
-                      ),
-                    ),
-                    if (type != MessageType.system)
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const SizedBox(height: 5),
-                          Text(
-                            DateFormat.Hm().format(createdAt.toLocal()),
-                            style: TextStyle(
-                              color: details[type]!['textColor']!.withOpacity(0.5),
-                              fontSize: 12,
-                            ),
-                          ),
-                        ],
-                      ),
-                  ],
-                ),
-              ),
+              Builder(builder: (BuildContext context) {
+                final Color bubbleColor = details[type]!['bubbleColor']!;
+                final Color selectionColor = details[type]!['selectionColor']!;
+                final Color textColor = details[type]!['textColor']!;
+                final Color linkColor = details[type]!['linkColor']!;
+
+                if (message.isLessEmojisThan(5)) {
+                  final EmojiParser parser = EmojiParser();
+
+                  final int emojis = parser.count(message);
+                  const double minFontSize = 30;
+                  const double maxFontSize = 70;
+                  double fontSize = maxFontSize / emojis;
+                  fontSize = fontSize.clamp(minFontSize, maxFontSize);
+
+                  return EmojiMessageBubble(
+                    message: message,
+                    createdAt: createdAt,
+                    type: type,
+                    status: status!,
+                    fontSize: fontSize,
+                  );
+                }
+
+                return TextMessageBubble(
+                  bubbleColor: bubbleColor,
+                  selectionColor: selectionColor,
+                  textColor: textColor,
+                  linkColor: linkColor,
+                  message: message,
+                  createdAt: createdAt,
+                  type: type,
+                  status: status!,
+                );
+              }),
             ],
           ),
         ),
