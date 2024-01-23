@@ -38,5 +38,5 @@ class Message {
   final MessageType? type;
   final String? sendBy;
   final DateTime? createdAt;
-  final MessageStatus? status;
+  MessageStatus? status;
 }
