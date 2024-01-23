@@ -106,6 +106,15 @@ abstract class ChatStoreBase with Store {
   @observable
   ObservableList<Message> messages = ObservableList();
 
+  @computed
+  bool get allowSendMessage {
+    if (messages.isEmpty) {
+      return true;
+    } else {
+      return messages.first.type != MessageType.user;
+    }
+  }
+
   @action
   void toggleEmojiKeyboard() {
     isEmojiKeyboardShowing = !isEmojiKeyboardShowing;
