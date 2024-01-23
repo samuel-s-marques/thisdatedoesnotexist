@@ -254,9 +254,11 @@ class _ChatPageState extends State<ChatPage> {
                             ),
                           ),
                         ),
-                        IconButton(
-                          onPressed: store.onSendTap,
-                          icon: const Icon(Icons.send),
+                        Observer(
+                          builder: (_) => IconButton(
+                            onPressed: store.allowSendMessage ? store.onSendTap : null,
+                            icon: const Icon(Icons.send),
+                          ),
                         ),
                       ],
                     ),
