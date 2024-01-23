@@ -42,11 +42,11 @@ extension StringExtension on String {
     return text.isEmpty;
   }
 
-  bool isLessEmojisThan(String text, int maxEmojis) {
-    final allEmojis = emojisRegExp.allMatches(text);
+  bool isLessEmojisThan(int maxEmojis) {
+    final allEmojis = emojisRegExp.allMatches(this);
     final numEmojis = allEmojis.length;
 
-    if (numEmojis < maxEmojis && isOnlyEmojis(text)) {
+    if (numEmojis < maxEmojis && isOnlyEmojis(this)) {
       return true;
     }
 
