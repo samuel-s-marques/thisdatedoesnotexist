@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_linkify/flutter_linkify.dart';
-import 'package:intl/intl.dart';
+import 'package:flutter_emoji/flutter_emoji.dart';
 import 'package:thisdatedoesnotexist/app/core/util.dart';
+import 'package:thisdatedoesnotexist/app/features/chat/widgets/emoji_message_bubble.dart';
 import 'package:thisdatedoesnotexist/app/features/chat/widgets/message_status_enum.dart';
 import 'package:thisdatedoesnotexist/app/features/chat/widgets/message_type_enum.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:thisdatedoesnotexist/app/features/chat/widgets/text_message_bubble.dart';
 
 class ChatBubble extends StatelessWidget {
   const ChatBubble({
@@ -101,79 +101,41 @@ class ChatBubble extends StatelessWidget {
           child: Row(
             mainAxisAlignment: details[type]!['alignment']!,
             children: [
-              Container(
-                constraints: BoxConstraints(
-                  maxWidth: MediaQuery.of(context).size.width * 0.7,
-                ),
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: details[type]!['bubbleColor']!,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Theme(
-                      data: ThemeData(
-                        textSelectionTheme: TextSelectionThemeData(
-                          cursorColor: details[type]!['selectionColor']!,
-                          selectionColor: details[type]!['selectionColor']!,
-                          selectionHandleColor: details[type]!['selectionColor']!,
-                        ),
-                      ),
-                      child: SelectableLinkify(
-                        text: message,
-                        onOpen: (LinkableElement link) async {
-                          if (await canLaunchUrl(Uri.parse(link.url))) {
-                            await launchUrl(Uri.parse(link.url));
-                          }
-                        },
-                        style: TextStyle(
-                          color: details[type]!['textColor']!,
-                        ),
-                        linkStyle: TextStyle(
-                          color: details[type]!['linkColor']!,
-                          decoration: TextDecoration.underline,
-                          decorationColor: details[type]!['linkColor']!,
-                        ),
-                      ),
-                    ),
-                    if (type != MessageType.system)
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const SizedBox(height: 5),
-                          Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text(
-                                DateFormat.Hm().format(createdAt.toLocal()),
-                                style: TextStyle(
-                                  color: details[type]!['textColor']!.withOpacity(0.5),
-                                  fontSize: 12,
-                                ),
-                              ),
-                              if (type == MessageType.user)
-                                Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    const SizedBox(width: 5),
-                                    Icon(
-                                      status!.toIconData(),
-                                      size: 14,
-                                      color: details[type]!['textColor']!.withOpacity(0.5),
-                                    ),
-                                  ],
-                                )
-                            ],
-                          )
-                        ],
-                      ),
-                  ],
-                ),
-              ),
+              Builder(builder: (BuildContext context) {
+                final Color bubbleColor = details[type]!['bubbleColor']!;
+                final Color selectionColor = details[type]!['selectionColor']!;
+                final Color textColor = details[type]!['textColor']!;
+                final Color linkColor = details[type]!['linkColor']!;
+
+                if (message.isLessEmojisThan(5)) {
+                  final EmojiParser parser = EmojiParser();
+
+                  final int emojis = parser.count(message);
+                  const double minFontSize = 30;
+                  const double maxFontSize = 70;
+                  double fontSize = maxFontSize / emojis;
+                  fontSize = fontSize.clamp(minFontSize, maxFontSize);
+
+                  return EmojiMessageBubble(
+                    message: message,
+                    createdAt: createdAt,
+                    type: type,
+                    status: status!,
+                    fontSize: fontSize,
+                  );
+                }
+
+                return TextMessageBubble(
+                  bubbleColor: bubbleColor,
+                  selectionColor: selectionColor,
+                  textColor: textColor,
+                  linkColor: linkColor,
+                  message: message,
+                  createdAt: createdAt,
+                  type: type,
+                  status: status!,
+                );
+              }),
             ],
           ),
         ),
