@@ -208,13 +208,19 @@ abstract class ChatStoreBase with Store {
       status: MessageStatus.sending,
       createdAt: DateTime.now(),
     );
-
-    _addMessage(newMessage);
     messages.insert(0, newMessage);
-
     messageController.clear();
     cacheService.deleteData('${character?.uid}-chat');
     scrollToBottom();
+
+    try {
+      _addMessage(newMessage);
+      updateMessageStatus(newMessage.id, 'sent');
+    } catch (e) {
+      if (kDebugMode) {
+        print('WebSocket connection error: $e');
+      }
+    }
   }
 
   @action
@@ -358,7 +364,24 @@ abstract class ChatStoreBase with Store {
 
         messages.insert(0, message);
       }
+
+      if (json['type'] == 'message-status') {
+        final String? id = json['message']['id'].toString();
+        final String? status = json['message']['status'];
+
+        updateMessageStatus(id, status);
+      }
     }
+  }
+
+  @action
+  void updateMessageStatus(String? id, String? newStatus) {
+    final MessageStatus? status = MessageStatus.values.byName(newStatus ?? 'read');
+
+    final Message message = messages.firstWhere((Message message) => message.id == id);
+    message.status = status;
+
+    print(message.status);
   }
 
   @action
