@@ -17,6 +17,7 @@ import 'package:thisdatedoesnotexist/app/core/services/dio_service.dart';
 import 'package:thisdatedoesnotexist/app/core/util.dart';
 import 'package:thisdatedoesnotexist/app/features/chat/models/chat_model.dart';
 import 'package:thisdatedoesnotexist/app/features/chat/widgets/chat_state_enum.dart';
+import 'package:thisdatedoesnotexist/app/features/chat/widgets/message_from_enum.dart';
 import 'package:thisdatedoesnotexist/app/features/chat/widgets/message_status_enum.dart';
 import 'package:thisdatedoesnotexist/app/features/chat/widgets/message_type_enum.dart';
 import 'package:uuid/uuid.dart';
@@ -43,6 +44,9 @@ abstract class ChatStoreBase with Store {
   CacheService cacheService = CacheService();
   Timer? searchDebounce;
   Timer? messageDebounce;
+
+  @observable
+  String? recordedAudio;
 
   @observable
   bool isEmojiKeyboardShowing = false;
@@ -119,7 +123,7 @@ abstract class ChatStoreBase with Store {
     if (messages.isEmpty) {
       return true;
     } else {
-      return messages.first.type != MessageType.user;
+      return messages.first.from != MessageFrom.user;
     }
   }
 
@@ -206,7 +210,22 @@ abstract class ChatStoreBase with Store {
   }
 
   @action
-  void onSendTap() {
+  void onSendTap(MessageType type) {
+    switch (type) {
+      case MessageType.text:
+        sendTextMessage();
+        break;
+      case MessageType.audio:
+        sendAudioMessage();
+        break;
+      default:
+        sendTextMessage();
+        break;
+    }
+  }
+
+  @action
+  void sendTextMessage() {
     if (messageController.text.isEmpty || textMessage.trim().isEmpty) {
       return;
     }
@@ -214,7 +233,7 @@ abstract class ChatStoreBase with Store {
     final Message newMessage = Message(
       id: uuid.v4(),
       text: textMessage.trim(),
-      type: MessageType.user,
+      from: MessageFrom.user,
       sendBy: authenticatedUser?.uid,
       status: MessageStatus.sending,
       createdAt: DateTime.now(),
@@ -231,6 +250,41 @@ abstract class ChatStoreBase with Store {
     } catch (e) {
       if (kDebugMode) {
         print('WebSocket connection error: $e');
+      }
+    }
+  }
+
+  void sendAudioMessage() {
+    if (recordedAudio == null) {
+      return;
+    }
+
+
+  }
+
+  @action
+  Future<void> refreshRecording() async {
+    recordedAudio = null;
+    recorderController.refresh();
+  }
+
+  @action
+  void disposeRecording() {
+    recordedAudio = null;
+    recorderController.refresh();
+    isRecording = false;
+  }
+
+  @action
+  Future<void> recordOrStop() async {
+    if (await recorderController.checkPermission()) {
+      if (isRecording) {
+        recordedAudio = await recorderController.stop();
+        isRecording = false;
+      } else {
+        recordedAudio = null;
+        await recorderController.record();
+        isRecording = true;
       }
     }
   }
@@ -360,7 +414,7 @@ abstract class ChatStoreBase with Store {
 
         final String? id = messageData['id'].toString();
         final String? text = messageData['text'];
-        final MessageType? type = MessageType.values.byName(messageData['type']);
+        final MessageFrom? type = MessageFrom.values.byName(messageData['type']);
         final String? sendBy = messageData['send_by'];
         final DateTime? createdAt = DateTime.parse(messageData['created_at']);
         final MessageStatus? status = MessageStatus.values.byName(messageData['status'] ?? 'read');
@@ -368,7 +422,7 @@ abstract class ChatStoreBase with Store {
         final Message message = Message(
           id: id,
           text: text,
-          type: type,
+          from: type,
           sendBy: sendBy,
           status: status,
           createdAt: createdAt,
@@ -425,12 +479,12 @@ abstract class ChatStoreBase with Store {
         final String id = item['id'].toString();
         final String content = item['content'];
         final DateTime createdAt = DateTime.parse(item['created_at']);
-        final MessageType type = item['user']['uid'] == authenticatedUser!.uid ? MessageType.user : MessageType.sender;
+        final MessageFrom type = item['user']['uid'] == authenticatedUser!.uid ? MessageFrom.user : MessageFrom.sender;
         final MessageStatus status = MessageStatus.values.byName(item['status'] ?? 'read');
         final Message message = Message(
           id: id,
           text: content,
-          type: type,
+          from: type,
           createdAt: createdAt,
           status: status,
           sendBy: item['user']['uid'],
