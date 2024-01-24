@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:intl/intl.dart';
 import 'package:thisdatedoesnotexist/app/core/util.dart';
+import 'package:thisdatedoesnotexist/app/features/chat/widgets/message_from_enum.dart';
 import 'package:thisdatedoesnotexist/app/features/chat/widgets/message_status_enum.dart';
-import 'package:thisdatedoesnotexist/app/features/chat/widgets/message_type_enum.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class TextMessageBubble extends StatelessWidget {
@@ -15,7 +15,7 @@ class TextMessageBubble extends StatelessWidget {
     required this.linkColor,
     required this.message,
     required this.createdAt,
-    required this.type,
+    required this.from,
     required this.status,
   });
 
@@ -25,7 +25,7 @@ class TextMessageBubble extends StatelessWidget {
   final Color linkColor;
   final String message;
   final DateTime createdAt;
-  final MessageType type;
+  final MessageFrom from;
   final MessageStatus status;
 
   @override
@@ -68,7 +68,7 @@ class TextMessageBubble extends StatelessWidget {
               ),
             ),
           ),
-          if (type != MessageType.system)
+          if (from != MessageFrom.system)
             Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               mainAxisSize: MainAxisSize.min,
@@ -84,7 +84,7 @@ class TextMessageBubble extends StatelessWidget {
                         fontSize: 12,
                       ),
                     ),
-                    if (type == MessageType.user)
+                    if (from == MessageFrom.user)
                       Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
