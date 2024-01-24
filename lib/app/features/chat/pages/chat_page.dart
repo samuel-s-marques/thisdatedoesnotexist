@@ -192,6 +192,7 @@ class _ChatPageState extends State<ChatPage> {
                                 return ChatBubble(
                                   from: index.isEven ? MessageFrom.sender : MessageFrom.user,
                                   message: 'Hello! This is a message! My index is $index',
+                                  type: MessageType.text,
                                   createdAt: DateTime.now(),
                                   status: MessageStatus.read,
                                 );
@@ -209,6 +210,7 @@ class _ChatPageState extends State<ChatPage> {
                                 ChatBubble(
                                   from: MessageFrom.system,
                                   message: DateFormat('dd/MM/yyyy').format(message.createdAt!),
+                                  type: MessageType.text,
                                   bubbleColor: Colors.black.withOpacity(0.3),
                                   textColor: Colors.white,
                                   createdAt: DateTime.now(),
@@ -216,6 +218,7 @@ class _ChatPageState extends State<ChatPage> {
                               ChatBubble(
                                 from: message.from!,
                                 message: message.text ?? '',
+                                type: message.type!,
                                 createdAt: message.createdAt!,
                                 status: message.status ?? MessageStatus.sending,
                               ),
