@@ -2,15 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_emoji/flutter_emoji.dart';
 import 'package:thisdatedoesnotexist/app/core/util.dart';
+import 'package:thisdatedoesnotexist/app/features/chat/widgets/audio_message_bubble.dart';
 import 'package:thisdatedoesnotexist/app/features/chat/widgets/emoji_message_bubble.dart';
 import 'package:thisdatedoesnotexist/app/features/chat/widgets/message_from_enum.dart';
 import 'package:thisdatedoesnotexist/app/features/chat/widgets/message_status_enum.dart';
+import 'package:thisdatedoesnotexist/app/features/chat/widgets/message_type_enum.dart';
 import 'package:thisdatedoesnotexist/app/features/chat/widgets/text_message_bubble.dart';
 
 class ChatBubble extends StatelessWidget {
   const ChatBubble({
     super.key,
     required this.from,
+    required this.type,
     required this.message,
     required this.createdAt,
     this.status,
@@ -20,6 +23,7 @@ class ChatBubble extends StatelessWidget {
   });
 
   final MessageFrom from;
+  final MessageType type;
   final String message;
   final DateTime createdAt;
   final MessageStatus? status;
@@ -122,6 +126,19 @@ class ChatBubble extends StatelessWidget {
                     from: from,
                     status: status!,
                     fontSize: fontSize,
+                  );
+                }
+
+                if (type == MessageType.audio) {
+                  return AudioMessageBubble(
+                    bubbleColor: bubbleColor,
+                    selectionColor: selectionColor,
+                    textColor: textColor,
+                    linkColor: linkColor,
+                    message: message,
+                    createdAt: createdAt,
+                    from: from,
+                    status: status!,
                   );
                 }
 
