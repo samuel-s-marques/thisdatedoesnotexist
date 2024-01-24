@@ -1,22 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:thisdatedoesnotexist/app/core/util.dart';
+import 'package:thisdatedoesnotexist/app/features/chat/widgets/message_from_enum.dart';
 import 'package:thisdatedoesnotexist/app/features/chat/widgets/message_status_enum.dart';
-import 'package:thisdatedoesnotexist/app/features/chat/widgets/message_type_enum.dart';
 
 class EmojiMessageBubble extends StatelessWidget {
   const EmojiMessageBubble({
     super.key,
     required this.message,
     required this.createdAt,
-    required this.type,
+    required this.from,
     required this.status,
     required this.fontSize,
   });
 
   final String message;
   final DateTime createdAt;
-  final MessageType type;
+  final MessageFrom from;
   final MessageStatus status;
   final double fontSize;
 
@@ -41,7 +41,7 @@ class EmojiMessageBubble extends StatelessWidget {
               fontSize: fontSize,
             ),
           ),
-          if (type != MessageType.system)
+          if (from != MessageFrom.system)
             Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               mainAxisSize: MainAxisSize.min,
@@ -56,7 +56,7 @@ class EmojiMessageBubble extends StatelessWidget {
                         fontSize: 12,
                       ),
                     ),
-                    if (type == MessageType.user)
+                    if (from == MessageFrom.user)
                       Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
