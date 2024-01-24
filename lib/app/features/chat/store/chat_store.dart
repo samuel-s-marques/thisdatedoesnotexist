@@ -183,13 +183,14 @@ abstract class ChatStoreBase with Store {
   }
 
   void onMessageFieldChanged(String? value) {
+    textMessage = value ?? '';
+
     if (messageDebounce?.isActive ?? false) {
       messageDebounce?.cancel();
     }
 
     messageDebounce = Timer(const Duration(milliseconds: 300), () {
       cacheService.saveData('${character?.uid}-chat', value);
-      textMessage = value ?? '';
       requestChats();
     });
   }
