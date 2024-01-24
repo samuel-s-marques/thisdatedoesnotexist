@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:audio_waveforms/audio_waveforms.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/material.dart';
@@ -14,6 +15,7 @@ import 'package:thisdatedoesnotexist/app/core/models/user_model.dart';
 import 'package:thisdatedoesnotexist/app/features/chat/store/chat_store.dart';
 import 'package:thisdatedoesnotexist/app/features/chat/widgets/chat_bubble.dart';
 import 'package:thisdatedoesnotexist/app/features/chat/widgets/grouped_listview.dart';
+import 'package:thisdatedoesnotexist/app/features/chat/widgets/message_from_enum.dart';
 import 'package:thisdatedoesnotexist/app/features/chat/widgets/message_status_enum.dart';
 import 'package:thisdatedoesnotexist/app/features/chat/widgets/message_type_enum.dart';
 import 'package:thisdatedoesnotexist/app/features/chat/widgets/profile_drawer.dart';
@@ -53,6 +55,7 @@ class _ChatPageState extends State<ChatPage> {
     store.isLoading = true;
     store.messageController.clear();
     store.messageDebounce?.cancel();
+    store.disposeRecording();
     store.hideEmojiKeyboard();
     super.dispose();
   }
@@ -187,7 +190,7 @@ class _ChatPageState extends State<ChatPage> {
                               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 5),
                               itemBuilder: (BuildContext context, int index) {
                                 return ChatBubble(
-                                  type: index.isEven ? MessageType.sender : MessageType.user,
+                                  from: index.isEven ? MessageFrom.sender : MessageFrom.user,
                                   message: 'Hello! This is a message! My index is $index',
                                   createdAt: DateTime.now(),
                                   status: MessageStatus.read,
@@ -204,14 +207,14 @@ class _ChatPageState extends State<ChatPage> {
                             children: [
                               if (isLastMessage || !store.isSameDate(store.messages[index], store.messages[index + 1]))
                                 ChatBubble(
-                                  type: MessageType.system,
+                                  from: MessageFrom.system,
                                   message: DateFormat('dd/MM/yyyy').format(message.createdAt!),
                                   bubbleColor: Colors.black.withOpacity(0.3),
                                   textColor: Colors.white,
                                   createdAt: DateTime.now(),
                                 ),
                               ChatBubble(
-                                type: message.type!,
+                                from: message.from!,
                                 message: message.text ?? '',
                                 createdAt: message.createdAt!,
                                 status: message.status ?? MessageStatus.sending,
@@ -233,35 +236,75 @@ class _ChatPageState extends State<ChatPage> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Flexible(
-                          child: TextField(
-                            controller: store.messageController,
-                            textCapitalization: TextCapitalization.sentences,
-                            minLines: 1,
-                            maxLines: 5,
-                            onChanged: store.onMessageFieldChanged,
-                            keyboardType: TextInputType.multiline,
-                            onTap: store.hideEmojiKeyboard,
-                            decoration: InputDecoration(
-                              fillColor: const Color(0xFFf4f4f9),
-                              hintText: 'Message...',
-                              suffixIcon: IconButton(
-                                onPressed: store.toggleEmojiKeyboard,
-                                icon: const Icon(
-                                  Icons.emoji_emotions,
+                        if (store.isRecording || store.recordedAudio != null)
+                          AudioWaveforms(
+                            size: Size(MediaQuery.of(context).size.width * (store.recordedAudio != null ? 0.65 : 0.75), 50),
+                            recorderController: store.recorderController,
+                            margin: EdgeInsets.zero,
+                            padding: EdgeInsets.zero,
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFf4f4f9),
+                              borderRadius: BorderRadius.circular(30),
+                            ),
+                            enableGesture: true,
+                            waveStyle: const WaveStyle(
+                              extendWaveform: true,
+                              showMiddleLine: false,
+                            ),
+                          )
+                        else
+                          Flexible(
+                            child: TextField(
+                              controller: store.messageController,
+                              textCapitalization: TextCapitalization.sentences,
+                              minLines: 1,
+                              maxLines: 5,
+                              onChanged: store.onMessageFieldChanged,
+                              keyboardType: TextInputType.multiline,
+                              onTap: store.hideEmojiKeyboard,
+                              decoration: InputDecoration(
+                                fillColor: const Color(0xFFf4f4f9),
+                                hintText: 'Message...',
+                                suffixIcon: IconButton(
+                                  onPressed: store.toggleEmojiKeyboard,
+                                  icon: const Icon(
+                                    Icons.emoji_emotions,
+                                  ),
                                 ),
                               ),
                             ),
                           ),
-                        ),
                         Observer(
-                          builder: (_) => IconButton(
-                            onPressed: store.allowSendMessage
-                                ? store.textMessage.isEmpty
-                                    ? () {}
-                                    : store.onSendTap
-                                : null,
-                            icon: Icon(store.textMessage.isEmpty ? Icons.mic : Icons.send),
+                          builder: (_) => Row(
+                            children: [
+                              if (store.recordedAudio != null)
+                                IconButton(
+                                  onPressed: store.refreshRecording,
+                                  icon: const Icon(
+                                    Icons.close,
+                                  ),
+                                ),
+                              Observer(
+                                builder: (_) => IconButton(
+                                  onPressed: store.allowSendMessage
+                                      ? () {
+                                          if (store.textMessage.isEmpty && store.recordedAudio == null) {
+                                            store.recordOrStop();
+                                          } else {
+                                            store.onSendTap(store.recordedAudio != null ? MessageType.audio : MessageType.text);
+                                          }
+                                        }
+                                      : null,
+                                  icon: Icon(
+                                    store.textMessage.isEmpty
+                                        ? store.isRecording
+                                            ? Icons.stop
+                                            : Icons.mic
+                                        : Icons.send,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ],
