@@ -256,8 +256,12 @@ class _ChatPageState extends State<ChatPage> {
                         ),
                         Observer(
                           builder: (_) => IconButton(
-                            onPressed: store.allowSendMessage ? store.onSendTap : null,
-                            icon: const Icon(Icons.send),
+                            onPressed: store.allowSendMessage
+                                ? store.textMessage.isEmpty
+                                    ? () {}
+                                    : store.onSendTap
+                                : null,
+                            icon: Icon(store.textMessage.isEmpty ? Icons.mic : Icons.send),
                           ),
                         ),
                       ],
