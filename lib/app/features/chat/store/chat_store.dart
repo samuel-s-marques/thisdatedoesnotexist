@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:audio_waveforms/audio_waveforms.dart';
 import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
@@ -38,6 +39,7 @@ abstract class ChatStoreBase with Store {
   ScrollController chatScrollController = ScrollController();
   ScrollController chatListScrollController = ScrollController();
   TextEditingController messageController = TextEditingController();
+  RecorderController recorderController = RecorderController();
   CacheService cacheService = CacheService();
   Timer? searchDebounce;
   Timer? messageDebounce;
@@ -106,6 +108,12 @@ abstract class ChatStoreBase with Store {
   @observable
   ObservableList<Message> messages = ObservableList();
 
+  @observable
+  bool isRecording = false;
+
+  @observable
+  String textMessage = '';
+
   @computed
   bool get allowSendMessage {
     if (messages.isEmpty) {
@@ -138,6 +146,7 @@ abstract class ChatStoreBase with Store {
           offset: messageController.text.length,
         ),
       );
+    textMessage = messageController.text.trim();
   }
 
   @action
@@ -180,6 +189,7 @@ abstract class ChatStoreBase with Store {
 
     messageDebounce = Timer(const Duration(milliseconds: 300), () {
       cacheService.saveData('${character?.uid}-chat', value);
+      textMessage = value ?? '';
       requestChats();
     });
   }
@@ -196,13 +206,13 @@ abstract class ChatStoreBase with Store {
 
   @action
   void onSendTap() {
-    if (messageController.text.isEmpty) {
+    if (messageController.text.isEmpty || textMessage.trim().isEmpty) {
       return;
     }
 
     final Message newMessage = Message(
       id: uuid.v4(),
-      text: messageController.text.trim(),
+      text: textMessage.trim(),
       type: MessageType.user,
       sendBy: authenticatedUser?.uid,
       status: MessageStatus.sending,
@@ -210,6 +220,7 @@ abstract class ChatStoreBase with Store {
     );
     messages.insert(0, newMessage);
     messageController.clear();
+    textMessage = '';
     cacheService.deleteData('${character?.uid}-chat');
     scrollToBottom();
 
@@ -391,6 +402,7 @@ abstract class ChatStoreBase with Store {
 
       if (await cacheService.getData('${character?.uid}-chat') != null) {
         messageController.text = await cacheService.getData('${character?.uid}-chat');
+        textMessage = messageController.text.trim();
       }
     }
 
