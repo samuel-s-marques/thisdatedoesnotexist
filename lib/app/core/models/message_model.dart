@@ -1,11 +1,11 @@
+import 'package:thisdatedoesnotexist/app/features/chat/widgets/message_from_enum.dart';
 import 'package:thisdatedoesnotexist/app/features/chat/widgets/message_status_enum.dart';
-import 'package:thisdatedoesnotexist/app/features/chat/widgets/message_type_enum.dart';
 
 class Message {
   Message({
     this.id,
     this.text,
-    this.type,
+    this.from,
     this.sendBy,
     this.status,
     this.createdAt,
@@ -15,7 +15,7 @@ class Message {
     return Message(
       id: json['id'],
       text: json['text'],
-      type: MessageType.values.firstWhere((MessageType type) => type.name == json['type']),
+      from: MessageFrom.values.firstWhere((MessageFrom from) => from.name == json['from']),
       status: MessageStatus.values.firstWhere((MessageStatus status) => status.name == json['status']),
       sendBy: json['send_by'],
       createdAt: json['created_at'] != null ? DateTime.parse(json['created_at']) : null,
@@ -26,7 +26,7 @@ class Message {
     return {
       'id': id,
       'text': text,
-      'type': type?.name,
+      'from': from?.name,
       'send_by': sendBy,
       'status': status?.name,
       'created_at': createdAt?.toIso8601String(),
@@ -35,7 +35,7 @@ class Message {
 
   final String? id;
   final String? text;
-  final MessageType? type;
+  final MessageFrom? from;
   final String? sendBy;
   final DateTime? createdAt;
   MessageStatus? status;
