@@ -1,5 +1,4 @@
 enum MessageType {
-  system,
-  user,
-  sender,
+  text,
+  audio,
 }
