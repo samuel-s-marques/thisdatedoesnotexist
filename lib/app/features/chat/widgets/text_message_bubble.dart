@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:intl/intl.dart';
+import 'package:thisdatedoesnotexist/app/core/models/message_model.dart';
 import 'package:thisdatedoesnotexist/app/core/util.dart';
 import 'package:thisdatedoesnotexist/app/features/chat/widgets/message_from_enum.dart';
-import 'package:thisdatedoesnotexist/app/features/chat/widgets/message_status_enum.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class TextMessageBubble extends StatelessWidget {
@@ -14,19 +14,13 @@ class TextMessageBubble extends StatelessWidget {
     required this.textColor,
     required this.linkColor,
     required this.message,
-    required this.createdAt,
-    required this.from,
-    required this.status,
   });
 
   final Color bubbleColor;
   final Color selectionColor;
   final Color textColor;
   final Color linkColor;
-  final String message;
-  final DateTime createdAt;
-  final MessageFrom from;
-  final MessageStatus status;
+  final Message message;
 
   @override
   Widget build(BuildContext context) {
@@ -52,7 +46,7 @@ class TextMessageBubble extends StatelessWidget {
               ),
             ),
             child: SelectableLinkify(
-              text: message,
+              text: message.content,
               onOpen: (LinkableElement link) async {
                 if (await canLaunchUrl(Uri.parse(link.url))) {
                   await launchUrl(Uri.parse(link.url));
@@ -68,7 +62,7 @@ class TextMessageBubble extends StatelessWidget {
               ),
             ),
           ),
-          if (from != MessageFrom.system)
+          if (message.from != MessageFrom.system)
             Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               mainAxisSize: MainAxisSize.min,
@@ -78,19 +72,19 @@ class TextMessageBubble extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      DateFormat.Hm().format(createdAt.toLocal()),
+                      DateFormat.Hm().format(message.createdAt!.toLocal()),
                       style: TextStyle(
                         color: textColor.withOpacity(0.5),
                         fontSize: 12,
                       ),
                     ),
-                    if (from == MessageFrom.user)
+                    if (message.from == MessageFrom.user)
                       Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           const SizedBox(width: 5),
                           Icon(
-                            status.toIconData(),
+                            message.status!.toIconData(),
                             size: 14,
                             color: textColor.withOpacity(0.5),
                           ),
