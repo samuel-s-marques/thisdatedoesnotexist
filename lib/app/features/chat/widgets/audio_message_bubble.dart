@@ -1,9 +1,9 @@
-import 'package:audio_waveforms/audio_waveforms.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:thisdatedoesnotexist/app/core/models/message_model.dart';
 import 'package:thisdatedoesnotexist/app/core/util.dart';
 import 'package:thisdatedoesnotexist/app/features/chat/widgets/message_from_enum.dart';
-import 'package:thisdatedoesnotexist/app/features/chat/widgets/message_status_enum.dart';
+import 'package:voice_message_package/voice_message_package.dart';
 
 class AudioMessageBubble extends StatefulWidget {
   const AudioMessageBubble({
@@ -13,31 +13,39 @@ class AudioMessageBubble extends StatefulWidget {
     required this.textColor,
     required this.linkColor,
     required this.message,
-    required this.createdAt,
-    required this.from,
-    required this.status,
   });
 
   final Color bubbleColor;
   final Color selectionColor;
   final Color textColor;
   final Color linkColor;
-  final String message;
-  final DateTime createdAt;
-  final MessageFrom from;
-  final MessageStatus status;
+  final Message message;
 
   @override
   State<AudioMessageBubble> createState() => _AudioMessageBubbleState();
 }
 
 class _AudioMessageBubbleState extends State<AudioMessageBubble> {
-  late PlayerController controller;
-  
+  late VoiceController controller;
+
   @override
   void initState() {
     super.initState();
-    controller = PlayerController()..preparePlayer(path: widget.message);
+    controller = VoiceController(
+      audioSrc: widget.message.location!,
+      maxDuration: widget.message.duration ?? const Duration(seconds: 10),
+      isFile: widget.message.location!.contains('http') == false,
+      onComplete: () {},
+      onPause: () {},
+      onPlaying: () {},
+      onError: (error) {},
+    );
+  }
+
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
   }
 
   @override
@@ -55,24 +63,19 @@ class _AudioMessageBubbleState extends State<AudioMessageBubble> {
         crossAxisAlignment: CrossAxisAlignment.end,
         mainAxisSize: MainAxisSize.min,
         children: [
-          Theme(
-            data: ThemeData(
-              textSelectionTheme: TextSelectionThemeData(
-                cursorColor: widget.selectionColor,
-                selectionColor: widget.selectionColor,
-                selectionHandleColor: widget.selectionColor,
-              ),
+          VoiceMessageView(
+            controller: controller,
+            backgroundColor: widget.bubbleColor,
+            cornerRadius: 10,
+            innerPadding: 0,
+            counterTextStyle: TextStyle(
+              fontSize: 12,
+              color: widget.textColor,
             ),
-            child: AudioFileWaveforms(
-              size: Size(
-                MediaQuery.of(context).size.width * 0.7,
-                100,
-              ),
-              playerController: PlayerController(),
-              waveformType: WaveformType.fitWidth,
-            ),
+            activeSliderColor: widget.selectionColor,
+            circlesColor: widget.selectionColor,
           ),
-          if (widget.from != MessageFrom.system)
+          if (widget.message.from != MessageFrom.system)
             Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               mainAxisSize: MainAxisSize.min,
@@ -82,19 +85,19 @@ class _AudioMessageBubbleState extends State<AudioMessageBubble> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      DateFormat.Hm().format(widget.createdAt.toLocal()),
+                      DateFormat.Hm().format(widget.message.createdAt!.toLocal()),
                       style: TextStyle(
                         color: widget.textColor.withOpacity(0.5),
                         fontSize: 12,
                       ),
                     ),
-                    if (widget.from == MessageFrom.user)
+                    if (widget.message.from == MessageFrom.user)
                       Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           const SizedBox(width: 5),
                           Icon(
-                            widget.status.toIconData(),
+                            widget.message.status!.toIconData(),
                             size: 14,
                             color: widget.textColor.withOpacity(0.5),
                           ),
