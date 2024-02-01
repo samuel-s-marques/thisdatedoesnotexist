@@ -48,6 +48,9 @@ abstract class ChatStoreBase with Store {
   Timer? audioDuration;
 
   @observable
+  bool allowAudioMessages = false;
+
+  @observable
   String? recordedAudio;
 
   @observable
@@ -538,9 +541,30 @@ abstract class ChatStoreBase with Store {
   }
 
   @action
+  Future<void> getChatSettings() async {
+    final Response<dynamic> response = await dio.get(
+      '$server/api/chats/settings',
+      options: DioOptions(),
+    );
+
+    if (response.statusCode == 200) {
+      allowAudioMessages = response.data['audio'] ?? false;
+    }
+  }
+
+  @action
   Future<List<Message>> getMessages(String id, int page, void Function(int) updateAvailablePages) async {
     final List<Message> messages = [];
-    final Response<dynamic> response = await dio.get('$server/api/messages?uid=$id&page=$page', options: DioOptions(cache: false));
+    final Response<dynamic> response = await dio.get(
+      '$server/api/messages?uid=$id&page=$page',
+      options: DioOptions(
+        cache: false,
+        headers: {
+          'Authorization': 'Bearer ${await authenticatedUser!.getIdToken()}',
+          'Content-Type': 'application/json',
+        },
+      ),
+    );
 
     if (response.statusCode == 200) {
       final int totalPages = response.data['meta']['last_page'] - page;
