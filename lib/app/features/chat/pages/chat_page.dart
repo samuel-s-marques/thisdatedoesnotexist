@@ -190,11 +190,14 @@ class _ChatPageState extends State<ChatPage> {
                               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 5),
                               itemBuilder: (BuildContext context, int index) {
                                 return ChatBubble(
-                                  from: index.isEven ? MessageFrom.sender : MessageFrom.user,
-                                  message: 'Hello! This is a message! My index is $index',
-                                  type: MessageType.text,
-                                  createdAt: DateTime.now(),
-                                  status: MessageStatus.read,
+                                  message: Message(
+                                    id: uuid.v4(),
+                                    content: 'Hello! This is a message! My index is $index',
+                                    type: MessageType.text,
+                                    from: index.isEven ? MessageFrom.sender : MessageFrom.user,
+                                    createdAt: DateTime.now(),
+                                    status: MessageStatus.read,
+                                  ),
                                 );
                               },
                             ),
@@ -208,20 +211,16 @@ class _ChatPageState extends State<ChatPage> {
                             children: [
                               if (isLastMessage || !store.isSameDate(store.messages[index], store.messages[index + 1]))
                                 ChatBubble(
-                                  from: MessageFrom.system,
-                                  message: DateFormat('dd/MM/yyyy').format(message.createdAt!),
-                                  type: MessageType.text,
+                                  message: Message(
+                                    content: DateFormat('dd/MM/yyyy').format(message.createdAt!),
+                                    from: MessageFrom.system,
+                                    type: MessageType.text,
+                                    createdAt: DateTime.now(),
+                                  ),
                                   bubbleColor: Colors.black.withOpacity(0.3),
                                   textColor: Colors.white,
-                                  createdAt: DateTime.now(),
                                 ),
-                              ChatBubble(
-                                from: message.from!,
-                                message: message.text ?? '',
-                                type: message.type!,
-                                createdAt: message.createdAt!,
-                                status: message.status ?? MessageStatus.sending,
-                              ),
+                              ChatBubble(message: message),
                             ],
                           );
                         },
@@ -242,7 +241,7 @@ class _ChatPageState extends State<ChatPage> {
                         if (store.isRecording || store.recordedAudio != null)
                           AudioWaveforms(
                             size: Size(MediaQuery.of(context).size.width * (store.recordedAudio != null ? 0.65 : 0.75), 50),
-                            recorderController: store.recorderController,
+                            recorderController: RecorderController(),
                             margin: EdgeInsets.zero,
                             padding: EdgeInsets.zero,
                             decoration: BoxDecoration(
@@ -290,21 +289,20 @@ class _ChatPageState extends State<ChatPage> {
                               Observer(
                                 builder: (_) => IconButton(
                                   onPressed: store.allowSendMessage
-                                      ? () {
+                                      ? () async {
                                           if (store.textMessage.isEmpty && store.recordedAudio == null) {
-                                            store.recordOrStop();
+                                            await store.recordOrStop();
                                           } else {
-                                            store.onSendTap(store.recordedAudio != null ? MessageType.audio : MessageType.text);
+                                            print('sent');
+                                            await store.onSendTap(store.recordedAudio != null ? MessageType.audio : MessageType.text);
                                           }
                                         }
                                       : null,
-                                  icon: Icon(
-                                    store.textMessage.isEmpty
-                                        ? store.isRecording
-                                            ? Icons.stop
-                                            : Icons.mic
-                                        : Icons.send,
-                                  ),
+                                  icon: store.textMessage.isNotEmpty || store.recordedAudio != null
+                                      ? const Icon(Icons.send)
+                                      : store.isRecording
+                                          ? const Icon(Icons.stop)
+                                          : const Icon(Icons.mic),
                                 ),
                               ),
                             ],
