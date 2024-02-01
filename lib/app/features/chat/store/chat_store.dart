@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
-
-import 'package:audio_waveforms/audio_waveforms.dart';
+import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
@@ -9,6 +8,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:intl/intl.dart';
 import 'package:mobx/mobx.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:record/record.dart';
 import 'package:thisdatedoesnotexist/app/core/models/message_model.dart';
 import 'package:thisdatedoesnotexist/app/core/models/user_model.dart';
 import 'package:thisdatedoesnotexist/app/core/services/auth_service.dart';
@@ -40,13 +41,17 @@ abstract class ChatStoreBase with Store {
   ScrollController chatScrollController = ScrollController();
   ScrollController chatListScrollController = ScrollController();
   TextEditingController messageController = TextEditingController();
-  RecorderController recorderController = RecorderController();
+  AudioRecorder audioRecorder = AudioRecorder();
   CacheService cacheService = CacheService();
   Timer? searchDebounce;
   Timer? messageDebounce;
+  Timer? audioDuration;
 
   @observable
   String? recordedAudio;
+
+  @observable
+  int recordDuration = 0;
 
   @observable
   bool isEmojiKeyboardShowing = false;
@@ -210,13 +215,14 @@ abstract class ChatStoreBase with Store {
   }
 
   @action
-  void onSendTap(MessageType type) {
+  Future<void> onSendTap(MessageType type) async {
     switch (type) {
       case MessageType.text:
         sendTextMessage();
         break;
       case MessageType.audio:
-        sendAudioMessage();
+        await sendAudioMessage();
+        await refreshRecording();
         break;
       default:
         sendTextMessage();
@@ -232,7 +238,8 @@ abstract class ChatStoreBase with Store {
 
     final Message newMessage = Message(
       id: uuid.v4(),
-      text: textMessage.trim(),
+      content: textMessage.trim(),
+      type: MessageType.text,
       from: MessageFrom.user,
       sendBy: authenticatedUser?.uid,
       status: MessageStatus.sending,
@@ -242,7 +249,7 @@ abstract class ChatStoreBase with Store {
     messageController.clear();
     textMessage = '';
     cacheService.deleteData('${character?.uid}-chat');
-    scrollToBottom();
+    // scrollToBottom();
 
     try {
       _addMessage(newMessage);
@@ -254,37 +261,99 @@ abstract class ChatStoreBase with Store {
     }
   }
 
-  void sendAudioMessage() {
+  Future<void> sendAudioMessage() async {
     if (recordedAudio == null) {
       return;
     }
 
+    print('Trying to send audio message');
+    final Uint8List audioBytes = await File(recordedAudio!).readAsBytes();
+    print('Read bytes');
 
+    final Message newMessage = Message(
+      id: uuid.v4(),
+      type: MessageType.audio,
+      content: base64Encode(audioBytes),
+      from: MessageFrom.user,
+      sendBy: authenticatedUser?.uid,
+      location: recordedAudio,
+      duration: Duration(milliseconds: recordDuration),
+      status: MessageStatus.sending,
+      createdAt: DateTime.now(),
+    );
+    print(newMessage.duration);
+    messages.insert(0, newMessage);
+    // scrollToBottom();
+    // await disposeRecording();
+
+    try {
+      _addMessage(newMessage);
+      recordDuration = 0;
+      updateMessageStatus(newMessage.id, 'sent');
+    } catch (e) {
+      if (kDebugMode) {
+        print('WebSocket connection error: $e');
+      }
+    }
   }
 
   @action
   Future<void> refreshRecording() async {
     recordedAudio = null;
-    recorderController.refresh();
   }
 
   @action
-  void disposeRecording() {
+  Future<void> disposeRecording() async {
     recordedAudio = null;
-    recorderController.refresh();
+    await audioRecorder.stop();
     isRecording = false;
+    await audioRecorder.dispose();
+  }
+
+  @action
+  void startAudioDurationTimer() {
+    audioDuration?.cancel();
+
+    audioDuration = Timer.periodic(const Duration(milliseconds: 1), (Timer _) {
+      recordDuration++;
+    });
   }
 
   @action
   Future<void> recordOrStop() async {
-    if (await recorderController.checkPermission()) {
-      if (isRecording) {
-        recordedAudio = await recorderController.stop();
-        isRecording = false;
-      } else {
-        recordedAudio = null;
-        await recorderController.record();
-        isRecording = true;
+    print('Recording: $isRecording');
+    print('hasPermission: ${await audioRecorder.hasPermission()}');
+
+    if (await audioRecorder.hasPermission()) {
+      try {
+        if (isRecording) {
+          recordedAudio = await audioRecorder.stop();
+          print(recordedAudio);
+          isRecording = false;
+          audioDuration?.cancel();
+          print('Stop recording');
+        } else {
+          final Directory tempDirectory = await getTemporaryDirectory();
+
+          recordedAudio = null;
+          isRecording = true;
+          await audioRecorder.start(
+            const RecordConfig(
+              bitRate: 705600,
+              sampleRate: 16000,
+              numChannels: 1,
+              encoder: AudioEncoder.wav,
+              noiseSuppress: true,
+            ),
+            path: '${tempDirectory.path}/audio.wav',
+          );
+          startAudioDurationTimer();
+          print('Start recording');
+        }
+      } catch (e) {
+        if (kDebugMode) {
+          print('Error: $e');
+        }
       }
     }
   }
@@ -414,17 +483,21 @@ abstract class ChatStoreBase with Store {
 
         final String? id = messageData['id'].toString();
         final String? text = messageData['text'];
-        final MessageFrom? type = MessageFrom.values.byName(messageData['type']);
+        final MessageType? type = MessageType.values.byName(messageData['type'] ?? 'text');
         final String? sendBy = messageData['send_by'];
         final DateTime? createdAt = DateTime.parse(messageData['created_at']);
         final MessageStatus? status = MessageStatus.values.byName(messageData['status'] ?? 'read');
+        final MessageFrom from = MessageFrom.values.byName(messageData['from']);
+        final String? location = messageData['location'];
 
         final Message message = Message(
           id: id,
-          text: text,
-          from: type,
+          content: text,
+          from: from,
+          type: type,
           sendBy: sendBy,
           status: status,
+          location: location,
           createdAt: createdAt,
         );
 
@@ -479,13 +552,19 @@ abstract class ChatStoreBase with Store {
         final String id = item['id'].toString();
         final String content = item['content'];
         final DateTime createdAt = DateTime.parse(item['created_at']);
-        final MessageFrom type = item['user']['uid'] == authenticatedUser!.uid ? MessageFrom.user : MessageFrom.sender;
+        final MessageFrom from = item['user']['uid'] == authenticatedUser!.uid ? MessageFrom.user : MessageFrom.sender;
         final MessageStatus status = MessageStatus.values.byName(item['status'] ?? 'read');
+        final MessageType type = MessageType.values.byName(item['type'] ?? 'text');
+        final int? duration = item['duration'];
+        final String? location = item['location'];
         final Message message = Message(
           id: id,
-          text: content,
-          from: type,
+          content: content,
+          from: from,
+          type: type,
+          duration: duration != null ? Duration(milliseconds: duration) : null,
           createdAt: createdAt,
+          location: location != null ? '$server/$location' : null,
           status: status,
           sendBy: item['user']['uid'],
         );
