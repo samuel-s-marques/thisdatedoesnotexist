@@ -290,15 +290,14 @@ class _ChatPageState extends State<ChatPage> {
                                 builder: (_) => IconButton(
                                   onPressed: store.allowSendMessage
                                       ? () async {
-                                          if (store.textMessage.isEmpty && store.recordedAudio == null) {
+                                          if (store.allowAudioMessages && store.textMessage.isEmpty && store.recordedAudio == null) {
                                             await store.recordOrStop();
                                           } else {
-                                            print('sent');
                                             await store.onSendTap(store.recordedAudio != null ? MessageType.audio : MessageType.text);
                                           }
                                         }
                                       : null,
-                                  icon: store.textMessage.isNotEmpty || store.recordedAudio != null
+                                  icon: store.textMessage.isNotEmpty || store.recordedAudio != null || !store.allowAudioMessages
                                       ? const Icon(Icons.send)
                                       : store.isRecording
                                           ? const Icon(Icons.stop)
