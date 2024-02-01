@@ -23,7 +23,7 @@ class Message {
       type: MessageType.values.firstWhere((MessageType type) => type.name == json['type']),
       status: MessageStatus.values.firstWhere((MessageStatus status) => status.name == json['status']),
       location: json['location'],
-      duration: json['duration'] != null ? Duration(seconds: json['duration']) : null,
+      duration: json['duration'] != null ? Duration(milliseconds: json['duration']) : null,
       sendBy: json['send_by'],
       createdAt: json['created_at'] != null ? DateTime.parse(json['created_at']) : null,
     );
@@ -36,7 +36,7 @@ class Message {
       'from': from?.name,
       'type': type?.name,
       'location': location,
-      'duration': duration?.inSeconds,
+      'duration': duration?.inMilliseconds,
       'send_by': sendBy,
       'status': status?.name,
       'created_at': createdAt?.toIso8601String(),
