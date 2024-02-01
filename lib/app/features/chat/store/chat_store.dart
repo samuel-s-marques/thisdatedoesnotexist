@@ -544,7 +544,7 @@ abstract class ChatStoreBase with Store {
   Future<void> getChatSettings() async {
     final Response<dynamic> response = await dio.get(
       '$server/api/chats/settings',
-      options: DioOptions(),
+      options: DioOptions(cache: false),
     );
 
     if (response.statusCode == 200) {
