@@ -1,30 +1,31 @@
 import 'package:flutter/material.dart';
 
 class WaveformPainter extends CustomPainter {
-  WaveformPainter({required this.amplitude});
+  WaveformPainter({required this.amplitudeValues});
 
-  final double amplitude;
+  final List<double> amplitudeValues;
 
   @override
   void paint(Canvas canvas, Size size) {
     final Paint paint = Paint()
       ..color = Colors.blue
-      ..strokeWidth = 2.0;
+      ..strokeWidth = 2.0
+      ..strokeCap = StrokeCap.round;
 
     final double centerY = size.height / 2;
-    final double waveHeight = amplitude * 0.5;
 
-    canvas.drawLine(
-      Offset(0, centerY - waveHeight),
-      Offset(size.width, centerY - waveHeight),
-      paint,
-    );
+    for (int i = 0; i < amplitudeValues.length; i++) {
+      final double amplitude = amplitudeValues[i];
 
-    canvas.drawLine(
-      Offset(0, centerY + waveHeight),
-      Offset(size.width, centerY + waveHeight),
-      paint,
-    );
+      final double x = size.width - i.toDouble() * 4;
+      final double y = centerY - amplitude * 0.5;
+
+      canvas.drawLine(
+        Offset(x, centerY - y),
+        Offset(x, centerY + y),
+        paint,
+      );
+    }
   }
 
   @override
