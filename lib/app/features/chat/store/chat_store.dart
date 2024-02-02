@@ -41,11 +41,13 @@ abstract class ChatStoreBase with Store {
   ScrollController chatScrollController = ScrollController();
   ScrollController chatListScrollController = ScrollController();
   TextEditingController messageController = TextEditingController();
-  AudioRecorder audioRecorder = AudioRecorder();
+  AudioRecorder? audioRecorder;
   CacheService cacheService = CacheService();
   Timer? searchDebounce;
   Timer? messageDebounce;
   Timer? audioDuration;
+  Timer? amplitudeTimer;
+  StreamController<double>? amplitudeStreamController;
 
   @observable
   bool allowAudioMessages = false;
@@ -308,9 +310,10 @@ abstract class ChatStoreBase with Store {
   @action
   Future<void> disposeRecording() async {
     recordedAudio = null;
-    await audioRecorder.stop();
+    await audioRecorder?.stop();
     isRecording = false;
-    await audioRecorder.dispose();
+    await audioRecorder?.dispose();
+    await amplitudeStreamController?.close();
   }
 
   @action
@@ -322,25 +325,38 @@ abstract class ChatStoreBase with Store {
     });
   }
 
+  void _startAmplitudeStream() {
+    amplitudeTimer = Timer.periodic(const Duration(milliseconds: 100), (timer) async {
+      // Simulate getting the microphone amplitude (replace this with actual plugin usage)
+      final Amplitude amplitude = await audioRecorder!.getAmplitude();
+
+      // Push the amplitude value to the stream
+      amplitudeStreamController!.add(amplitude.current.abs());
+    });
+  }
+
   @action
   Future<void> recordOrStop() async {
-    print('Recording: $isRecording');
-    print('hasPermission: ${await audioRecorder.hasPermission()}');
+    audioRecorder ??= AudioRecorder();
 
-    if (await audioRecorder.hasPermission()) {
+    print('Recording: $isRecording');
+    print('hasPermission: ${await audioRecorder!.hasPermission()}');
+
+    if (await audioRecorder!.hasPermission()) {
       try {
         if (isRecording) {
-          recordedAudio = await audioRecorder.stop();
+          recordedAudio = await audioRecorder!.stop();
           print(recordedAudio);
           isRecording = false;
           audioDuration?.cancel();
+          amplitudeTimer?.cancel();
           print('Stop recording');
         } else {
           final Directory tempDirectory = await getTemporaryDirectory();
 
           recordedAudio = null;
           isRecording = true;
-          await audioRecorder.start(
+          await audioRecorder!.start(
             const RecordConfig(
               bitRate: 705600,
               sampleRate: 16000,
@@ -350,7 +366,9 @@ abstract class ChatStoreBase with Store {
             ),
             path: '${tempDirectory.path}/audio.wav',
           );
+
           startAudioDurationTimer();
+          _startAmplitudeStream();
           print('Start recording');
         }
       } catch (e) {
