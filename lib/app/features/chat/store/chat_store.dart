@@ -47,6 +47,7 @@ abstract class ChatStoreBase with Store {
   Timer? messageDebounce;
   Timer? audioDuration;
   Timer? amplitudeTimer;
+  List<double> amplitudeValues = [];
   StreamController<double>? amplitudeStreamController;
 
   @observable
@@ -305,6 +306,7 @@ abstract class ChatStoreBase with Store {
   @action
   Future<void> refreshRecording() async {
     recordedAudio = null;
+    amplitudeValues.clear();
   }
 
   @action
@@ -327,11 +329,11 @@ abstract class ChatStoreBase with Store {
 
   void _startAmplitudeStream() {
     amplitudeTimer = Timer.periodic(const Duration(milliseconds: 100), (timer) async {
-      // Simulate getting the microphone amplitude (replace this with actual plugin usage)
       final Amplitude amplitude = await audioRecorder!.getAmplitude();
+      final double maxAmplitude = amplitude.max.abs();
+      final double currentAmplitude = amplitude.current.abs();
 
-      // Push the amplitude value to the stream
-      amplitudeStreamController!.add(amplitude.current.abs());
+      amplitudeStreamController!.add(maxAmplitude / currentAmplitude);
     });
   }
 
