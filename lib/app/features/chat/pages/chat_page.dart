@@ -253,10 +253,14 @@ class _ChatPageState extends State<ChatPage> {
                                 stream: store.amplitudeStreamController!.stream,
                                 builder: (BuildContext context, AsyncSnapshot<double> snapshot) {
                                   if (snapshot.hasData) {
-                                    print(snapshot.data);
-
                                     final double amplitude = snapshot.data!;
-                                    return WaveformView(amplitude: amplitude);
+
+                                    store.amplitudeValues.insert(0, amplitude);
+                                    if (store.amplitudeValues.length > 100) {
+                                      store.amplitudeValues.removeLast();
+                                    }
+
+                                    return WaveformView(amplitudeValues: store.amplitudeValues);
                                   }
 
                                   return const SizedBox();
