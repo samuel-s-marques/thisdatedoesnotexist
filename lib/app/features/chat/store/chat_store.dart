@@ -287,7 +287,6 @@ abstract class ChatStoreBase with Store {
       status: MessageStatus.sending,
       createdAt: DateTime.now(),
     );
-    print(newMessage.duration);
     messages.insert(0, newMessage);
     // scrollToBottom();
     // await disposeRecording();
