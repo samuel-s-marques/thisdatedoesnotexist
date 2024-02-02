@@ -9,7 +9,6 @@ environment:
 
 dependencies:
   appinio_swiper: ^2.1.0
-  audio_waveforms: ^1.0.4
   cached_network_image: ^3.3.0
   cloud_firestore: ^4.13.0
   connectivity_plus: ^5.0.2
@@ -45,6 +44,11 @@ dependencies:
   url_launcher: ^6.2.3
   flutter_emoji: ^2.5.1
   gal: ^2.2.2
+  record: ^5.0.4
+  voice_message_package: 
+    git:
+      url: https://github.com/samuel-s-marques/voice_message_player
+      ref: master
 
 dev_dependencies:
   build_runner: ^2.4.6
