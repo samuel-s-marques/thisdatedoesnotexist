@@ -1,6 +1,6 @@
+import 'dart:async';
 import 'dart:math';
 
-import 'package:audio_waveforms/audio_waveforms.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +9,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:intl/intl.dart';
+import 'package:record/record.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:thisdatedoesnotexist/app/core/models/message_model.dart';
 import 'package:thisdatedoesnotexist/app/core/models/user_model.dart';
@@ -19,6 +20,7 @@ import 'package:thisdatedoesnotexist/app/features/chat/widgets/message_from_enum
 import 'package:thisdatedoesnotexist/app/features/chat/widgets/message_status_enum.dart';
 import 'package:thisdatedoesnotexist/app/features/chat/widgets/message_type_enum.dart';
 import 'package:thisdatedoesnotexist/app/features/chat/widgets/profile_drawer.dart';
+import 'package:thisdatedoesnotexist/app/features/chat/widgets/waveform_view.dart';
 import 'package:uuid/uuid.dart';
 
 class ChatPage extends StatefulWidget {
@@ -44,6 +46,8 @@ class _ChatPageState extends State<ChatPage> {
     super.initState();
     future = store.getCharacterById(widget.id);
     store.handleEndReached(widget.id);
+    store.audioRecorder = AudioRecorder();
+    store.amplitudeStreamController = StreamController<double>();
   }
 
   @override
@@ -239,19 +243,25 @@ class _ChatPageState extends State<ChatPage> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         if (store.isRecording || store.recordedAudio != null)
-                          AudioWaveforms(
-                            size: Size(MediaQuery.of(context).size.width * (store.recordedAudio != null ? 0.65 : 0.75), 50),
-                            recorderController: RecorderController(),
-                            margin: EdgeInsets.zero,
-                            padding: EdgeInsets.zero,
-                            decoration: BoxDecoration(
-                              color: const Color(0xFFf4f4f9),
-                              borderRadius: BorderRadius.circular(30),
-                            ),
-                            enableGesture: true,
-                            waveStyle: const WaveStyle(
-                              extendWaveform: true,
-                              showMiddleLine: false,
+                          Expanded(
+                            child: Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(30),
+                                color: const Color(0xFFf4f4f9),
+                              ),
+                              child: StreamBuilder(
+                                stream: store.amplitudeStreamController!.stream,
+                                builder: (BuildContext context, AsyncSnapshot<double> snapshot) {
+                                  if (snapshot.hasData) {
+                                    print(snapshot.data);
+
+                                    final double amplitude = snapshot.data!;
+                                    return WaveformView(amplitude: amplitude);
+                                  }
+
+                                  return const SizedBox();
+                                },
+                              ),
                             ),
                           )
                         else
