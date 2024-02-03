@@ -47,7 +47,7 @@ class _ChatPageState extends State<ChatPage> {
     future = store.getCharacterById(widget.id);
     store.handleEndReached(widget.id);
     store.audioRecorder = AudioRecorder();
-    store.amplitudeStreamController = StreamController<double>();
+    store.amplitudeStreamController = StreamController<double>.broadcast();
   }
 
   @override
@@ -254,16 +254,16 @@ class _ChatPageState extends State<ChatPage> {
                                 builder: (BuildContext context, AsyncSnapshot<double> snapshot) {
                                   if (snapshot.hasData) {
                                     final double amplitude = snapshot.data!;
-
+                              
                                     store.amplitudeValues.insert(0, amplitude);
                                     if (store.amplitudeValues.length > 100) {
                                       store.amplitudeValues.removeLast();
                                     }
-
+                              
                                     return WaveformView(amplitudeValues: store.amplitudeValues);
                                   }
-
-                                  return const SizedBox();
+                              
+                                  return const SizedBox.shrink();
                                 },
                               ),
                             ),
