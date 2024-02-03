@@ -8,8 +8,10 @@ class WaveformView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CustomPaint(
-      painter: WaveformPainter(amplitudeValues: amplitudeValues),
+    return RepaintBoundary(
+      child: CustomPaint(
+        painter: WaveformPainter(amplitudeValues: amplitudeValues),
+      ),
     );
   }
 }
