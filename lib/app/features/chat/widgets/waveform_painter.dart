@@ -8,7 +8,7 @@ class WaveformPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final Paint paint = Paint()
-      ..color = Colors.blue
+      ..color = Colors.grey
       ..strokeWidth = 2.0
       ..strokeCap = StrokeCap.round;
 
