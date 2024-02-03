@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math';
 
 import 'package:cached_network_image/cached_network_image.dart';
@@ -8,15 +9,18 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:intl/intl.dart';
+import 'package:record/record.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:thisdatedoesnotexist/app/core/models/message_model.dart';
 import 'package:thisdatedoesnotexist/app/core/models/user_model.dart';
 import 'package:thisdatedoesnotexist/app/features/chat/store/chat_store.dart';
 import 'package:thisdatedoesnotexist/app/features/chat/widgets/chat_bubble.dart';
 import 'package:thisdatedoesnotexist/app/features/chat/widgets/grouped_listview.dart';
+import 'package:thisdatedoesnotexist/app/features/chat/widgets/message_from_enum.dart';
 import 'package:thisdatedoesnotexist/app/features/chat/widgets/message_status_enum.dart';
 import 'package:thisdatedoesnotexist/app/features/chat/widgets/message_type_enum.dart';
 import 'package:thisdatedoesnotexist/app/features/chat/widgets/profile_drawer.dart';
+import 'package:thisdatedoesnotexist/app/features/chat/widgets/waveform_view.dart';
 import 'package:uuid/uuid.dart';
 
 class ChatPage extends StatefulWidget {
@@ -42,6 +46,8 @@ class _ChatPageState extends State<ChatPage> {
     super.initState();
     future = store.getCharacterById(widget.id);
     store.handleEndReached(widget.id);
+    store.audioRecorder = AudioRecorder();
+    store.amplitudeStreamController = StreamController<double>.broadcast();
   }
 
   @override
@@ -53,6 +59,7 @@ class _ChatPageState extends State<ChatPage> {
     store.isLoading = true;
     store.messageController.clear();
     store.messageDebounce?.cancel();
+    store.disposeRecording();
     store.hideEmojiKeyboard();
     super.dispose();
   }
@@ -187,10 +194,14 @@ class _ChatPageState extends State<ChatPage> {
                               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 5),
                               itemBuilder: (BuildContext context, int index) {
                                 return ChatBubble(
-                                  type: index.isEven ? MessageType.sender : MessageType.user,
-                                  message: 'Hello! This is a message! My index is $index',
-                                  createdAt: DateTime.now(),
-                                  status: MessageStatus.read,
+                                  message: Message(
+                                    id: uuid.v4(),
+                                    content: 'Hello! This is a message! My index is $index',
+                                    type: MessageType.text,
+                                    from: index.isEven ? MessageFrom.sender : MessageFrom.user,
+                                    createdAt: DateTime.now(),
+                                    status: MessageStatus.read,
+                                  ),
                                 );
                               },
                             ),
@@ -204,18 +215,16 @@ class _ChatPageState extends State<ChatPage> {
                             children: [
                               if (isLastMessage || !store.isSameDate(store.messages[index], store.messages[index + 1]))
                                 ChatBubble(
-                                  type: MessageType.system,
-                                  message: DateFormat('dd/MM/yyyy').format(message.createdAt!),
+                                  message: Message(
+                                    content: DateFormat('dd/MM/yyyy').format(message.createdAt!),
+                                    from: MessageFrom.system,
+                                    type: MessageType.text,
+                                    createdAt: DateTime.now(),
+                                  ),
                                   bubbleColor: Colors.black.withOpacity(0.3),
                                   textColor: Colors.white,
-                                  createdAt: DateTime.now(),
                                 ),
-                              ChatBubble(
-                                type: message.type!,
-                                message: message.text ?? '',
-                                createdAt: message.createdAt!,
-                                status: message.status ?? MessageStatus.sending,
-                              ),
+                              ChatBubble(message: message),
                             ],
                           );
                         },
@@ -233,31 +242,83 @@ class _ChatPageState extends State<ChatPage> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Flexible(
-                          child: TextField(
-                            controller: store.messageController,
-                            textCapitalization: TextCapitalization.sentences,
-                            minLines: 1,
-                            maxLines: 5,
-                            onChanged: store.onMessageFieldChanged,
-                            keyboardType: TextInputType.multiline,
-                            onTap: store.hideEmojiKeyboard,
-                            decoration: InputDecoration(
-                              fillColor: const Color(0xFFf4f4f9),
-                              hintText: 'Message...',
-                              suffixIcon: IconButton(
-                                onPressed: store.toggleEmojiKeyboard,
-                                icon: const Icon(
-                                  Icons.emoji_emotions,
+                        if (store.isRecording || store.recordedAudio != null)
+                          Expanded(
+                            child: Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(30),
+                                color: const Color(0xFFf4f4f9),
+                              ),
+                              child: StreamBuilder(
+                                stream: store.amplitudeStreamController!.stream,
+                                builder: (BuildContext context, AsyncSnapshot<double> snapshot) {
+                                  if (snapshot.hasData) {
+                                    final double amplitude = snapshot.data!;
+                              
+                                    store.amplitudeValues.insert(0, amplitude);
+                                    if (store.amplitudeValues.length > 100) {
+                                      store.amplitudeValues.removeLast();
+                                    }
+                              
+                                    return WaveformView(amplitudeValues: store.amplitudeValues);
+                                  }
+                              
+                                  return const SizedBox.shrink();
+                                },
+                              ),
+                            ),
+                          )
+                        else
+                          Flexible(
+                            child: TextField(
+                              controller: store.messageController,
+                              textCapitalization: TextCapitalization.sentences,
+                              minLines: 1,
+                              maxLines: 5,
+                              onChanged: store.onMessageFieldChanged,
+                              keyboardType: TextInputType.multiline,
+                              onTap: store.hideEmojiKeyboard,
+                              decoration: InputDecoration(
+                                fillColor: const Color(0xFFf4f4f9),
+                                hintText: 'Message...',
+                                suffixIcon: IconButton(
+                                  onPressed: store.toggleEmojiKeyboard,
+                                  icon: const Icon(
+                                    Icons.emoji_emotions,
+                                  ),
                                 ),
                               ),
                             ),
                           ),
-                        ),
                         Observer(
-                          builder: (_) => IconButton(
-                            onPressed: store.allowSendMessage ? store.onSendTap : null,
-                            icon: const Icon(Icons.send),
+                          builder: (_) => Row(
+                            children: [
+                              if (store.recordedAudio != null)
+                                IconButton(
+                                  onPressed: store.refreshRecording,
+                                  icon: const Icon(
+                                    Icons.close,
+                                  ),
+                                ),
+                              Observer(
+                                builder: (_) => IconButton(
+                                  onPressed: store.allowSendMessage
+                                      ? () async {
+                                          if (store.allowAudioMessages && store.textMessage.isEmpty && store.recordedAudio == null) {
+                                            await store.recordOrStop();
+                                          } else {
+                                            await store.onSendTap(store.recordedAudio != null ? MessageType.audio : MessageType.text);
+                                          }
+                                        }
+                                      : null,
+                                  icon: store.textMessage.isNotEmpty || store.recordedAudio != null || !store.allowAudioMessages
+                                      ? const Icon(Icons.send)
+                                      : store.isRecording
+                                          ? const Icon(Icons.stop)
+                                          : const Icon(Icons.mic),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ],

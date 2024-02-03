@@ -1,23 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:thisdatedoesnotexist/app/core/models/message_model.dart';
 import 'package:thisdatedoesnotexist/app/core/util.dart';
-import 'package:thisdatedoesnotexist/app/features/chat/widgets/message_status_enum.dart';
-import 'package:thisdatedoesnotexist/app/features/chat/widgets/message_type_enum.dart';
+import 'package:thisdatedoesnotexist/app/features/chat/widgets/message_from_enum.dart';
 
 class EmojiMessageBubble extends StatelessWidget {
   const EmojiMessageBubble({
     super.key,
     required this.message,
-    required this.createdAt,
-    required this.type,
-    required this.status,
     required this.fontSize,
   });
 
-  final String message;
-  final DateTime createdAt;
-  final MessageType type;
-  final MessageStatus status;
+  final Message message;
   final double fontSize;
 
   @override
@@ -36,12 +30,12 @@ class EmojiMessageBubble extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-            message,
+            message.content,
             style: TextStyle(
               fontSize: fontSize,
             ),
           ),
-          if (type != MessageType.system)
+          if (message.from != MessageFrom.system)
             Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               mainAxisSize: MainAxisSize.min,
@@ -51,18 +45,18 @@ class EmojiMessageBubble extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      DateFormat.Hm().format(createdAt.toLocal()),
+                      DateFormat.Hm().format(message.createdAt!.toLocal()),
                       style: const TextStyle(
                         fontSize: 12,
                       ),
                     ),
-                    if (type == MessageType.user)
+                    if (message.from == MessageFrom.user)
                       Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           const SizedBox(width: 5),
                           Icon(
-                            status.toIconData(),
+                            message.status!.toIconData(),
                             size: 14,
                           ),
                         ],

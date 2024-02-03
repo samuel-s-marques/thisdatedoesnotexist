@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:intl/intl.dart';
 import 'package:thisdatedoesnotexist/app/core/models/message_model.dart';
 import 'package:thisdatedoesnotexist/app/core/util.dart';
 import 'package:thisdatedoesnotexist/app/features/chat/widgets/message_from_enum.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:voice_message_package/voice_message_package.dart';
 
-class TextMessageBubble extends StatelessWidget {
-  const TextMessageBubble({
+class AudioMessageBubble extends StatefulWidget {
+  const AudioMessageBubble({
     super.key,
     required this.bubbleColor,
     required this.selectionColor,
@@ -23,6 +22,33 @@ class TextMessageBubble extends StatelessWidget {
   final Message message;
 
   @override
+  State<AudioMessageBubble> createState() => _AudioMessageBubbleState();
+}
+
+class _AudioMessageBubbleState extends State<AudioMessageBubble> {
+  late VoiceController controller;
+
+  @override
+  void initState() {
+    super.initState();
+    controller = VoiceController(
+      audioSrc: widget.message.location!,
+      maxDuration: widget.message.duration ?? const Duration(seconds: 10),
+      isFile: widget.message.location!.contains('http') == false,
+      onComplete: () {},
+      onPause: () {},
+      onPlaying: () {},
+      onError: (error) {},
+    );
+  }
+
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Container(
       constraints: BoxConstraints(
@@ -30,39 +56,26 @@ class TextMessageBubble extends StatelessWidget {
       ),
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
-        color: bubbleColor,
+        color: widget.bubbleColor,
         borderRadius: BorderRadius.circular(10),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.end,
         mainAxisSize: MainAxisSize.min,
         children: [
-          Theme(
-            data: ThemeData(
-              textSelectionTheme: TextSelectionThemeData(
-                cursorColor: selectionColor,
-                selectionColor: selectionColor,
-                selectionHandleColor: selectionColor,
-              ),
+          VoiceMessageView(
+            controller: controller,
+            backgroundColor: widget.bubbleColor,
+            cornerRadius: 10,
+            innerPadding: 0,
+            counterTextStyle: TextStyle(
+              fontSize: 12,
+              color: widget.textColor,
             ),
-            child: SelectableLinkify(
-              text: message.content,
-              onOpen: (LinkableElement link) async {
-                if (await canLaunchUrl(Uri.parse(link.url))) {
-                  await launchUrl(Uri.parse(link.url));
-                }
-              },
-              style: TextStyle(
-                color: textColor,
-              ),
-              linkStyle: TextStyle(
-                color: linkColor,
-                decoration: TextDecoration.underline,
-                decorationColor: linkColor,
-              ),
-            ),
+            activeSliderColor: widget.selectionColor,
+            circlesColor: widget.selectionColor,
           ),
-          if (message.from != MessageFrom.system)
+          if (widget.message.from != MessageFrom.system)
             Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               mainAxisSize: MainAxisSize.min,
@@ -72,21 +85,21 @@ class TextMessageBubble extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      DateFormat.Hm().format(message.createdAt!.toLocal()),
+                      DateFormat.Hm().format(widget.message.createdAt!.toLocal()),
                       style: TextStyle(
-                        color: textColor.withOpacity(0.5),
+                        color: widget.textColor.withOpacity(0.5),
                         fontSize: 12,
                       ),
                     ),
-                    if (message.from == MessageFrom.user)
+                    if (widget.message.from == MessageFrom.user)
                       Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           const SizedBox(width: 5),
                           Icon(
-                            message.status!.toIconData(),
+                            widget.message.status!.toIconData(),
                             size: 14,
-                            color: textColor.withOpacity(0.5),
+                            color: widget.textColor.withOpacity(0.5),
                           ),
                         ],
                       )

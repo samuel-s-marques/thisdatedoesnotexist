@@ -22,6 +22,7 @@ class _ChatListPageState extends State<ChatListPage> {
   void initState() {
     super.initState();
     store.initializeWebSocket();
+    store.getChatSettings();
 
     store.chatListScrollController.addListener(() {
       if (store.chatListScrollController.position.pixels == store.chatListScrollController.position.maxScrollExtent) {
