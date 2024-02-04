@@ -339,21 +339,25 @@ class _HomePageState extends State<HomePage> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: [
-                              IconButton(
-                                onPressed: !store.allowSwiping ? null : () => store.cardSwiperController.swipeLeft(),
-                                color: Colors.white,
-                                style: IconButton.styleFrom(
-                                  backgroundColor: Colors.red,
+                              Observer(
+                                builder: (_) => IconButton(
+                                  onPressed: !store.allowSwiping ? null : () => store.cardSwiperController.swipeLeft(),
+                                  color: Colors.white,
+                                  style: IconButton.styleFrom(
+                                    backgroundColor: Colors.red,
+                                  ),
+                                  icon: const Icon(Icons.close),
                                 ),
-                                icon: const Icon(Icons.close),
                               ),
-                              IconButton(
-                                onPressed: !store.allowSwiping ? null : () => store.cardSwiperController.swipeRight(),
-                                color: Colors.white,
-                                style: IconButton.styleFrom(
-                                  backgroundColor: Colors.green,
+                              Observer(
+                                builder: (_) => IconButton(
+                                  onPressed: !store.allowSwiping ? null : () => store.cardSwiperController.swipeRight(),
+                                  color: Colors.white,
+                                  style: IconButton.styleFrom(
+                                    backgroundColor: Colors.green,
+                                  ),
+                                  icon: const Icon(Icons.check),
                                 ),
-                                icon: const Icon(Icons.check),
                               ),
                             ],
                           ),
