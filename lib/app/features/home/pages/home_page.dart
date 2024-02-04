@@ -34,8 +34,7 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
 
-    UserModel(uid: store.authService.getUser().uid).getSwipes().then((swipes) => store.setSwipes(swipes));
-
+    store.getAvailableSwipes();
     store.setIndex(0);
     store.getReligions();
     store.getPoliticalViews();
@@ -301,7 +300,7 @@ class _HomePageState extends State<HomePage> {
                   future: store.getTodayCards(),
                   builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
                     if (snapshot.hasData) {
-                      if (snapshot.data == false || store.swipes == 0) {
+                      if (snapshot.data == false) {
                         return const Center(
                           child: Text('No more cards for today!'),
                         );
@@ -310,48 +309,55 @@ class _HomePageState extends State<HomePage> {
                       return Column(
                         children: [
                           Flexible(
-                            child: AppinioSwiper(
-                              cardCount: store.cards.length,
-                              swipeOptions: const SwipeOptions.only(
-                                left: true,
-                                right: true,
-                              ),
-                              allowUnSwipe: false,
-                              allowUnlimitedUnSwipe: false,
-                              backgroundCardCount: 0,
-                              onSwipeEnd: (int index, int direction, SwiperActivity activity) => store.onSwipe(index, direction, activity, context),
-                              controller: store.cardSwiperController,
-                              cardBuilder: (BuildContext context, int index) {
-                                final UserModel character = store.cards[index];
+                            child: Observer(
+                              builder: (_) => AppinioSwiper(
+                                cardCount: store.cards.length,
+                                swipeOptions: const SwipeOptions.only(
+                                  left: true,
+                                  right: true,
+                                ),
+                                isDisabled: !store.allowSwiping,
+                                allowUnSwipe: false,
+                                allowUnlimitedUnSwipe: false,
+                                backgroundCardCount: 0,
+                                onSwipeEnd: (int index, int direction, SwiperActivity activity) => store.onSwipe(index, direction, activity, context),
+                                controller: store.cardSwiperController,
+                                cardBuilder: (BuildContext context, int index) {
+                                  final UserModel character = store.cards[index];
 
-                                return CardWidget(
-                                  homeStore: store,
-                                  dio: store.dio,
-                                  character: character,
-                                  imageUrl: '${store.server}/uploads/characters/${character.uid}.png',
-                                );
-                              },
+                                  return CardWidget(
+                                    homeStore: store,
+                                    dio: store.dio,
+                                    character: character,
+                                    imageUrl: '${store.server}/uploads/characters/${character.uid}.png',
+                                  );
+                                },
+                              ),
                             ),
                           ),
                           const SizedBox(height: 15),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: [
-                              IconButton(
-                                onPressed: () => store.cardSwiperController.swipeLeft(),
-                                color: Colors.white,
-                                style: IconButton.styleFrom(
-                                  backgroundColor: Colors.red,
+                              Observer(
+                                builder: (_) => IconButton(
+                                  onPressed: !store.allowSwiping ? null : () => store.cardSwiperController.swipeLeft(),
+                                  color: Colors.white,
+                                  style: IconButton.styleFrom(
+                                    backgroundColor: Colors.red,
+                                  ),
+                                  icon: const Icon(Icons.close),
                                 ),
-                                icon: const Icon(Icons.close),
                               ),
-                              IconButton(
-                                onPressed: () => store.cardSwiperController.swipeRight(),
-                                color: Colors.white,
-                                style: IconButton.styleFrom(
-                                  backgroundColor: Colors.green,
+                              Observer(
+                                builder: (_) => IconButton(
+                                  onPressed: !store.allowSwiping ? null : () => store.cardSwiperController.swipeRight(),
+                                  color: Colors.white,
+                                  style: IconButton.styleFrom(
+                                    backgroundColor: Colors.green,
+                                  ),
+                                  icon: const Icon(Icons.check),
                                 ),
-                                icon: const Icon(Icons.check),
                               ),
                             ],
                           ),

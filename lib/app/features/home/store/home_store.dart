@@ -26,12 +26,15 @@ abstract class HomeStoreBase with Store {
   SharedPreferences? prefs;
 
   @observable
-  int swipes = 20;
+  int? swipes;
 
   List<Widget> pages = [
     const ChatModule(),
     const ProfileModule(),
   ];
+
+  @computed
+  bool get allowSwiping => swipes != null && swipes! > 0;
 
   @observable
   ObservableList<UserModel> cards = ObservableList();
@@ -192,6 +195,22 @@ abstract class HomeStoreBase with Store {
     ageValues = values;
   }
 
+  @action
+  Future<void> getAvailableSwipes() async {
+    authenticatedUser ??= authService.getUser();
+    final Response<dynamic> response = await dio.get(
+      '$server/api/users/swipes',
+      options: DioOptions(
+        cache: false,
+        headers: {'Authorization': 'Bearer ${await authenticatedUser!.getIdToken()}', 'Content-Type': 'application/json'},
+      ),
+    );
+
+    if (response.statusCode == 200) {
+      setSwipes(response.data['available_swipes'] ?? 0);
+    }
+  }
+
   Future<bool> getPreferences() async {
     authenticatedUser ??= authService.getUser();
     final Response<dynamic> response = await dio.get('$server/api/preferences/${authenticatedUser?.uid}', options: DioOptions());
@@ -318,9 +337,13 @@ abstract class HomeStoreBase with Store {
   ) async {
     authenticatedUser ??= authService.getUser();
 
+    if (swipes == null) {
+      return;
+    }
+
     switch (activity) {
       case Swipe():
-        if (swipes > 0) {
+        if (swipes! > 0) {
           if (activity.direction == AxisDirection.right || activity.direction == AxisDirection.left) {
             try {
               final String direction = activity.direction == AxisDirection.right ? 'right' : 'left';
@@ -341,14 +364,13 @@ abstract class HomeStoreBase with Store {
               );
 
               if (response.statusCode == 200) {
-                swipes--;
+                setSwipes(swipes! - 1);
 
                 if (currentIndex != null && currentIndex == cards.length - 2) {
                   if (meta['current_page'] == meta['last_page']) {
                     return;
                   }
 
-                  currentPage++;
                   await getTodayCards();
                 }
               } else {
@@ -399,15 +421,11 @@ abstract class HomeStoreBase with Store {
   }
 
   @observable
-  int currentPage = 1;
-
-  @observable
   ObservableMap<String, dynamic> meta = ObservableMap();
 
   @action
   Future<bool?> getTodayCards() async {
     if (selectedIndex != 0) {
-      currentPage = 1;
       return null;
     }
 
@@ -416,7 +434,7 @@ abstract class HomeStoreBase with Store {
     }
 
     if (gotPreferences) {
-      String url = '$server/api/characters?uid=${authenticatedUser?.uid}&min_age=${ageValues.start.round()}&max_age=${ageValues.end.round()}&page=$currentPage';
+      String url = '$server/api/characters?uid=${authenticatedUser?.uid}&min_age=${ageValues.start.round()}&max_age=${ageValues.end.round()}';
 
       if (selectedPoliticalViewPreferences.isNotEmpty) {
         final List<String?> politicalViews = selectedPoliticalViewPreferences.map((e) => e.name).toList();
@@ -475,6 +493,10 @@ abstract class HomeStoreBase with Store {
   @action
   void setIndex(int index) {
     selectedIndex = index;
+
+    if (index == 0) {
+      getAvailableSwipes();
+    }
   }
 
   @action
