@@ -1,22 +1,23 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter_modular/flutter_modular.dart';
 import 'package:intl/intl.dart';
 import 'package:mobx/mobx.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:record/record.dart';
 import 'package:thisdatedoesnotexist/app/core/models/message_model.dart';
+import 'package:thisdatedoesnotexist/app/core/models/service_return_model.dart';
 import 'package:thisdatedoesnotexist/app/core/models/user_model.dart';
-import 'package:thisdatedoesnotexist/app/core/services/auth_service.dart';
 import 'package:thisdatedoesnotexist/app/core/services/cache_service.dart';
-import 'package:thisdatedoesnotexist/app/core/services/dio_service.dart';
+import 'package:thisdatedoesnotexist/app/core/services/report_service.dart';
 import 'package:thisdatedoesnotexist/app/core/util.dart';
 import 'package:thisdatedoesnotexist/app/features/chat/models/chat_model.dart';
+import 'package:thisdatedoesnotexist/app/features/chat/services/chat_service.dart';
 import 'package:thisdatedoesnotexist/app/features/chat/widgets/chat_state_enum.dart';
 import 'package:thisdatedoesnotexist/app/features/chat/widgets/message_from_enum.dart';
 import 'package:thisdatedoesnotexist/app/features/chat/widgets/message_status_enum.dart';
@@ -29,12 +30,12 @@ part 'chat_store.g.dart';
 class ChatStore = ChatStoreBase with _$ChatStore;
 
 abstract class ChatStoreBase with Store {
-  AuthService authService = AuthService();
   User? authenticatedUser;
   Uuid uuid = const Uuid();
+  ChatService service = Modular.get();
+  ReportService reportService = Modular.get();
   String server = const String.fromEnvironment('SERVER');
   String wssServer = const String.fromEnvironment('WSS_SERVER');
-  final DioService dio = DioService();
   WebSocketChannel? channel;
   BuildContext? buildContext;
   bool requestedChats = false;
@@ -272,9 +273,7 @@ abstract class ChatStoreBase with Store {
       return;
     }
 
-    print('Trying to send audio message');
     final Uint8List audioBytes = await File(recordedAudio!).readAsBytes();
-    print('Read bytes');
 
     final Message newMessage = Message(
       id: uuid.v4(),
@@ -340,18 +339,13 @@ abstract class ChatStoreBase with Store {
   Future<void> recordOrStop() async {
     audioRecorder ??= AudioRecorder();
 
-    print('Recording: $isRecording');
-    print('hasPermission: ${await audioRecorder!.hasPermission()}');
-
     if (await audioRecorder!.hasPermission()) {
       try {
         if (isRecording) {
           recordedAudio = await audioRecorder!.stop();
-          print(recordedAudio);
           isRecording = false;
           audioDuration?.cancel();
           amplitudeTimer?.cancel();
-          print('Stop recording');
         } else {
           final Directory tempDirectory = await getTemporaryDirectory();
 
@@ -370,7 +364,6 @@ abstract class ChatStoreBase with Store {
 
           startAudioDurationTimer();
           _startAmplitudeStream();
-          print('Start recording');
         }
       } catch (e) {
         if (kDebugMode) {
@@ -399,8 +392,6 @@ abstract class ChatStoreBase with Store {
   }
 
   Future<void> authenticateUser() async {
-    authenticatedUser ??= authService.getUser();
-
     channel!.sink.add(
       jsonEncode({
         'type': 'auth',
@@ -544,11 +535,11 @@ abstract class ChatStoreBase with Store {
   }
 
   @action
-  Future<UserModel?> getCharacterById(String id) async {
-    final Response<dynamic> response = await dio.get('$server/api/characters/$id', options: DioOptions());
+  Future<UserModel?> getChat(String id) async {
+    final ServiceReturn response = await service.getChat(id);
 
-    if (response.statusCode == 200) {
-      character = UserModel.fromMap(response.data);
+    if (response.success) {
+      character = response.data;
 
       if (await cacheService.getData('${character?.uid}-chat') != null) {
         messageController.text = await cacheService.getData('${character?.uid}-chat');
@@ -561,12 +552,9 @@ abstract class ChatStoreBase with Store {
 
   @action
   Future<void> getChatSettings() async {
-    final Response<dynamic> response = await dio.get(
-      '$server/api/chats/settings',
-      options: DioOptions(cache: false),
-    );
+    final ServiceReturn response = await service.getChatSettings();
 
-    if (response.statusCode == 200) {
+    if (response.success) {
       allowAudioMessages = response.data['audio'] ?? false;
     }
   }
@@ -574,24 +562,10 @@ abstract class ChatStoreBase with Store {
   @action
   Future<List<Message>> getMessages(String id, int page, void Function(int) updateAvailablePages) async {
     final List<Message> messages = [];
-    final Response<dynamic> response = await dio.get(
-      '$server/api/messages?uid=$id&page=$page',
-      options: DioOptions(
-        cache: false,
-        headers: {
-          'Authorization': 'Bearer ${await authenticatedUser!.getIdToken()}',
-          'Content-Type': 'application/json',
-        },
-      ),
-    );
+    final ServiceReturn response = await service.getMessages(id, page, updateAvailablePages);
 
-    if (response.statusCode == 200) {
-      final int totalPages = response.data['meta']['last_page'] - page;
-      final List<dynamic> data = response.data['data'];
-
-      updateAvailablePages(totalPages);
-
-      for (final Map<String, dynamic> item in data) {
+    if (response.success) {
+      for (final Map<String, dynamic> item in response.data) {
         final String id = item['id'].toString();
         final String content = item['content'];
         final DateTime createdAt = DateTime.parse(item['created_at']);
@@ -615,123 +589,12 @@ abstract class ChatStoreBase with Store {
         messages.add(message);
       }
     } else {
-      errorMessage = response.data['error'] ?? 'Something went wrong, please try again later';
+      errorMessage = response.data['details'] ?? 'Something went wrong, please try again later';
     }
 
     return messages;
   }
 
   @action
-  Future<void> openReportBottomSheet({
-    required BuildContext context,
-  }) {
-    return showModalBottomSheet(
-      context: context,
-      enableDrag: true,
-      useSafeArea: true,
-      showDragHandle: true,
-      builder: (BuildContext context) {
-        return ListView(
-          children: [
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 24),
-              child: Text(
-                'Report',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-            const SizedBox(height: 20),
-            ListTile(
-              contentPadding: const EdgeInsets.symmetric(horizontal: 24),
-              title: const Text('Inappropriate content'),
-              leading: const Icon(Icons.no_adult_content_outlined),
-              onTap: () async => sendReport(
-                context: context,
-                type: 'inappropriate content',
-              ),
-            ),
-            const SizedBox(height: 10),
-            ListTile(
-              contentPadding: const EdgeInsets.symmetric(horizontal: 24),
-              title: const Text('Bug'),
-              leading: const Icon(Icons.bug_report_outlined),
-              onTap: () async => sendReport(context: context, type: 'bug'),
-            ),
-            const SizedBox(height: 10),
-            ListTile(
-              contentPadding: const EdgeInsets.symmetric(horizontal: 24),
-              title: const Text('Other'),
-              leading: const Icon(Icons.report_outlined),
-              onTap: () {
-                Navigator.pop(context);
-                final TextEditingController _controller = TextEditingController();
-
-                showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return AlertDialog(
-                      title: const Text('Report'),
-                      actions: [
-                        TextButton(
-                          onPressed: () async => sendReport(
-                            context: context,
-                            type: 'other',
-                            description: _controller.text.trim(),
-                          ),
-                          child: const Text('Send Report'),
-                        ),
-                      ],
-                      content: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text('Please describe the issue:'),
-                          const SizedBox(height: 10),
-                          TextField(
-                            controller: _controller,
-                            textCapitalization: TextCapitalization.sentences,
-                            decoration: const InputDecoration(
-                              hintText: 'Description',
-                            ),
-                          ),
-                        ],
-                      ),
-                    );
-                  },
-                );
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  @action
-  Future<void> sendReport({
-    required BuildContext context,
-    required String type,
-    String? description,
-  }) async {
-    try {
-      final Response<dynamic> response = await dio.post('$server/api/reports', data: {
-        'user_uid': authenticatedUser!.uid,
-        'character_uid': character!.uid,
-        'type': type,
-      });
-
-      if (response.statusCode == 200) {
-        context.showSnackBarSuccess(message: 'Report sent successfully');
-      } else {
-        context.showSnackBarError(message: response.data['error'] ?? 'Something went wrong, please try again later');
-      }
-
-      Navigator.pop(context);
-    } catch (e) {
-      context.showSnackBarError(message: 'Something went wrong, please try again later');
-    }
-  }
+  Future<void> report(BuildContext context) => reportService.report(context: context, characterUid: character?.uid ?? '');
 }
