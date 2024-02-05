@@ -23,10 +23,11 @@ class _HomePageState extends State<HomePage> {
   HomeStore store = HomeStore();
   NotificationStore notificationStore = Modular.get<NotificationStore>();
   ConnectivityStore connectivityStore = Modular.get<ConnectivityStore>();
+  AppinioSwiperController? controller;
 
   @override
   void dispose() {
-    store.cardSwiperController.dispose();
+    controller?.dispose();
     super.dispose();
   }
 
@@ -34,13 +35,10 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
 
+    controller = AppinioSwiperController();
     store.getAvailableSwipes();
     store.setIndex(0);
-    store.getReligions();
-    store.getPoliticalViews();
-    store.getRelationshipGoals();
-    store.getBodyTypes();
-    store.getSexes();
+    store.getData();
   }
 
   @override
@@ -122,9 +120,10 @@ class _HomePageState extends State<HomePage> {
                                         return FilterChip(
                                           label: Text(store.sexesMap[sex.name]!.capitalize()),
                                           selected: isSelected,
-                                          onSelected: (bool selected) => store.selectSexPreference(
+                                          onSelected: (bool selected) => store.selectPreference(
                                             selected: selected,
-                                            sex: sex,
+                                            list: store.selectedSexPreferences,
+                                            preference: sex,
                                           ),
                                         );
                                       }).toList(),
@@ -185,9 +184,10 @@ class _HomePageState extends State<HomePage> {
                                         return FilterChip(
                                           label: Text(goal.name!.capitalize()),
                                           selected: isSelected,
-                                          onSelected: (bool selected) => store.selectRelationshipGoalPreference(
+                                          onSelected: (bool selected) => store.selectPreference(
                                             selected: selected,
-                                            goal: goal,
+                                            list: store.selectedRelationshipGoalPreferences,
+                                            preference: goal,
                                           ),
                                         );
                                       }).toList(),
@@ -207,9 +207,10 @@ class _HomePageState extends State<HomePage> {
                                         return FilterChip(
                                           label: Text(view.name!.capitalize()),
                                           selected: isSelected,
-                                          onSelected: (bool selected) => store.selectPoliticalViewPreference(
+                                          onSelected: (bool selected) => store.selectPreference(
                                             selected: selected,
-                                            view: view,
+                                            list: store.selectedPoliticalViewPreferences,
+                                            preference: view,
                                           ),
                                         );
                                       }).toList(),
@@ -229,9 +230,10 @@ class _HomePageState extends State<HomePage> {
                                         return FilterChip(
                                           label: Text(religion.name!.capitalize()),
                                           selected: isSelected,
-                                          onSelected: (bool selected) => store.selectReligionPreference(
+                                          onSelected: (bool selected) => store.selectPreference(
                                             selected: selected,
-                                            religion: religion,
+                                            list: store.selectedReligionPreferences,
+                                            preference: religion,
                                           ),
                                         );
                                       }).toList(),
@@ -250,9 +252,10 @@ class _HomePageState extends State<HomePage> {
                                         return FilterChip(
                                           label: Text(bodyType.name!.capitalize()),
                                           selected: isSelected,
-                                          onSelected: (bool selected) => store.selectBodyTypePreference(
+                                          onSelected: (bool selected) => store.selectPreference(
                                             selected: selected,
-                                            bodyType: bodyType,
+                                            list: store.selectedBodyTypePreferences,
+                                            preference: bodyType,
                                           ),
                                         );
                                       }).toList(),
@@ -321,13 +324,12 @@ class _HomePageState extends State<HomePage> {
                                 allowUnlimitedUnSwipe: false,
                                 backgroundCardCount: 0,
                                 onSwipeEnd: (int index, int direction, SwiperActivity activity) => store.onSwipe(index, direction, activity, context),
-                                controller: store.cardSwiperController,
+                                controller: controller,
                                 cardBuilder: (BuildContext context, int index) {
                                   final UserModel character = store.cards[index];
 
                                   return CardWidget(
                                     homeStore: store,
-                                    dio: store.dio,
                                     character: character,
                                     imageUrl: '${store.server}/uploads/characters/${character.uid}.png',
                                   );
@@ -341,7 +343,7 @@ class _HomePageState extends State<HomePage> {
                             children: [
                               Observer(
                                 builder: (_) => IconButton(
-                                  onPressed: !store.allowSwiping ? null : () => store.cardSwiperController.swipeLeft(),
+                                  onPressed: !store.allowSwiping ? null : () => controller!.swipeLeft(),
                                   color: Colors.white,
                                   style: IconButton.styleFrom(
                                     backgroundColor: Colors.red,
@@ -351,7 +353,7 @@ class _HomePageState extends State<HomePage> {
                               ),
                               Observer(
                                 builder: (_) => IconButton(
-                                  onPressed: !store.allowSwiping ? null : () => store.cardSwiperController.swipeRight(),
+                                  onPressed: !store.allowSwiping ? null : () => controller!.swipeRight(),
                                   color: Colors.white,
                                   style: IconButton.styleFrom(
                                     backgroundColor: Colors.green,
