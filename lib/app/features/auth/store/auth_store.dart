@@ -1,19 +1,21 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:mobx/mobx.dart';
-import 'package:thisdatedoesnotexist/app/core/enum/auth_status_enum.dart';
 import 'package:thisdatedoesnotexist/app/core/exceptions/auth_exception.dart';
+import 'package:thisdatedoesnotexist/app/core/models/service_return_model.dart';
 import 'package:thisdatedoesnotexist/app/core/models/user_model.dart';
-import 'package:thisdatedoesnotexist/app/core/services/auth_service.dart';
-import 'package:thisdatedoesnotexist/app/core/services/database_service.dart';
 import 'package:thisdatedoesnotexist/app/core/util.dart';
+import 'package:thisdatedoesnotexist/app/features/auth/services/auth_service.dart';
+import 'package:thisdatedoesnotexist/app/features/auth/services/database_service.dart';
 
 part 'auth_store.g.dart';
 
 class AuthStore = AuthStoreBase with _$AuthStore;
 
 abstract class AuthStoreBase with Store {
-  AuthService authService = AuthService();
+  AuthService service = Modular.get();
+  DatabaseService databaseService = Modular.get();
+
   late TextEditingController emailController;
   late TextEditingController passwordController;
   late TextEditingController repeatPasswordController;
@@ -31,16 +33,16 @@ abstract class AuthStoreBase with Store {
   Future<void> signUp(BuildContext context) async {
     isLoading = true;
 
-    final AuthStatus status = await authService.createAccount(
+    final ServiceReturn response = await service.createAccount(
       email: emailController.text,
       password: passwordController.text,
     );
 
-    if (status == AuthStatus.successful) {
+    if (response.success) {
       context.showSnackBarSuccess(message: 'Signed up with e-mail and password!');
       await Modular.to.pushReplacementNamed('/onboarding/');
     } else {
-      final String error = AuthExceptionHandler.generateErrorMessage(status);
+      final String error = AuthExceptionHandler.generateErrorMessage(response.data);
       context.showSnackBarError(message: error);
     }
 
@@ -51,14 +53,15 @@ abstract class AuthStoreBase with Store {
   Future<void> signIn(BuildContext context) async {
     isLoading = true;
 
-    final AuthStatus status = await authService.login(
+    final ServiceReturn response = await service.login(
       email: emailController.text,
       password: passwordController.text,
     );
-    final DatabaseService databaseService = DatabaseService();
 
-    if (status == AuthStatus.successful) {
-      final UserModel? user = await databaseService.getUser();
+    if (response.success) {
+      final ServiceReturn dbResponse = await databaseService.getUser();
+      final UserModel? user = dbResponse.data;
+
       if (user == null || user.active == false) {
         await Modular.to.pushReplacementNamed('/onboarding/');
       } else {
@@ -67,7 +70,7 @@ abstract class AuthStoreBase with Store {
 
       context.showSnackBarSuccess(message: 'Signed in with e-mail and password!');
     } else {
-      final String error = AuthExceptionHandler.generateErrorMessage(status);
+      final String error = AuthExceptionHandler.generateErrorMessage(response.data);
       context.showSnackBarError(message: error);
     }
 
@@ -78,11 +81,11 @@ abstract class AuthStoreBase with Store {
   Future<void> signInWithGoogle(BuildContext context) async {
     isLoading = true;
 
-    final AuthStatus status = await authService.loginWithGoogle();
-    final DatabaseService databaseService = DatabaseService();
+    final ServiceReturn response = await service.loginWithGoogle();
 
-    if (status == AuthStatus.successful) {
-      final UserModel? user = await databaseService.getUser();
+    if (response.success) {
+      final ServiceReturn dbResponse = await databaseService.getUser();
+      final UserModel? user = dbResponse.data;
 
       if (user == null || user.active == false) {
         await Modular.to.pushReplacementNamed('/onboarding/');
@@ -92,7 +95,7 @@ abstract class AuthStoreBase with Store {
 
       context.showSnackBarSuccess(message: 'Signed in with Google!');
     } else {
-      final String error = AuthExceptionHandler.generateErrorMessage(status);
+      final String error = AuthExceptionHandler.generateErrorMessage(response.data);
       context.showSnackBarError(message: error);
     }
 
@@ -106,26 +109,25 @@ abstract class AuthStoreBase with Store {
   Future<void> forgotPassword(BuildContext context) async {
     isLoading = true;
 
-    final AuthStatus status = await authService.resetPassword(email: emailController.text);
+    final ServiceReturn response = await service.resetPassword(email: emailController.text);
 
-    if (status == AuthStatus.successful) {
+    if (response.success) {
       context.showSnackBarSuccess(message: 'Sent reset password e-mail!');
     } else {
-      final String error = AuthExceptionHandler.generateErrorMessage(status);
+      final String error = AuthExceptionHandler.generateErrorMessage(response.data);
       context.showSnackBarError(message: error);
     }
 
     isLoading = false;
   }
 
-  Future<bool> checkLogin() async {
-    final DatabaseService databaseService = DatabaseService();
-    final UserModel? user = await databaseService.getUser();
+  Future<void> checkAuth() async {
+    final bool isAuthenticated = await service.isAuthenticated();
 
-    if (user != null && user.active!) {
-      return true;
+    if (isAuthenticated) {
+      await Modular.to.pushReplacementNamed('/home/');
+    } else {
+      await Modular.to.pushReplacementNamed('/login');
     }
-
-    return false;
   }
 }

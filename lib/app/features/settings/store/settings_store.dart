@@ -1,24 +1,27 @@
+import 'dart:io';
+import 'dart:typed_data';
+
 import 'package:dio/dio.dart';
+import 'package:feedback/feedback.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_modular/flutter_modular.dart';
 import 'package:intl/intl.dart';
 import 'package:mobx/mobx.dart';
-import 'package:thisdatedoesnotexist/app/core/enum/auth_status_enum.dart';
-import 'package:thisdatedoesnotexist/app/core/services/auth_service.dart';
+import 'package:path_provider/path_provider.dart' as path_provider;
+import 'package:thisdatedoesnotexist/app/core/models/service_return_model.dart';
 import 'package:thisdatedoesnotexist/app/core/services/cache_service.dart';
-import 'package:thisdatedoesnotexist/app/core/services/dio_service.dart';
 import 'package:thisdatedoesnotexist/app/core/util.dart';
+import 'package:thisdatedoesnotexist/app/features/settings/services/settings_service.dart';
 
 part 'settings_store.g.dart';
 
 class SettingsStore = SettingsStoreBase with _$SettingsStore;
 
 abstract class SettingsStoreBase with Store {
-  AuthService authService = AuthService();
-  User? authenticatedUser;
-  DioService dio = DioService();
   String server = const String.fromEnvironment('SERVER');
   final DateFormat dateFormat = DateFormat('HH:mm:ss dd/MM/yyyy');
+  final SettingsService service = Modular.get();
 
   // TODO: move to JSON file
   Map<String, String> faq = {
@@ -59,9 +62,36 @@ abstract class SettingsStoreBase with Store {
   }
 
   @action
+  Future<void> saveFeedback(UserFeedback feedback, BuildContext context) async {
+    try {
+      final Directory directory = await path_provider.getTemporaryDirectory();
+      final Uint8List screenshot = feedback.screenshot;
+      await File('${directory.path}/screenshot.png').writeAsBytes(screenshot);
+
+      final ServiceReturn response = await service.saveFeedback(
+        text: feedback.text,
+        screenshot: await MultipartFile.fromFile(
+          '${directory.path}/screenshot.png',
+          filename: 'screenshot.png',
+        ),
+      );
+
+      if (response.success) {
+        context.showSnackBarSuccess(message: 'Feedback sent successfully.');
+      } else {
+        context.showSnackBarError(message: 'Error in server while sending feedback. Try again later.');
+      }
+    } catch (e) {
+      context.showSnackBarError(message: 'Error sending feedback. Try again later.');
+    }
+  }
+
+  @action
   Future<void> deleteAccount(BuildContext context) async {
-    if (await authService.deleteAccount() == AuthStatus.successful) {
-      await Navigator.pushReplacementNamed(context, '/');
+    final ServiceReturn response = await service.deleteAccount();
+
+    if (response.success) {
+      await Navigator.pushReplacementNamed(context, '/login/');
       await CacheService().clearData();
       context.showSnackBarSuccess(message: 'Account deleted successfully.');
     } else {
@@ -71,8 +101,10 @@ abstract class SettingsStoreBase with Store {
 
   @action
   Future<void> logOut(BuildContext context) async {
-    if (await authService.logout() == AuthStatus.successful) {
-      await Navigator.pushReplacementNamed(context, '/');
+    final ServiceReturn response = await service.logOut();
+
+    if (response.success) {
+      await Navigator.pushReplacementNamed(context, '/login/');
       await CacheService().clearData();
       context.showSnackBarSuccess(message: 'Logged out successfully.');
     } else {
@@ -82,25 +114,25 @@ abstract class SettingsStoreBase with Store {
 
   @action
   Future<dynamic> getReportedCharacters() async {
-    authenticatedUser ??= authService.getUser();
+    final ServiceReturn response = await service.getReportedCharacters();
 
-    final Response<dynamic> response = await dio.get(
-      '$server/api/reports?uid=${authenticatedUser?.uid}',
-      options: DioOptions(),
-    );
+    if (response.success) {
+      return response.data;
+    }
 
-    return response.data;
+    return null;
   }
 
   @action
   Future<dynamic> getAccountStatus() async {
-    authenticatedUser ??= authService.getUser();
+    final ServiceReturn response = await service.getReportedCharacters();
 
-    final Response<dynamic> response = await dio.get(
-      '$server/api/status/account/${authenticatedUser?.uid}',
-      options: DioOptions(),
-    );
+    if (response.success) {
+      return response.data;
+    }
 
-    return response.data;
+    return null;
   }
+
+  User? getUser() => service.getUser();
 }

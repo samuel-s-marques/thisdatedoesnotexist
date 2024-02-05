@@ -1,17 +1,16 @@
 import 'package:appinio_swiper/appinio_swiper.dart';
-import 'package:dio/dio.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_modular/flutter_modular.dart';
 import 'package:mobx/mobx.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:thisdatedoesnotexist/app/core/models/base_model.dart';
 import 'package:thisdatedoesnotexist/app/core/models/preferences_model.dart';
+import 'package:thisdatedoesnotexist/app/core/models/service_return_model.dart';
 import 'package:thisdatedoesnotexist/app/core/models/user_model.dart';
-import 'package:thisdatedoesnotexist/app/core/services/auth_service.dart';
-import 'package:thisdatedoesnotexist/app/core/services/dio_service.dart';
+import 'package:thisdatedoesnotexist/app/core/services/data_service.dart';
 import 'package:thisdatedoesnotexist/app/core/util.dart';
 import 'package:thisdatedoesnotexist/app/features/chat/chat_module.dart';
+import 'package:thisdatedoesnotexist/app/features/home/services/home_service.dart';
 import 'package:thisdatedoesnotexist/app/features/profile/profile_module.dart';
 
 part 'home_store.g.dart';
@@ -19,27 +18,19 @@ part 'home_store.g.dart';
 class HomeStore = HomeStoreBase with _$HomeStore;
 
 abstract class HomeStoreBase with Store {
-  AuthService authService = AuthService();
-  User? authenticatedUser;
-  final DioService dio = DioService();
-  String server = const String.fromEnvironment('SERVER');
-  SharedPreferences? prefs;
+  HomeService service = Modular.get();
+  DataService dataService = Modular.get();
+  List<Widget> pages = const [ChatModule(), ProfileModule()];
+  final String server = const String.fromEnvironment('SERVER');
 
   @observable
   int? swipes;
-
-  List<Widget> pages = [
-    const ChatModule(),
-    const ProfileModule(),
-  ];
 
   @computed
   bool get allowSwiping => swipes != null && swipes! > 0;
 
   @observable
   ObservableList<UserModel> cards = ObservableList();
-
-  AppinioSwiperController cardSwiperController = AppinioSwiperController();
 
   @observable
   RangeValues ageValues = const RangeValues(18, 70);
@@ -131,62 +122,15 @@ abstract class HomeStoreBase with Store {
   bool gotPreferences = false;
 
   @action
-  Future<void> selectPoliticalViewPreference({
+  Future<void> selectPreference({
     required bool selected,
-    required BaseModel view,
+    required BaseModel preference,
+    required List<BaseModel> list,
   }) async {
     if (selected) {
-      selectedPoliticalViewPreferences.add(view);
+      list.add(preference);
     } else {
-      selectedPoliticalViewPreferences.remove(view);
-    }
-  }
-
-  @action
-  Future<void> selectReligionPreference({
-    required bool selected,
-    required BaseModel religion,
-  }) async {
-    if (selected) {
-      selectedReligionPreferences.add(religion);
-    } else {
-      selectedReligionPreferences.remove(religion);
-    }
-  }
-
-  @action
-  Future<void> selectSexPreference({
-    required bool selected,
-    required BaseModel sex,
-  }) async {
-    if (selected) {
-      selectedSexPreferences.add(sex);
-    } else {
-      selectedSexPreferences.remove(sex);
-    }
-  }
-
-  @action
-  Future<void> selectBodyTypePreference({
-    required bool selected,
-    required BaseModel bodyType,
-  }) async {
-    if (selected) {
-      selectedBodyTypePreferences.add(bodyType);
-    } else {
-      selectedBodyTypePreferences.remove(bodyType);
-    }
-  }
-
-  @action
-  Future<void> selectRelationshipGoalPreference({
-    required bool selected,
-    required BaseModel goal,
-  }) async {
-    if (selected) {
-      selectedRelationshipGoalPreferences.add(goal);
-    } else {
-      selectedRelationshipGoalPreferences.remove(goal);
+      list.remove(preference);
     }
   }
 
@@ -197,135 +141,77 @@ abstract class HomeStoreBase with Store {
 
   @action
   Future<void> getAvailableSwipes() async {
-    authenticatedUser ??= authService.getUser();
-    final Response<dynamic> response = await dio.get(
-      '$server/api/users/swipes',
-      options: DioOptions(
-        cache: false,
-        headers: {'Authorization': 'Bearer ${await authenticatedUser!.getIdToken()}', 'Content-Type': 'application/json'},
-      ),
-    );
+    final ServiceReturn response = await service.getAvailableSwipes();
 
-    if (response.statusCode == 200) {
+    if (response.success) {
       setSwipes(response.data['available_swipes'] ?? 0);
     }
   }
 
   Future<bool> getPreferences() async {
-    authenticatedUser ??= authService.getUser();
-    final Response<dynamic> response = await dio.get('$server/api/preferences/${authenticatedUser?.uid}', options: DioOptions());
+    final ServiceReturn response = await service.getPreferences();
 
-    if (response.statusCode == 200) {
-      final Map<dynamic, dynamic> data = response.data;
+    if (response.success) {
+      final Preferences preferences = response.data;
 
-      final List<dynamic> sexes = data['sexes'] ?? [];
-      final List<dynamic> relationshipGoals = data['relationship_goals'] ?? [];
-      final List<dynamic> politicalViews = data['political_views'] ?? [];
-      final List<dynamic> bodyTypes = data['body_types'] ?? [];
-      final List<dynamic> religions = data['religions'] ?? [];
-      final double minAge = checkDouble(data['min_age'] ?? 18);
-      final double maxAge = checkDouble(data['max_age'] ?? 70);
-
-      selectedRelationshipGoalPreferences = ObservableList.of(relationshipGoals.map((goal) => BaseModel.fromMap(goal)).toList());
-      selectedBodyTypePreferences = ObservableList.of(bodyTypes.map((type) => BaseModel.fromMap(type)).toList());
-      selectedPoliticalViewPreferences = ObservableList.of(politicalViews.map((view) => BaseModel.fromMap(view)).toList());
-      selectedSexPreferences = ObservableList.of(sexes.map((sex) => BaseModel.fromMap(sex)).toList());
-      selectedReligionPreferences = ObservableList.of(religions.map((religion) => BaseModel.fromMap(religion)).toList());
-      ageValues = RangeValues(minAge, maxAge);
+      selectedBodyTypePreferences = ObservableList.of(preferences.bodyTypes);
+      selectedPoliticalViewPreferences = ObservableList.of(preferences.politicalViews);
+      selectedRelationshipGoalPreferences = ObservableList.of(preferences.relationshipGoals);
+      selectedReligionPreferences = ObservableList.of(preferences.religions);
+      selectedSexPreferences = ObservableList.of(preferences.sexes);
+      ageValues = RangeValues(preferences.minAge, preferences.maxAge);
 
       updateLastSelectedLists();
-
-      return true;
     }
 
-    return false;
+    return response.success;
   }
 
-  Future<void> getRelationshipGoals() async {
-    final Response<dynamic> response = await dio.get('$server/api/relationship-goals', options: DioOptions());
+  Future<void> getData() async {
+    final Future<ServiceReturn> bodyTypesFuture = dataService.getBodyTypes();
+    final Future<ServiceReturn> politicalViewsFuture = dataService.getPoliticalViews();
+    final Future<ServiceReturn> relationshipGoalsFuture = dataService.getRelationshipGoals();
+    final Future<ServiceReturn> religionsFuture = dataService.getReligions();
+    final Future<ServiceReturn> sexesFuture = dataService.getSexes();
 
-    if (response.statusCode == 200) {
-      final List<dynamic> data = response.data['data'];
+    final (
+      bodyTypesData,
+      politicalViewsData,
+      relationshipGoalsData,
+      religionsData,
+      sexesData,
+    ) = await (
+      bodyTypesFuture,
+      politicalViewsFuture,
+      relationshipGoalsFuture,
+      religionsFuture,
+      sexesFuture,
+    ).wait;
 
-      for (int index = 0; index < data.length; index++) {
-        final BaseModel goal = BaseModel.fromMap(data[index]);
-        relationshipGoals.add(goal);
-      }
+    if (bodyTypesData.success) {
+      final List<dynamic> data = bodyTypesData.data;
+      bodyTypes.addAll(data.map((e) => BaseModel.fromMap(e)).toList());
     }
-  }
 
-  Future<void> getSexes() async {
-    final Response<dynamic> response = await dio.get('$server/api/sexes', options: DioOptions());
-
-    if (response.statusCode == 200) {
-      final List<dynamic> data = response.data['data'];
-
-      for (int index = 0; index < data.length; index++) {
-        final BaseModel sex = BaseModel.fromMap(data[index]);
-        sexes.add(sex);
-      }
+    if (politicalViewsData.success) {
+      final List<dynamic> data = politicalViewsData.data;
+      politicalViews.addAll(data.map((e) => BaseModel.fromMap(e)).toList());
     }
-  }
 
-  Future<void> getPoliticalViews() async {
-    final Response<dynamic> response = await dio.get('$server/api/political-views', options: DioOptions());
-
-    if (response.statusCode == 200) {
-      final List<dynamic> data = response.data['data'];
-
-      for (int index = 0; index < data.length; index++) {
-        final BaseModel view = BaseModel.fromMap(data[index]);
-        politicalViews.add(view);
-      }
+    if (relationshipGoalsData.success) {
+      final List<dynamic> data = relationshipGoalsData.data;
+      relationshipGoals.addAll(data.map((e) => BaseModel.fromMap(e)).toList());
     }
-  }
 
-  Future<void> getBodyTypes() async {
-    final Response<dynamic> response = await dio.get('$server/api/body-types', options: DioOptions());
-
-    if (response.statusCode == 200) {
-      final List<dynamic> data = response.data['data'];
-
-      for (int index = 0; index < data.length; index++) {
-        final BaseModel bodyType = BaseModel.fromMap(data[index]);
-        bodyTypes.add(bodyType);
-      }
+    if (religionsData.success) {
+      final List<dynamic> data = religionsData.data;
+      religions.addAll(data.map((e) => BaseModel.fromMap(e)).toList());
     }
-  }
 
-  Future<void> getReligions() async {
-    final Response<dynamic> response = await dio.get('$server/api/religions', options: DioOptions());
-
-    if (response.statusCode == 200) {
-      final List<dynamic> data = response.data['data'];
-
-      for (int index = 0; index < data.length; index++) {
-        final BaseModel religion = BaseModel.fromMap(data[index]);
-        religions.add(religion);
-      }
+    if (sexesData.success) {
+      final List<dynamic> data = sexesData.data;
+      sexes.addAll(data.map((e) => BaseModel.fromMap(e)).toList());
     }
-  }
-
-  @action
-  Future<void> shakeCards() async {
-    const double distance = 30;
-
-    await cardSwiperController.animateTo(
-      const Offset(-distance, 0),
-      duration: const Duration(milliseconds: 200),
-      curve: Curves.easeInOut,
-    );
-    await cardSwiperController.animateTo(
-      const Offset(distance, 0),
-      duration: const Duration(milliseconds: 400),
-      curve: Curves.easeInOut,
-    );
-
-    await cardSwiperController.animateTo(
-      const Offset(0, 0),
-      duration: const Duration(milliseconds: 200),
-      curve: Curves.easeInOut,
-    );
   }
 
   @action
@@ -335,8 +221,6 @@ abstract class HomeStoreBase with Store {
     SwiperActivity activity,
     BuildContext context,
   ) async {
-    authenticatedUser ??= authService.getUser();
-
     if (swipes == null) {
       return;
     }
@@ -348,33 +232,15 @@ abstract class HomeStoreBase with Store {
             try {
               final String direction = activity.direction == AxisDirection.right ? 'right' : 'left';
 
-              final Response<dynamic> response = await dio.post(
-                '$server/api/swipes',
-                data: {
-                  'target_id': cards[previousIndex].uid,
-                  'swiper_id': authenticatedUser!.uid,
-                  'direction': direction,
-                },
-                options: Options(
-                  headers: {
-                    'Authorization': 'Bearer ${await authenticatedUser!.getIdToken()}',
-                    'Content-Type': 'application/json',
-                  },
-                ),
+              final ServiceReturn response = await service.saveSwipe(
+                targetId: cards[previousIndex].uid,
+                direction: direction,
               );
 
-              if (response.statusCode == 200) {
+              if (response.success) {
                 setSwipes(swipes! - 1);
-
-                if (currentIndex != null && currentIndex == cards.length - 2) {
-                  if (meta['current_page'] == meta['last_page']) {
-                    return;
-                  }
-
-                  await getTodayCards();
-                }
               } else {
-                context.showSnackBarError(message: response.data['error']);
+                context.showSnackBarError(message: 'Failed to save swipe!');
               }
             } catch (exception, stackTrace) {
               await Sentry.captureException(
@@ -401,27 +267,14 @@ abstract class HomeStoreBase with Store {
       maxAge: ageValues.end,
     );
 
-    final Response<dynamic> response = await dio.put(
-      '$server/api/preferences/${authenticatedUser?.uid}',
-      data: preferences.toMap(),
-      options: Options(
-        headers: {
-          'Authorization': 'Bearer ${await authenticatedUser!.getIdToken()}',
-          'Content-Type': 'application/json',
-        },
-      ),
-    );
+    final ServiceReturn response = await service.savePreferences(preferences);
 
-    if (response.statusCode == 200) {
+    if (response.success) {
       updateLastSelectedLists();
-      return true;
     }
 
-    return false;
+    return response.success;
   }
-
-  @observable
-  ObservableMap<String, dynamic> meta = ObservableMap();
 
   @action
   Future<bool?> getTodayCards() async {
@@ -434,43 +287,28 @@ abstract class HomeStoreBase with Store {
     }
 
     if (gotPreferences) {
-      String url = '$server/api/characters?uid=${authenticatedUser?.uid}&min_age=${ageValues.start.round()}&max_age=${ageValues.end.round()}';
-
-      if (selectedPoliticalViewPreferences.isNotEmpty) {
-        final List<String?> politicalViews = selectedPoliticalViewPreferences.map((e) => e.name).toList();
-        url += '&political_view=${politicalViews.join(',')}';
-      }
-
-      if (selectedRelationshipGoalPreferences.isNotEmpty) {
-        final List<String?> relationshipGoals = selectedRelationshipGoalPreferences.map((e) => e.name).toList();
-        url += '&relationship_goal=${relationshipGoals.join(',')}';
-      }
-
-      if (selectedBodyTypePreferences.isNotEmpty) {
-        final List<String?> bodytypes = selectedBodyTypePreferences.map((e) => e.name).toList();
-        url += '&body_type=${bodytypes.join(',')}';
-      }
-
-      if (selectedSexPreferences.isNotEmpty) {
-        final List<String?> sexes = selectedSexPreferences.map((e) => e.name).toList();
-        url += '&sex=${sexes.join(',')}';
-      }
-
-      if (selectedReligionPreferences.isNotEmpty) {
-        final List<String?> religions = selectedReligionPreferences.map((e) => e.name).toList();
-        url += '&religion=${religions.join(',')}';
-      }
-
-      final Response<dynamic> response = await dio.get(
-        url,
-        options: DioOptions(
-          cache: false,
+      final ServiceReturn response = await service.getTodayCards(
+        Preferences(
+          sexes: selectedSexPreferences,
+          relationshipGoals: selectedRelationshipGoalPreferences,
+          politicalViews: selectedPoliticalViewPreferences,
+          bodyTypes: selectedBodyTypePreferences,
+          religions: selectedReligionPreferences,
+          minAge: ageValues.start,
+          maxAge: ageValues.end,
         ),
       );
 
-      if (response.statusCode == 200) {
-        cards = ObservableList.of((response.data['data'] as List<dynamic>).map((e) => UserModel.fromMap(e['profile'])).toList());
-        meta = ObservableMap.of(response.data['meta']);
+      if (response.success) {
+        cards = ObservableList.of(
+          (response.data as List<dynamic>)
+              .map(
+                (e) => UserModel.fromMap(
+                  e['profile'],
+                ),
+              )
+              .toList(),
+        );
 
         if (cards.isEmpty) {
           return false;

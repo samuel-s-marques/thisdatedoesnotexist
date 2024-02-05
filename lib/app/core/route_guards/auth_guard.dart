@@ -1,22 +1,13 @@
 import 'package:flutter_modular/flutter_modular.dart';
-import 'package:thisdatedoesnotexist/app/core/models/user_model.dart';
-import 'package:thisdatedoesnotexist/app/core/services/database_service.dart';
+import 'package:thisdatedoesnotexist/app/features/auth/services/auth_service.dart';
 
 class AuthGuard extends RouteGuard {
-  AuthGuard() : super();
+  AuthGuard() : super(redirectTo: '/login');
 
   @override
   Future<bool> canActivate(String path, ModularRoute route) async {
-    /*
-    final DatabaseService databaseService = DatabaseService();
-    final UserModel? user = await databaseService.getUser();
+    final AuthService auth = Modular.get();
 
-    if (user != null && user.active!) {
-      await Modular.to.pushReplacementNamed('/home/');
-      return false;
-    }
-    */
-
-    return true;
+    return auth.isAuthenticated();
   }
 }

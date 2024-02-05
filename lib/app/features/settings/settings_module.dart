@@ -6,11 +6,13 @@ import 'package:thisdatedoesnotexist/app/features/settings/pages/help_and_suppor
 import 'package:thisdatedoesnotexist/app/features/settings/pages/reported_characters_page.dart';
 import 'package:thisdatedoesnotexist/app/features/settings/pages/security_page.dart';
 import 'package:thisdatedoesnotexist/app/features/settings/pages/settings_page.dart';
+import 'package:thisdatedoesnotexist/app/features/settings/services/settings_service.dart';
 import 'package:thisdatedoesnotexist/app/features/settings/store/settings_store.dart';
 
 class SettingsModule extends Module {
   @override
   void binds(Injector i) {
+    i.addSingleton<SettingsService>(SettingsServiceImpl.new);
     i.addLazySingleton((i) => SettingsStore());
   }
 
