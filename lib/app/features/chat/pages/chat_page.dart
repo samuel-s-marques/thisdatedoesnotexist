@@ -44,7 +44,7 @@ class _ChatPageState extends State<ChatPage> {
   @override
   void initState() {
     super.initState();
-    future = store.getCharacterById(widget.id);
+    future = store.getChat(widget.id);
     store.handleEndReached(widget.id);
     store.audioRecorder = AudioRecorder();
     store.amplitudeStreamController = StreamController<double>.broadcast();
@@ -121,7 +121,7 @@ class _ChatPageState extends State<ChatPage> {
                     MenuItemButton(
                       leadingIcon: const Icon(Icons.report_outlined),
                       child: const Text('Report'),
-                      onPressed: () => store.openReportBottomSheet(context: context),
+                      onPressed: () => store.report(context),
                     ),
                   ],
                 ),
