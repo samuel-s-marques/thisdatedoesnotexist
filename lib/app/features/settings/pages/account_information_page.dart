@@ -18,7 +18,7 @@ class AccountInformationPage extends StatelessWidget {
             TextField(
               enabled: false,
               controller: TextEditingController(
-                text: store.authService.getUser().displayName,
+                text: store.getUser()?.displayName ?? '',
               ),
               decoration: const InputDecoration(
                 labelText: 'Name',
@@ -27,7 +27,7 @@ class AccountInformationPage extends StatelessWidget {
             TextField(
               enabled: false,
               controller: TextEditingController(
-                text: store.authService.getUser().email,
+                text: store.getUser()?.email ?? '',
               ),
               decoration: const InputDecoration(
                 labelText: 'E-mail',
