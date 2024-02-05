@@ -3,8 +3,9 @@ import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_modular/flutter_modular.dart';
 import 'package:gal/gal.dart';
-import 'package:thisdatedoesnotexist/app/core/services/dio_service.dart';
+import 'package:thisdatedoesnotexist/app/core/repository/repository.dart';
 import 'package:thisdatedoesnotexist/app/core/util.dart';
 
 class InteractiveViewerWidget extends StatelessWidget {
@@ -28,10 +29,10 @@ class InteractiveViewerWidget extends StatelessWidget {
               }
 
               try {
-                final DioService dio = DioService();
+                final Repository repository = Modular.get();
                 final String path = '${Directory.systemTemp.path}/${DateTime.now().millisecondsSinceEpoch}.png';
 
-                await dio.download(imageUrl, path);
+                await repository.download(imageUrl, path);
                 await Gal.putImage(path);
 
                 context.showSnackBarSuccess(message: 'Image downloaded successfully!');
