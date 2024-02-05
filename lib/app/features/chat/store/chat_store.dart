@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -16,6 +15,7 @@ import 'package:thisdatedoesnotexist/app/core/models/user_model.dart';
 import 'package:thisdatedoesnotexist/app/core/services/cache_service.dart';
 import 'package:thisdatedoesnotexist/app/core/services/report_service.dart';
 import 'package:thisdatedoesnotexist/app/core/util.dart';
+import 'package:thisdatedoesnotexist/app/features/auth/services/auth_service.dart';
 import 'package:thisdatedoesnotexist/app/features/chat/models/chat_model.dart';
 import 'package:thisdatedoesnotexist/app/features/chat/services/chat_service.dart';
 import 'package:thisdatedoesnotexist/app/features/chat/widgets/chat_state_enum.dart';
@@ -30,10 +30,10 @@ part 'chat_store.g.dart';
 class ChatStore = ChatStoreBase with _$ChatStore;
 
 abstract class ChatStoreBase with Store {
-  User? authenticatedUser;
   Uuid uuid = const Uuid();
   ChatService service = Modular.get();
   ReportService reportService = Modular.get();
+  AuthService authService = Modular.get();
   String server = const String.fromEnvironment('SERVER');
   String wssServer = const String.fromEnvironment('WSS_SERVER');
   WebSocketChannel? channel;
@@ -248,7 +248,7 @@ abstract class ChatStoreBase with Store {
       content: textMessage.trim(),
       type: MessageType.text,
       from: MessageFrom.user,
-      sendBy: authenticatedUser?.uid,
+      sendBy: authService.getUser()!.uid,
       status: MessageStatus.sending,
       createdAt: DateTime.now(),
     );
@@ -280,7 +280,7 @@ abstract class ChatStoreBase with Store {
       type: MessageType.audio,
       content: base64Encode(audioBytes),
       from: MessageFrom.user,
-      sendBy: authenticatedUser?.uid,
+      sendBy: authService.getUser()!.uid,
       location: recordedAudio,
       duration: Duration(milliseconds: recordDuration),
       status: MessageStatus.sending,
@@ -395,8 +395,8 @@ abstract class ChatStoreBase with Store {
     channel!.sink.add(
       jsonEncode({
         'type': 'auth',
-        'user_id': authenticatedUser!.uid,
-        'token': await authenticatedUser!.getIdToken(),
+        'user_id': authService.getUser()!.uid,
+        'token': await authService.getToken(),
       }),
     );
   }
@@ -435,7 +435,7 @@ abstract class ChatStoreBase with Store {
   Future<void> handleWebSocketMessage(dynamic data) async {
     final Map<String, dynamic> json = jsonDecode(data ?? {});
 
-    if (authenticatedUser == null || json['message'] == 'Unauthorized.') {
+    if (await authService.getToken() == null || json['message'] == 'Unauthorized.') {
       await authenticateUser();
     }
 
@@ -569,7 +569,7 @@ abstract class ChatStoreBase with Store {
         final String id = item['id'].toString();
         final String content = item['content'];
         final DateTime createdAt = DateTime.parse(item['created_at']);
-        final MessageFrom from = item['user']['uid'] == authenticatedUser!.uid ? MessageFrom.user : MessageFrom.sender;
+        final MessageFrom from = item['user']['uid'] == authService.getUser()!.uid ? MessageFrom.user : MessageFrom.sender;
         final MessageStatus status = MessageStatus.values.byName(item['status'] ?? 'read');
         final MessageType type = MessageType.values.byName(item['type'] ?? 'text');
         final int? duration = item['duration'];
