@@ -1,38 +1,37 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:mobx/mobx.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
-import 'package:thisdatedoesnotexist/app/core/enum/database_status_enum.dart';
 import 'package:thisdatedoesnotexist/app/core/models/base_model.dart';
 import 'package:thisdatedoesnotexist/app/core/models/hobby_model.dart';
 import 'package:thisdatedoesnotexist/app/core/models/preferences_model.dart';
 import 'package:thisdatedoesnotexist/app/core/models/pronoun_model.dart';
+import 'package:thisdatedoesnotexist/app/core/models/service_return_model.dart';
 import 'package:thisdatedoesnotexist/app/core/models/user_model.dart';
-import 'package:thisdatedoesnotexist/app/core/services/auth_service.dart';
-import 'package:thisdatedoesnotexist/app/core/services/database_service.dart';
-import 'package:thisdatedoesnotexist/app/core/services/dio_service.dart';
+import 'package:thisdatedoesnotexist/app/core/services/data_service.dart';
 import 'package:thisdatedoesnotexist/app/core/util.dart';
+import 'package:thisdatedoesnotexist/app/features/onboarding/services/onboarding_service.dart';
 
 part 'onboarding_store.g.dart';
 
 class OnboardingStore = OnboardingStoreBase with _$OnboardingStore;
 
 abstract class OnboardingStoreBase with Store {
-  AuthService authService = AuthService();
-  DatabaseService databaseService = DatabaseService();
-  String server = const String.fromEnvironment('SERVER');
   TextEditingController nameController = TextEditingController();
   TextEditingController surnameController = TextEditingController();
   TextEditingController bioController = TextEditingController();
   TextEditingController heightController = TextEditingController();
   TextEditingController weightController = TextEditingController();
+  OnboardingService service = Modular.get();
+  DataService dataService = Modular.get();
+  FlutterSecureStorage storage = const FlutterSecureStorage();
   final ImagePicker imagePicker = ImagePicker();
-  final DioService dio = DioService();
   final MaskTextInputFormatter heightMask = MaskTextInputFormatter(
     mask: '#,##',
     filter: {
@@ -176,68 +175,8 @@ abstract class OnboardingStoreBase with Store {
   }
 
   @action
-  void selectPoliticalViewPreference({
-    required bool selected,
-    required BaseModel view,
-  }) {
-    if (selected) {
-      selectedPoliticalViewPreferences.add(view);
-    } else {
-      selectedPoliticalViewPreferences.remove(view);
-    }
-  }
-
-  @action
-  void selectSexPreference({
-    required bool selected,
-    required BaseModel sex,
-  }) {
-    if (selected) {
-      selectedSexPreferences.add(sex);
-    } else {
-      selectedSexPreferences.remove(sex);
-    }
-  }
-
-  @action
   void selectSex(BaseModel selectedSex) {
     sex = selectedSex;
-  }
-
-  @action
-  void selectBodyTypePreference({
-    required bool selected,
-    required BaseModel bodyType,
-  }) {
-    if (selected) {
-      selectedBodyTypePreferences.add(bodyType);
-    } else {
-      selectedBodyTypePreferences.remove(bodyType);
-    }
-  }
-
-  @action
-  void selectReligionPreference({
-    required bool selected,
-    required BaseModel religion,
-  }) {
-    if (selected) {
-      selectedReligionPreferences.add(religion);
-    } else {
-      selectedReligionPreferences.remove(religion);
-    }
-  }
-
-  @action
-  void selectRelationshipGoalPreference({
-    required bool selected,
-    required BaseModel goal,
-  }) {
-    if (selected) {
-      selectedRelationshipGoalPreferences.add(goal);
-    } else {
-      selectedRelationshipGoalPreferences.remove(goal);
-    }
   }
 
   @action
@@ -273,114 +212,16 @@ abstract class OnboardingStoreBase with Store {
     }
   }
 
-  Future<void> getHobbies() async {
-    final Response<dynamic> response = await dio.get('$server/api/hobbies', options: DioOptions());
-
-    if (response.statusCode == 200) {
-      final List<dynamic> data = response.data['data'];
-
-      for (int index = 0; index < data.length; index++) {
-        final Hobby hobby = Hobby.fromMap(data[index]);
-
-        if (!groupedHobbies.containsKey(hobby.type)) {
-          groupedHobbies[hobby.type] = [];
-        }
-
-        groupedHobbies[hobby.type]!.add(hobby);
-      }
-    }
-  }
-
-  Future<void> getRelationshipGoals() async {
-    final Response<dynamic> response = await dio.get('$server/api/relationship-goals', options: DioOptions());
-
-    if (response.statusCode == 200) {
-      final List<dynamic> data = response.data['data'];
-
-      for (int index = 0; index < data.length; index++) {
-        final BaseModel goal = BaseModel.fromMap(data[index]);
-        relationshipGoals.add(goal);
-      }
-    }
-  }
-
-  Future<void> getPoliticalViews() async {
-    final Response<dynamic> response = await dio.get('$server/api/political-views', options: DioOptions());
-
-    if (response.statusCode == 200) {
-      final List<dynamic> data = response.data['data'];
-
-      for (int index = 0; index < data.length; index++) {
-        final BaseModel view = BaseModel.fromMap(data[index]);
-        politicalViews.add(view);
-      }
-    }
-  }
-
-  Future<void> getSexes() async {
-    final Response<dynamic> response = await dio.get('$server/api/sexes', options: DioOptions());
-
-    if (response.statusCode == 200) {
-      final List<dynamic> data = response.data['data'];
-
-      for (int index = 0; index < data.length; index++) {
-        final BaseModel sex = BaseModel.fromMap(data[index]);
-        sexes.add(sex);
-      }
-    }
-  }
-
-  Future<void> getBodyTypes() async {
-    final Response<dynamic> response = await dio.get('$server/api/body-types', options: DioOptions());
-
-    if (response.statusCode == 200) {
-      final List<dynamic> data = response.data['data'];
-
-      for (int index = 0; index < data.length; index++) {
-        final BaseModel bodyType = BaseModel.fromMap(data[index]);
-        bodyTypes.add(bodyType);
-      }
-    }
-  }
-
-  Future<void> getPronouns() async {
-    final Response<dynamic> response = await dio.get('$server/api/pronouns', options: DioOptions());
-
-    if (response.statusCode == 200) {
-      final List<dynamic> data = response.data['data'];
-
-      for (int index = 0; index < data.length; index++) {
-        final Pronoun pronoun = Pronoun.fromMap(data[index]);
-        pronouns.add(pronoun);
-      }
-    }
-  }
-
   @action
-  Future<void> getReligions() async {
-    final Response<dynamic> response = await dio.get('$server/api/religions', options: DioOptions());
-
-    if (response.statusCode == 200) {
-      final List<dynamic> data = response.data['data'];
-
-      for (int index = 0; index < data.length; index++) {
-        final BaseModel religion = BaseModel.fromMap(data[index]);
-        religions.add(religion);
-      }
-    }
-  }
-
-  @action
-  Future<void> getOccupations() async {
-    final Response<dynamic> response = await dio.get('$server/api/occupations', options: DioOptions());
-
-    if (response.statusCode == 200) {
-      final List<dynamic> data = response.data['data'];
-
-      for (int index = 0; index < data.length; index++) {
-        final BaseModel occupation = BaseModel.fromMap(data[index]);
-        occupations.add(occupation);
-      }
+  Future<void> selectPreference({
+    required bool selected,
+    required BaseModel preference,
+    required List<BaseModel> list,
+  }) async {
+    if (selected) {
+      list.add(preference);
+    } else {
+      list.remove(preference);
     }
   }
 
@@ -418,27 +259,101 @@ abstract class OnboardingStoreBase with Store {
     });
 
     try {
-      final Response<dynamic> response = await dio.post(
-        '$server/api/users/upload',
-        data: formData,
-        options: DioOptions(),
-      );
+      final ServiceReturn response = await service.upload(formData);
 
-      if (response.statusCode == 400) {
-        context.showSnackBarError(
-          message: 'This image is not allowed. Please, choose another one.',
-        );
-
-        allowProfileImage = false;
-        return;
-      } else if (response.statusCode == 200) {
+      if (response.success) {
         allowProfileImage = true;
         return;
       }
 
+      context.showSnackBarError(
+        message: 'This image is not allowed. Please, choose another one.',
+      );
+      allowProfileImage = false;
+
       return;
     } catch (e) {
       context.showSnackBarError(message: 'Something went wrong. Please try again.');
+    }
+  }
+
+  Future<void> getData() async {
+    final Future<ServiceReturn> bodyTypesFuture = dataService.getBodyTypes();
+    final Future<ServiceReturn> politicalViewsFuture = dataService.getPoliticalViews();
+    final Future<ServiceReturn> relationshipGoalsFuture = dataService.getRelationshipGoals();
+    final Future<ServiceReturn> religionsFuture = dataService.getReligions();
+    final Future<ServiceReturn> sexesFuture = dataService.getSexes();
+    final Future<ServiceReturn> hobbiesFuture = dataService.getHobbies();
+    final Future<ServiceReturn> occupationsFuture = dataService.getOccupations();
+    final Future<ServiceReturn> pronounsFuture = dataService.getPronouns();
+
+    final (
+      bodyTypesData,
+      politicalViewsData,
+      relationshipGoalsData,
+      religionsData,
+      sexesData,
+      hobbiesData,
+      occupationsData,
+      pronounsData,
+    ) = await (
+      bodyTypesFuture,
+      politicalViewsFuture,
+      relationshipGoalsFuture,
+      religionsFuture,
+      sexesFuture,
+      hobbiesFuture,
+      occupationsFuture,
+      pronounsFuture,
+    ).wait;
+
+    if (bodyTypesData.success) {
+      final List<dynamic> data = bodyTypesData.data;
+      bodyTypes.addAll(data.map((e) => BaseModel.fromMap(e)).toList());
+    }
+
+    if (politicalViewsData.success) {
+      final List<dynamic> data = politicalViewsData.data;
+      politicalViews.addAll(data.map((e) => BaseModel.fromMap(e)).toList());
+    }
+
+    if (relationshipGoalsData.success) {
+      final List<dynamic> data = relationshipGoalsData.data;
+      relationshipGoals.addAll(data.map((e) => BaseModel.fromMap(e)).toList());
+    }
+
+    if (religionsData.success) {
+      final List<dynamic> data = religionsData.data;
+      religions.addAll(data.map((e) => BaseModel.fromMap(e)).toList());
+    }
+
+    if (sexesData.success) {
+      final List<dynamic> data = sexesData.data;
+      sexes.addAll(data.map((e) => BaseModel.fromMap(e)).toList());
+    }
+
+    if (hobbiesData.success) {
+      final List<dynamic> data = hobbiesData.data;
+
+      for (int index = 0; index < data.length; index++) {
+        final Hobby hobby = Hobby.fromMap(data[index]);
+
+        if (!groupedHobbies.containsKey(hobby.type)) {
+          groupedHobbies[hobby.type] = [];
+        }
+
+        groupedHobbies[hobby.type]!.add(hobby);
+      }
+    }
+
+    if (occupationsData.success) {
+      final List<dynamic> data = occupationsData.data;
+      occupations.addAll(data.map((e) => BaseModel.fromMap(e)).toList());
+    }
+
+    if (pronounsData.success) {
+      final List<dynamic> data = pronounsData.data;
+      pronouns.addAll(data.map((e) => Pronoun.fromMap(e)).toList());
     }
   }
 
@@ -447,7 +362,7 @@ abstract class OnboardingStoreBase with Store {
     final double weight = double.parse(weightController.text.replaceAll(',', '.'));
 
     user = UserModel(
-      uid: authService.getUser().uid,
+      uid: await storage.read(key: 'uid') ?? '',
       name: nameController.text.trim(),
       surname: surnameController.text.trim(),
       height: height,
@@ -475,7 +390,7 @@ abstract class OnboardingStoreBase with Store {
       ),
     );
 
-    if (await databaseService.createUser(user!) == DatabaseStatus.successful) {
+    if (await service.createUser(user!) == ServiceReturn(success: true)) {
       if (!OneSignal.Notifications.permission) {
         await OneSignal.Notifications.requestPermission(true);
       }
