@@ -1,11 +1,8 @@
-import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:thisdatedoesnotexist/app/core/models/base_model.dart';
 import 'package:thisdatedoesnotexist/app/core/models/hobby_model.dart';
 import 'package:thisdatedoesnotexist/app/core/models/preferences_model.dart';
 import 'package:thisdatedoesnotexist/app/core/models/pronoun_model.dart';
-import 'package:thisdatedoesnotexist/app/core/services/auth_service.dart';
-import 'package:thisdatedoesnotexist/app/core/services/dio_service.dart';
 import 'package:thisdatedoesnotexist/app/core/util.dart';
 
 class UserModel {
@@ -72,10 +69,6 @@ class UserModel {
     );
   }
 
-  String server = const String.fromEnvironment('SERVER');
-  final User authenticatedUser = AuthService().getUser();
-  final DioService dio = DioService();
-
   final String uid;
   final String? name;
   final String? surname;
@@ -125,39 +118,5 @@ class UserModel {
       'hobbies': hobbies?.map((Hobby hobby) => hobby.toMap()).toList(),
       'preferences': preferences?.toMap(),
     };
-  }
-
-  Future<int> getSwipes() async {
-    final Response<dynamic> response = await dio.get(
-      '$server/api/users/$uid',
-      options: DioOptions(
-        headers: {'Authorization': 'Bearer ${await authenticatedUser.getIdToken()}', 'Content-Type': 'application/json'},
-      ),
-    );
-
-    if (response.statusCode == 200) {
-      final UserModel user = UserModel.fromMap(response.data);
-
-      return user.availableSwipes ?? 0;
-    }
-
-    return 0;
-  }
-
-  Future<bool> isActive() async {
-    final Response<dynamic> response = await dio.get(
-      '$server/api/users/$uid',
-      options: DioOptions(
-        headers: {'Authorization': 'Bearer ${await authenticatedUser.getIdToken()}', 'Content-Type': 'application/json'},
-      ),
-    );
-
-    if (response.statusCode == 200) {
-      final UserModel user = UserModel.fromMap(response.data as Map<String, dynamic>);
-
-      return user.active ?? false;
-    }
-
-    return false;
   }
 }
