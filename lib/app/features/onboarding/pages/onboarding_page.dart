@@ -6,7 +6,6 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:introduction_screen/introduction_screen.dart';
 import 'package:thisdatedoesnotexist/app/core/models/base_model.dart';
 import 'package:thisdatedoesnotexist/app/core/models/hobby_model.dart';
-import 'package:thisdatedoesnotexist/app/core/models/user_model.dart';
 import 'package:thisdatedoesnotexist/app/core/util.dart';
 import 'package:thisdatedoesnotexist/app/core/widgets/searchable_list_view.dart';
 import 'package:thisdatedoesnotexist/app/features/onboarding/store/onboarding_store.dart';
@@ -25,19 +24,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
   @override
   void initState() {
     super.initState();
-
-    store.user = UserModel(
-      uid: store.authService.getUser().uid,
-    );
-
-    store.getPronouns();
-    store.getOccupations();
-    store.getReligions();
-    store.getHobbies();
-    store.getPoliticalViews();
-    store.getRelationshipGoals();
-    store.getBodyTypes();
-    store.getSexes();
+    store.getData();
   }
 
   @override
@@ -444,9 +431,10 @@ class _OnboardingPageState extends State<OnboardingPage> {
                       return FilterChip(
                         label: Text(store.pluralSexesMap[sex.name]!),
                         selected: isSelected,
-                        onSelected: (bool selected) => store.selectSexPreference(
+                        onSelected: (bool selected) => store.selectPreference(
                           selected: selected,
-                          sex: sex,
+                          list: store.selectedSexPreferences,
+                          preference: sex,
                         ),
                       );
                     }).toList(),
@@ -515,9 +503,10 @@ class _OnboardingPageState extends State<OnboardingPage> {
                       return FilterChip(
                         label: Text(goal.name!.capitalize()),
                         selected: isSelected,
-                        onSelected: (bool selected) => store.selectRelationshipGoalPreference(
+                        onSelected: (bool selected) => store.selectPreference(
                           selected: selected,
-                          goal: goal,
+                          list: store.selectedRelationshipGoalPreferences,
+                          preference: goal,
                         ),
                       );
                     }).toList(),
@@ -541,9 +530,10 @@ class _OnboardingPageState extends State<OnboardingPage> {
                       return FilterChip(
                         label: Text(view.name!.capitalize()),
                         selected: isSelected,
-                        onSelected: (bool selected) => store.selectPoliticalViewPreference(
+                        onSelected: (bool selected) => store.selectPreference(
                           selected: selected,
-                          view: view,
+                          list: store.selectedPoliticalViewPreferences,
+                          preference: view,
                         ),
                       );
                     }).toList(),
@@ -567,9 +557,10 @@ class _OnboardingPageState extends State<OnboardingPage> {
                       return FilterChip(
                         label: Text(religion.name!.capitalize()),
                         selected: isSelected,
-                        onSelected: (bool selected) => store.selectReligionPreference(
+                        onSelected: (bool selected) => store.selectPreference(
                           selected: selected,
-                          religion: religion,
+                          list: store.selectedReligionPreferences,
+                          preference: religion,
                         ),
                       );
                     }).toList(),
@@ -593,9 +584,10 @@ class _OnboardingPageState extends State<OnboardingPage> {
                       return FilterChip(
                         label: Text(bodyType.name!.capitalize()),
                         selected: isSelected,
-                        onSelected: (bool selected) => store.selectBodyTypePreference(
+                        onSelected: (bool selected) => store.selectPreference(
                           selected: selected,
-                          bodyType: bodyType,
+                          list: store.selectedBodyTypePreferences,
+                          preference: bodyType,
                         ),
                       );
                     }).toList(),
@@ -606,13 +598,13 @@ class _OnboardingPageState extends State<OnboardingPage> {
           ),
           PageViewModel(
             title: 'Welcome!',
-            bodyWidget: Column(
+            bodyWidget: const Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Text("You're oficially a part of ThisDateDoesNotExist!"),
-                const SizedBox(height: 30),
+                Text("You're oficially a part of ThisDateDoesNotExist!"),
+                SizedBox(height: 30),
                 Text(
-                  "Congratulations, ${store.authService.getUser().displayName}! You're now part of a community that values connection and authenticity. Your personalized matches are just a heartbeat away. Swipe, chat, and discover the magic of ThisDateDoesNotExist!",
+                  "Congratulations! You're now part of a community that values connection and authenticity. Your personalized matches are just a heartbeat away. Swipe, chat, and discover the magic of ThisDateDoesNotExist!",
                 ),
               ],
             ),
