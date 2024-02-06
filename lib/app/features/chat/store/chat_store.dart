@@ -104,6 +104,9 @@ abstract class ChatStoreBase with Store {
   bool isSearching = false;
 
   @observable
+  bool isCharacterTyping = false;
+
+  @observable
   ScrollDirection lastScrollDirection = ScrollDirection.idle;
 
   @observable
@@ -523,6 +526,17 @@ abstract class ChatStoreBase with Store {
 
         updateMessageStatus(id, status);
       }
+
+      if (json['type'] == 'typing') {
+        final String? from = json['from'];
+        final bool isTyping = json['isTyping'] ?? false;
+
+        if (from == character?.uid) {
+          isCharacterTyping = isTyping;
+        }
+
+        chats[chats.indexWhere((ChatModel chat) => chat.uid == from)].isTyping = isTyping;
+      }
     }
   }
 
@@ -539,7 +553,9 @@ abstract class ChatStoreBase with Store {
     final ServiceReturn response = await service.getChat(id);
 
     if (response.success) {
+      isCharacterTyping = false;
       character = response.data;
+      isCharacterTyping = chats.firstWhere((ChatModel chat) => chat.uid == character!.uid).isTyping;
 
       if (await cacheService.getData('${character?.uid}-chat') != null) {
         messageController.text = await cacheService.getData('${character?.uid}-chat');
