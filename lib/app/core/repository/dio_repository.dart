@@ -1,5 +1,4 @@
 import 'package:dio/dio.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:thisdatedoesnotexist/app/core/models/options.dart';
 import 'package:thisdatedoesnotexist/app/core/models/return_model.dart';
@@ -11,12 +10,12 @@ class DioRepository implements Repository {
   DioRepository() {
     dio.interceptors.add(InterceptorsWrapper(
       onRequest: (RequestOptions options, RequestInterceptorHandler handler) async {
-        options.headers['Authorization'] = 'Bearer ${await service.getToken()}';
+        final String? token = await service.getToken();
 
-        if (kDebugMode) {
-          print('REQUEST[${options.method}] => PATH: ${options.path}');
-          print('REQUEST[${options.method}] => HEADERS: ${options.headers}');
-          print('REQUEST[${options.method}] => BODY: ${options.data}');
+        if (token != null) {
+          options.headers['Authorization'] = 'Bearer $token';
+        } else {
+          await Modular.to.pushReplacementNamed('/login');
         }
 
         return handler.next(options);
@@ -29,7 +28,7 @@ class DioRepository implements Repository {
           return;
         }
 
-        return;
+        return handler.next(exception);
       },
     ));
   }
