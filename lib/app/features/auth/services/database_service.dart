@@ -49,7 +49,7 @@ class DatabaseServiceImpl implements DatabaseService {
         return ServiceReturn(success: true);
       }
 
-      return ServiceReturn(success: false, message: response.data['details']);
+      return ServiceReturn(success: false, message: response.data['error']['details']);
     } catch (e) {
       return ServiceReturn(success: false, message: e.toString());
     }
@@ -60,7 +60,9 @@ class DatabaseServiceImpl implements DatabaseService {
     try {
       final Return response = await _repository.get(
         '$_server/api/users',
-        options: HttpOptions(),
+        options: HttpOptions(
+          cache: false,
+        ),
       );
 
       if (response.statusCode == 200) {
@@ -70,7 +72,7 @@ class DatabaseServiceImpl implements DatabaseService {
         );
       }
 
-      return ServiceReturn(success: false, message: response.data['details']);
+      return ServiceReturn(success: false, message: response.data['error']['details']);
     } catch (e) {
       return ServiceReturn(success: false, message: e.toString());
     }
@@ -89,7 +91,7 @@ class DatabaseServiceImpl implements DatabaseService {
         return ServiceReturn(success: true);
       }
 
-      return ServiceReturn(success: false, message: response.data['details']);
+      return ServiceReturn(success: false, message: response.data['error']['details']);
     } catch (e) {
       return ServiceReturn(success: false, message: e.toString());
     }
@@ -107,7 +109,7 @@ class DatabaseServiceImpl implements DatabaseService {
         return ServiceReturn(success: true);
       }
 
-      return ServiceReturn(success: false, message: response.data['details']);
+      return ServiceReturn(success: false, message: response.data['error']['details']);
     } catch (e) {
       return ServiceReturn(success: false, message: e.toString());
     }
