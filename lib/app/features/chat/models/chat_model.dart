@@ -6,6 +6,7 @@ class ChatModel {
     this.lastMessage,
     this.draft,
     this.seen = false,
+    this.isTyping = false,
     required this.updatedAt,
   });
 
@@ -16,6 +17,7 @@ class ChatModel {
       name: map['name'],
       lastMessage: map['last_message'],
       seen: map['seen'],
+      isTyping: map['isTyping'] ?? false,
       draft: map['draft'],
       updatedAt: DateTime.parse(map['updated_at']),
     );
@@ -26,6 +28,7 @@ class ChatModel {
   final String name;
   final String? lastMessage;
   final String? draft;
+  bool isTyping;
   final bool seen;
   final DateTime updatedAt;
 
@@ -33,6 +36,7 @@ class ChatModel {
     String? name,
     String? lastMessage,
     bool? seen,
+    bool? isTyping,
     DateTime? updatedAt,
   }) {
     return ChatModel(
@@ -42,6 +46,7 @@ class ChatModel {
       lastMessage: lastMessage ?? this.lastMessage,
       seen: seen ?? this.seen,
       draft: draft,
+      isTyping: isTyping ?? this.isTyping,
       updatedAt: updatedAt ?? this.updatedAt,
     );
   }
