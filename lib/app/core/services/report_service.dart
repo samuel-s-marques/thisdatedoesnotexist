@@ -131,7 +131,7 @@ class ReportServiceImpl implements ReportService {
       if (response.statusCode == 201) {
         context.showSnackBarSuccess(message: 'Report sent successfully');
       } else {
-        context.showSnackBarError(message: response.data['details'] ?? 'Something went wrong, please try again later');
+        context.showSnackBarError(message: response.data['error']['details'] ?? 'Something went wrong, please try again later');
       }
 
       Navigator.pop(context);

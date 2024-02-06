@@ -589,7 +589,7 @@ abstract class ChatStoreBase with Store {
         messages.add(message);
       }
     } else {
-      errorMessage = response.data['details'] ?? 'Something went wrong, please try again later';
+      errorMessage = response.data['error']['details'] ?? 'Something went wrong, please try again later';
     }
 
     return messages;

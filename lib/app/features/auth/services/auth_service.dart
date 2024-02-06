@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -38,6 +39,11 @@ class AuthServiceImpl implements AuthService {
       );
 
       await _auth.currentUser!.updateDisplayName(email.toUsername());
+
+      if (await _auth.currentUser!.getIdToken() == null) {
+        return ServiceReturn(success: false, message: 'Failed to create an account with e-mail and password.');
+      }
+
       await storage.write(key: 'token', value: await _auth.currentUser!.getIdToken());
       await storage.write(key: 'uid', value: _auth.currentUser!.uid);
 
@@ -70,6 +76,10 @@ class AuthServiceImpl implements AuthService {
         password: password,
       );
 
+      if (await _auth.currentUser!.getIdToken() == null) {
+        return ServiceReturn(success: false, message: 'Failed to log in with e-mail and password.');
+      }
+
       await storage.write(key: 'token', value: await _auth.currentUser!.getIdToken());
       await storage.write(key: 'uid', value: _auth.currentUser!.uid);
 
@@ -91,6 +101,11 @@ class AuthServiceImpl implements AuthService {
       );
 
       await _auth.signInWithCredential(credential);
+
+      if (await _auth.currentUser!.getIdToken() == null) {
+        return ServiceReturn(success: false, message: 'Failed to sign in with Google.');
+      }
+
       await storage.write(key: 'token', value: await _auth.currentUser!.getIdToken());
       await storage.write(key: 'uid', value: _auth.currentUser!.uid);
 
@@ -131,22 +146,36 @@ class AuthServiceImpl implements AuthService {
 
   @override
   Future<bool> isAuthenticated() async {
-    if (getUser() == null) {
+    try {
+      if (getUser() == null) {
+        return false;
+      }
+
+      await _auth.currentUser!.reload();
+      final ServiceReturn response = await _databaseService.getUser();
+      final UserModel? user = response.data;
+
+      return user != null && user.active!;
+    } catch (e) {
       return false;
     }
-
-    final ServiceReturn response = await _databaseService.getUser();
-    final UserModel? user = response.data;
-
-    return user != null && user.active!;
   }
 
   @override
   Future<String?> getToken() async {
-    if (await isAuthenticated()) {
-      return _auth.currentUser!.getIdToken();
-    }
+    try {
+      final User? currentUser = _auth.currentUser;
 
-    return null;
+      if (currentUser != null) {
+        return await currentUser.getIdToken();
+      }
+
+      return null;
+    } catch (e) {
+      if (kDebugMode) {
+        print('AuthService.getToken: $e');
+      }
+      return null;
+    }
   }
 }

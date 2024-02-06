@@ -390,7 +390,9 @@ abstract class OnboardingStoreBase with Store {
       ),
     );
 
-    if (await service.createUser(user!) == ServiceReturn(success: true)) {
+    final ServiceReturn response = await service.createUser(user!);
+
+    if (response.success) {
       if (!OneSignal.Notifications.permission) {
         await OneSignal.Notifications.requestPermission(true);
       }
