@@ -98,7 +98,23 @@ class _ChatPageState extends State<ChatPage> {
                       ),
                     ),
                     const SizedBox(width: 10),
-                    Text('${character.name} ${character.surname}'),
+                    Observer(
+                      builder: (_) => Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('${character.name} ${character.surname}'),
+                          if (store.isCharacterTyping)
+                            const Text(
+                              'Typing...',
+                              style: TextStyle(
+                                fontStyle: FontStyle.italic,
+                                color: Colors.grey,
+                                fontSize: 14,
+                              ),
+                            )
+                        ],
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -254,15 +270,15 @@ class _ChatPageState extends State<ChatPage> {
                                 builder: (BuildContext context, AsyncSnapshot<double> snapshot) {
                                   if (snapshot.hasData) {
                                     final double amplitude = snapshot.data!;
-                              
+
                                     store.amplitudeValues.insert(0, amplitude);
                                     if (store.amplitudeValues.length > 100) {
                                       store.amplitudeValues.removeLast();
                                     }
-                              
+
                                     return WaveformView(amplitudeValues: store.amplitudeValues);
                                   }
-                              
+
                                   return const SizedBox.shrink();
                                 },
                               ),

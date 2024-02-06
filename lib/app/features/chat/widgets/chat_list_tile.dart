@@ -11,6 +11,7 @@ class ChatListTile extends StatelessWidget {
     this.message,
     this.draft,
     required this.time,
+    this.isTyping = false,
     required this.avatarUrl,
   });
 
@@ -18,6 +19,7 @@ class ChatListTile extends StatelessWidget {
   final String name;
   final String? message;
   final String? draft;
+  final bool isTyping;
   final DateTime time;
   final String avatarUrl;
 
@@ -37,39 +39,55 @@ class ChatListTile extends StatelessWidget {
     }
   }
 
+  Widget? getSubtitle() {
+    if (isTyping) {
+      return const Text(
+        'Typing...',
+        style: TextStyle(
+          fontStyle: FontStyle.italic,
+          color: Colors.grey,
+        ),
+      );
+    }
+
+    if (message != null || draft != null) {
+      return Text.rich(
+        TextSpan(
+          children: [
+            if (draft != null && draft!.isNotEmpty)
+              TextSpan(
+                text: 'Draft: ',
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.red,
+                ),
+                children: [
+                  TextSpan(
+                    text: draft,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.normal,
+                      color: Colors.black,
+                    ),
+                  ),
+                ],
+              )
+            else
+              TextSpan(text: message)
+          ],
+        ),
+        overflow: TextOverflow.ellipsis,
+        maxLines: 1,
+      );
+    }
+
+    return null;
+  }
+
   @override
   Widget build(BuildContext context) {
     return ListTile(
       title: Text(name),
-      subtitle: (message != null || draft != null)
-          ? Text.rich(
-              TextSpan(
-                children: [
-                  if (draft != null && draft!.isNotEmpty)
-                    TextSpan(
-                      text: 'Draft: ',
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.red,
-                      ),
-                      children: [
-                        TextSpan(
-                          text: draft,
-                          style: const TextStyle(
-                            fontWeight: FontWeight.normal,
-                            color: Colors.black,
-                          ),
-                        ),
-                      ],
-                    )
-                  else
-                    TextSpan(text: message)
-                ],
-              ),
-              overflow: TextOverflow.ellipsis,
-              maxLines: 1,
-            )
-          : null,
+      subtitle: getSubtitle(),
       trailing: Text(formatDateTime(time)),
       leading: ClipOval(
         child: SizedBox.fromSize(
