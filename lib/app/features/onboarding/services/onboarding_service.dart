@@ -27,7 +27,7 @@ class OnboardingServiceImpl implements OnboardingService {
         options: HttpOptions(),
       );
 
-      if (response.statusCode == 201) {
+      if (response.statusCode == 200) {
         return ServiceReturn(
           success: true,
           data: response.data,
