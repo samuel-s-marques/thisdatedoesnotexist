@@ -24,6 +24,7 @@ class UserModel {
     this.lastSwipe,
     this.availableSwipes,
     this.active,
+    this.isTyping = false,
     this.relationshipGoal,
     this.hobbies,
     this.status,
@@ -35,6 +36,59 @@ class UserModel {
   factory UserModel.fromFirebase(User user) {
     return UserModel(
       uid: user.uid,
+    );
+  }
+
+  UserModel copyWith({
+    String? name,
+    String? surname,
+    int? age,
+    String? sex,
+    Pronoun? pronoun,
+    String? bio,
+    String? religion,
+    String? occupation,
+    String? country,
+    String? politicalView,
+    double? height,
+    double? weight,
+    String? imageUrl,
+    int? availableSwipes,
+    bool? active,
+    bool? isTyping,
+    String? status,
+    String? statusReason,
+    DateTime? statusUntil,
+    DateTime? lastSwipe,
+    BaseModel? relationshipGoal,
+    List<Hobby>? hobbies,
+    Preferences? preferences,
+  }) {
+    return UserModel(
+      uid: uid,
+      name: name ?? this.name,
+      surname: surname ?? this.surname,
+      age: age ?? this.age,
+      sex: sex ?? this.sex,
+      pronoun: pronoun ?? this.pronoun,
+      bio: bio ?? this.bio,
+      religion: religion ?? this.religion,
+      occupation: occupation ?? this.occupation,
+      country: country ?? this.country,
+      politicalView: politicalView ?? this.politicalView,
+      height: height ?? this.height,
+      weight: weight ?? this.weight,
+      imageUrl: imageUrl ?? this.imageUrl,
+      availableSwipes: availableSwipes ?? this.availableSwipes,
+      active: active ?? this.active,
+      isTyping: isTyping ?? this.isTyping,
+      status: status ?? this.status,
+      statusReason: statusReason ?? this.statusReason,
+      statusUntil: statusUntil ?? this.statusUntil,
+      lastSwipe: lastSwipe ?? this.lastSwipe,
+      relationshipGoal: relationshipGoal ?? this.relationshipGoal,
+      hobbies: hobbies ?? this.hobbies,
+      preferences: preferences ?? this.preferences,
     );
   }
 
@@ -85,6 +139,7 @@ class UserModel {
   final String? imageUrl;
   final int? availableSwipes;
   final bool? active;
+  bool isTyping;
   final String? status;
   final String? statusReason;
   final DateTime? statusUntil;
