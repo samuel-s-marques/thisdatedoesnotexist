@@ -98,6 +98,7 @@ class _ChatListPageState extends State<ChatListPage> {
                   id: index.toString(),
                   name: 'Chat name $index',
                   message: 'Message $index',
+                  isTyping: index.isEven,
                   time: DateTime.now(),
                   avatarUrl: 'https://placehold.co/256x256.png',
                 );
@@ -110,6 +111,7 @@ class _ChatListPageState extends State<ChatListPage> {
                 name: chat.name,
                 time: chat.updatedAt,
                 draft: chat.draft,
+                isTyping: chat.isTyping,
                 message: chat.lastMessage,
                 avatarUrl: chat.avatarUrl,
               );
