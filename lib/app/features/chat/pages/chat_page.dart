@@ -347,6 +347,16 @@ class _ChatPageState extends State<ChatPage> {
                       child: EmojiPicker(
                         textEditingController: store.messageController,
                         onBackspacePressed: store.onBackspaceEmojiKeyboardPressed,
+                        onEmojiSelected: (Category? _, Emoji __) {
+                          store.onMessageFieldChanged(store.messageController.text.trim());
+                        },
+                        config: const Config(
+                          bottomActionBarConfig: BottomActionBarConfig(
+                            backgroundColor: Color(0xFFEBEFF2),
+                            buttonColor: Color(0xFFEBEFF2),
+                            buttonIconColor: Colors.black,
+                          ),
+                        ),
                       ),
                     ),
                   )
