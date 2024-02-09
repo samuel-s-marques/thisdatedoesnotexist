@@ -253,7 +253,7 @@ abstract class ChatStoreBase with Store {
       from: MessageFrom.user,
       sendBy: authService.getUser()!.uid,
       status: MessageStatus.sending,
-      createdAt: DateTime.now(),
+      createdAt: DateTime.now().toLocal(),
     );
     messages.insert(0, newMessage);
     messageController.clear();
@@ -287,7 +287,7 @@ abstract class ChatStoreBase with Store {
       location: recordedAudio,
       duration: Duration(milliseconds: recordDuration),
       status: MessageStatus.sending,
-      createdAt: DateTime.now(),
+      createdAt: DateTime.now().toLocal(),
     );
     messages.insert(0, newMessage);
     // scrollToBottom();
@@ -391,6 +391,7 @@ abstract class ChatStoreBase with Store {
     final DateFormat formatter = DateFormat('dd/MM/yyyy');
     final String currentDateFormatted = formatter.format(current.createdAt!);
     final String nextDateFormatted = formatter.format(next.createdAt!);
+
     return currentDateFormatted == nextDateFormatted;
   }
 
@@ -482,7 +483,7 @@ abstract class ChatStoreBase with Store {
             lastMessage: data['last_message'],
             seen: data['seen'] != 0,
             draft: await cacheService.getData('${character.uid}-chat'),
-            updatedAt: DateTime.parse(data['updated_at']),
+            updatedAt: DateTime.parse(data['updated_at']).toLocal(),
           );
 
           tempChats.add(chat);
@@ -501,7 +502,7 @@ abstract class ChatStoreBase with Store {
         final String? text = messageData['text'];
         final MessageType? type = MessageType.values.byName(messageData['type'] ?? 'text');
         final String? sendBy = messageData['send_by'];
-        final DateTime? createdAt = DateTime.parse(messageData['created_at']);
+        final DateTime? createdAt = DateTime.parse(messageData['created_at']).toLocal();
         final MessageStatus? status = MessageStatus.values.byName(messageData['status'] ?? 'read');
         final MessageFrom from = MessageFrom.values.byName(messageData['from']);
         final String? location = messageData['location'];
@@ -584,7 +585,7 @@ abstract class ChatStoreBase with Store {
       for (final Map<String, dynamic> item in response.data) {
         final String id = item['id'].toString();
         final String content = item['content'];
-        final DateTime createdAt = DateTime.parse(item['created_at']);
+        final DateTime createdAt = DateTime.parse(item['created_at']).toLocal();
         final MessageFrom from = item['user']['uid'] == authService.getUser()!.uid ? MessageFrom.user : MessageFrom.sender;
         final MessageStatus status = MessageStatus.values.byName(item['status'] ?? 'read');
         final MessageType type = MessageType.values.byName(item['type'] ?? 'text');

@@ -235,7 +235,7 @@ class _ChatPageState extends State<ChatPage> {
                                     content: DateFormat('dd/MM/yyyy').format(message.createdAt!),
                                     from: MessageFrom.system,
                                     type: MessageType.text,
-                                    createdAt: DateTime.now(),
+                                    createdAt: DateTime.now().toLocal(),
                                   ),
                                   bubbleColor: Colors.black.withOpacity(0.3),
                                   textColor: Colors.white,
