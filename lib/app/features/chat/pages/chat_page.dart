@@ -189,7 +189,10 @@ class _ChatPageState extends State<ChatPage> {
                           return const Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Text('No messages yet. Be the first to send a message!'),
+                              Text(
+                                'No messages yet. Be the first to send a message!',
+                                textAlign: TextAlign.center,
+                              ),
                             ],
                           );
                         },
