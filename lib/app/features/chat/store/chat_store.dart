@@ -14,6 +14,7 @@ import 'package:thisdatedoesnotexist/app/core/models/service_return_model.dart';
 import 'package:thisdatedoesnotexist/app/core/models/user_model.dart';
 import 'package:thisdatedoesnotexist/app/core/services/cache_service.dart';
 import 'package:thisdatedoesnotexist/app/core/services/report_service.dart';
+import 'package:thisdatedoesnotexist/app/core/services/websocket_service.dart';
 import 'package:thisdatedoesnotexist/app/core/util.dart';
 import 'package:thisdatedoesnotexist/app/features/auth/services/auth_service.dart';
 import 'package:thisdatedoesnotexist/app/features/chat/models/chat_model.dart';
@@ -23,7 +24,6 @@ import 'package:thisdatedoesnotexist/app/features/chat/widgets/message_from_enum
 import 'package:thisdatedoesnotexist/app/features/chat/widgets/message_status_enum.dart';
 import 'package:thisdatedoesnotexist/app/features/chat/widgets/message_type_enum.dart';
 import 'package:uuid/uuid.dart';
-import 'package:web_socket_channel/web_socket_channel.dart';
 
 part 'chat_store.g.dart';
 
@@ -34,9 +34,8 @@ abstract class ChatStoreBase with Store {
   ChatService service = Modular.get();
   ReportService reportService = Modular.get();
   AuthService authService = Modular.get();
+  WebsocketService wss = Modular.get();
   String server = const String.fromEnvironment('SERVER');
-  String wssServer = const String.fromEnvironment('WSS_SERVER');
-  WebSocketChannel? channel;
   BuildContext? buildContext;
   bool requestedChats = false;
   ScrollController chatScrollController = ScrollController();
@@ -190,14 +189,12 @@ abstract class ChatStoreBase with Store {
 
   @action
   void _addMessage(Message message) {
-    channel!.sink.add(
-      jsonEncode(
-        {
-          'type': 'text',
-          'room_uid': character?.uid,
-          'message': message.toMap(),
-        },
-      ),
+    wss.send(
+      'text',
+      {
+        'room_uid': character?.uid,
+        'message': message.toMap(),
+      },
     );
   }
 
@@ -395,28 +392,9 @@ abstract class ChatStoreBase with Store {
     return currentDateFormatted == nextDateFormatted;
   }
 
-  Future<void> authenticateUser() async {
-    channel!.sink.add(
-      jsonEncode({
-        'type': 'auth',
-        'user_id': authService.getUser()!.uid,
-        'token': await authService.getToken(),
-      }),
-    );
-  }
-
   Future<void> initializeWebSocket() async {
-    try {
-      channel = WebSocketChannel.connect(
-        Uri.parse(wssServer),
-      );
-      await authenticateUser();
-      channel!.stream.listen(handleWebSocketMessage);
-    } catch (e) {
-      if (kDebugMode) {
-        print('WebSocket connection error: $e');
-      }
-    }
+    await wss.connect();
+    wss.messageStream.listen(handleWebSocketMessage);
   }
 
   @action
@@ -425,119 +403,113 @@ abstract class ChatStoreBase with Store {
     bool isSearching = false,
     String? searchQuery,
   }) {
-    channel!.sink.add(
-      jsonEncode({
-        'type': 'chats',
+    wss.send(
+      'chats',
+      {
         'search': searchQuery,
         'searching': isSearching,
         'page': chatListPage,
-      }),
+      },
     );
   }
 
   @action
-  Future<void> handleWebSocketMessage(dynamic data) async {
-    final Map<String, dynamic> json = jsonDecode(data ?? {});
+  Future<void> handleWebSocketMessage(Map<String, dynamic> json) async {
+    if (json['type'] == 'system') {
+      if (json['message'] == 'Authorized.') {
+        authenticated = true;
+      }
 
-    if (await authService.getToken() == null || json['message'] == 'Unauthorized.') {
-      await authenticateUser();
+      if (json['show']) {
+        switch (json['status']) {
+          case 'error':
+            buildContext!.showSnackBarError(message: json['message']);
+            break;
+          case 'success':
+            buildContext!.showSnackBarSuccess(message: json['message']);
+            break;
+          default:
+            buildContext!.showSnackBar(message: json['message']);
+            break;
+        }
+      }
     }
 
-    if (data != null) {
-      if (json['type'] == 'system') {
-        if (json['message'] == 'Authorized.') {
-          authenticated = true;
-        }
+    if (!firstRequest && authenticated) {
+      requestChats();
+      firstRequest = true;
+    }
 
-        if (json['show']) {
-          switch (json['status']) {
-            case 'error':
-              buildContext!.showSnackBarError(message: json['message']);
-              break;
-            case 'success':
-              buildContext!.showSnackBarSuccess(message: json['message']);
-              break;
-            default:
-              buildContext!.showSnackBar(message: json['message']);
-              break;
-          }
-        }
-      }
+    if (json['type'] == 'chats') {
+      final List<ChatModel> tempChats = [];
 
-      if (!firstRequest && authenticated) {
-        requestChats();
-        firstRequest = true;
-      }
+      for (int index = 0; index < json['data']['data'].length; index++) {
+        final Map<String, dynamic> data = json['data']['data'][index];
 
-      if (json['type'] == 'chats') {
-        final List<ChatModel> tempChats = [];
-
-        for (int index = 0; index < json['data']['data'].length; index++) {
-          final Map<String, dynamic> data = json['data']['data'][index];
-
-          final UserModel character = UserModel.fromMap(data['character']);
-          final ChatModel chat = ChatModel(
-            uid: character.uid,
-            avatarUrl: '$server/uploads/characters/${character.uid}.png',
-            name: '${character.name} ${character.surname}',
-            lastMessage: data['last_message'],
-            seen: data['seen'] != 0,
-            draft: await cacheService.getData('${character.uid}-chat'),
-            updatedAt: DateTime.parse(data['updated_at']).toLocal(),
-          );
-
-          tempChats.add(chat);
-        }
-
-        chats.clear();
-        chats.addAll(tempChats.toSet());
-        areChatsLoading = false;
-        requestedChats = false;
-      }
-
-      if (json['type'] == 'text') {
-        final Map<String, dynamic> messageData = json['message'];
-
-        final String? id = messageData['id'].toString();
-        final String? text = messageData['text'];
-        final MessageType? type = MessageType.values.byName(messageData['type'] ?? 'text');
-        final String? sendBy = messageData['send_by'];
-        final DateTime? createdAt = DateTime.parse(messageData['created_at']).toLocal();
-        final MessageStatus? status = MessageStatus.values.byName(messageData['status'] ?? 'read');
-        final MessageFrom from = MessageFrom.values.byName(messageData['from']);
-        final String? location = messageData['location'];
-
-        final Message message = Message(
-          id: id,
-          content: text,
-          from: from,
-          type: type,
-          sendBy: sendBy,
-          status: status,
-          location: location,
-          createdAt: createdAt,
+        final UserModel character = UserModel.fromMap(data['character']);
+        final ChatModel chat = ChatModel(
+          uid: character.uid,
+          avatarUrl: '$server/uploads/characters/${character.uid}.png',
+          name: '${character.name} ${character.surname}',
+          lastMessage: data['last_message'],
+          seen: data['seen'] != 0,
+          draft: await cacheService.getData('${character.uid}-chat'),
+          updatedAt: DateTime.parse(data['updated_at']).toLocal(),
         );
 
-        messages.insert(0, message);
+        tempChats.add(chat);
       }
 
-      if (json['type'] == 'message-status') {
-        final String? id = json['message']['id'].toString();
-        final String? status = json['message']['status'];
+      chats.clear();
+      chats.addAll(tempChats.toSet());
+      areChatsLoading = false;
+      requestedChats = false;
+    }
 
-        updateMessageStatus(id, status);
+    if (json['type'] == 'text') {
+      final Map<String, dynamic> messageData = json['message'];
+
+      final String? id = messageData['id'].toString();
+      final String? text = messageData['text'];
+      final MessageType? type = MessageType.values.byName(messageData['type'] ?? 'text');
+      final String? sendBy = messageData['send_by'];
+      final DateTime? createdAt = DateTime.parse(messageData['created_at']).toLocal();
+      final MessageStatus? status = MessageStatus.values.byName(messageData['status'] ?? 'read');
+      final MessageFrom from = MessageFrom.values.byName(messageData['from']);
+      final String? location = messageData['location'];
+
+      print(json['message']);
+
+      final Message message = Message(
+        id: id,
+        content: text,
+        from: from,
+        type: type,
+        sendBy: sendBy,
+        status: status,
+        location: location,
+        createdAt: createdAt,
+      );
+
+      messages.insert(0, message);
+    }
+
+    if (json['type'] == 'message-status') {
+      final String? id = json['message']['id'].toString();
+      final String? status = json['message']['status'];
+
+      updateMessageStatus(id, status);
+    }
+
+    if (json['type'] == 'typing') {
+      final String? from = json['from'];
+      final bool isTyping = json['isTyping'] ?? false;
+
+      if (from == character?.uid) {
+        isCharacterTyping = isTyping;
       }
 
-      if (json['type'] == 'typing') {
-        final String? from = json['from'];
-        final bool isTyping = json['isTyping'] ?? false;
-
-        if (from == character?.uid) {
-          isCharacterTyping = isTyping;
-        }
-
-        chats[chats.indexWhere((ChatModel chat) => chat.uid == from)].isTyping = isTyping;
-      }
+      chats[chats.indexWhere((ChatModel chat) => chat.uid == from)].isTyping = isTyping;
     }
   }
 
