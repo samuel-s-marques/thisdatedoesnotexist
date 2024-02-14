@@ -65,7 +65,7 @@ abstract class AuthStoreBase with Store {
       if (user == null || user.active == false) {
         await Modular.to.pushReplacementNamed('/onboarding/');
       } else {
-        await Modular.to.pushReplacementNamed('/home/');
+        await Modular.to.pushReplacementNamed('/start/home');
       }
 
       context.showSnackBarSuccess(message: 'Signed in with e-mail and password!');
@@ -90,7 +90,7 @@ abstract class AuthStoreBase with Store {
       if (user == null || user.active == false) {
         await Modular.to.pushReplacementNamed('/onboarding/');
       } else {
-        await Modular.to.pushReplacementNamed('/home/');
+        await Modular.to.pushReplacementNamed('/start/home');
       }
 
       context.showSnackBarSuccess(message: 'Signed in with Google!');
@@ -125,7 +125,7 @@ abstract class AuthStoreBase with Store {
     final bool isAuthenticated = await service.isAuthenticated();
 
     if (isAuthenticated) {
-      await Modular.to.pushReplacementNamed('/home/');
+      await Modular.to.pushReplacementNamed('/start/home');
     } else {
       await Modular.to.pushReplacementNamed('/login');
     }
