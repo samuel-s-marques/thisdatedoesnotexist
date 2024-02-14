@@ -9,9 +9,7 @@ import 'package:thisdatedoesnotexist/app/core/models/service_return_model.dart';
 import 'package:thisdatedoesnotexist/app/core/models/user_model.dart';
 import 'package:thisdatedoesnotexist/app/core/services/data_service.dart';
 import 'package:thisdatedoesnotexist/app/core/util.dart';
-import 'package:thisdatedoesnotexist/app/features/chat/chat_module.dart';
 import 'package:thisdatedoesnotexist/app/features/home/services/home_service.dart';
-import 'package:thisdatedoesnotexist/app/features/profile/profile_module.dart';
 
 part 'home_store.g.dart';
 
@@ -20,7 +18,6 @@ class HomeStore = HomeStoreBase with _$HomeStore;
 abstract class HomeStoreBase with Store {
   HomeService service = Modular.get();
   DataService dataService = Modular.get();
-  List<Widget> pages = const [ChatModule(), ProfileModule()];
   final String server = const String.fromEnvironment('SERVER');
 
   @observable
