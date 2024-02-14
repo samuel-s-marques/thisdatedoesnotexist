@@ -25,8 +25,8 @@ import 'package:thisdatedoesnotexist/app/features/profile/services/profile_servi
 import 'package:thisdatedoesnotexist/app/features/settings/services/settings_service.dart';
 import 'package:thisdatedoesnotexist/app/features/settings/settings_module.dart';
 import 'package:thisdatedoesnotexist/app/features/settings/store/settings_store.dart';
+import 'package:thisdatedoesnotexist/app/features/start/start_module.dart';
 import 'package:thisdatedoesnotexist/app/features/start/store/start_store.dart';
-import 'package:thisdatedoesnotexist/app/features/start/store_module.dart';
 
 class AppModule extends Module {
   @override
