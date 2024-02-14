@@ -4,6 +4,7 @@ import 'package:thisdatedoesnotexist/app/core/repository/repository.dart';
 import 'package:thisdatedoesnotexist/app/core/route_guards/auth_guard.dart';
 import 'package:thisdatedoesnotexist/app/core/services/data_service.dart';
 import 'package:thisdatedoesnotexist/app/core/services/report_service.dart';
+import 'package:thisdatedoesnotexist/app/core/services/websocket_service.dart';
 import 'package:thisdatedoesnotexist/app/core/store/connectivity_store.dart';
 import 'package:thisdatedoesnotexist/app/features/auth/auth_module.dart';
 import 'package:thisdatedoesnotexist/app/features/auth/services/auth_service.dart';
@@ -12,7 +13,6 @@ import 'package:thisdatedoesnotexist/app/features/auth/store/auth_store.dart';
 import 'package:thisdatedoesnotexist/app/features/chat/chat_module.dart';
 import 'package:thisdatedoesnotexist/app/features/chat/services/chat_service.dart';
 import 'package:thisdatedoesnotexist/app/features/chat/store/chat_store.dart';
-import 'package:thisdatedoesnotexist/app/features/home/home_module.dart';
 import 'package:thisdatedoesnotexist/app/features/home/services/home_service.dart';
 import 'package:thisdatedoesnotexist/app/features/home/store/home_store.dart';
 import 'package:thisdatedoesnotexist/app/features/notification/notification_module.dart';
@@ -25,6 +25,8 @@ import 'package:thisdatedoesnotexist/app/features/profile/services/profile_servi
 import 'package:thisdatedoesnotexist/app/features/settings/services/settings_service.dart';
 import 'package:thisdatedoesnotexist/app/features/settings/settings_module.dart';
 import 'package:thisdatedoesnotexist/app/features/settings/store/settings_store.dart';
+import 'package:thisdatedoesnotexist/app/features/start/store/start_store.dart';
+import 'package:thisdatedoesnotexist/app/features/start/store_module.dart';
 
 class AppModule extends Module {
   @override
@@ -32,6 +34,7 @@ class AppModule extends Module {
     i.addSingleton<Repository>(DioRepository.new);
     i.addSingleton<NotificationService>(NotificationServiceImpl.new);
     i.addSingleton<OnboardingService>(OnboardingServiceImpl.new);
+    i.addSingleton<WebsocketService>(WebsocketServiceImpl.new);
     i.addSingleton<DataService>(DataServiceImpl.new);
     i.addSingleton<HomeService>(HomeServiceImpl.new);
     i.addSingleton<ChatService>(ChatServiceImpl.new);
@@ -47,14 +50,15 @@ class AppModule extends Module {
     i.add<HomeStore>((i) => HomeStore());
     i.add<SettingsStore>((i) => SettingsStore());
     i.addSingleton(ChatStore.new);
+    i.addSingleton(StartStore.new);
   }
 
   @override
   void routes(r) {
     r.module('/', module: AuthModule());
     r.module('/onboarding', module: OnboardingModule());
-    r.module('/home', module: HomeModule(), guards: [AuthGuard()]);
-    r.module('/chat', module: const ChatModule(), guards: [AuthGuard()]);
+    r.module('/start', module: StartModule(), guards: [AuthGuard()]);
+    r.module('/chat', module: ChatModule(), guards: [AuthGuard()]);
     r.module('/settings', module: SettingsModule(), guards: [AuthGuard()]);
     r.module('/notifications', module: NotificationModule(), guards: [AuthGuard()]);
   }
