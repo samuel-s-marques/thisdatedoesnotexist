@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:mobx/mobx.dart';
 import 'package:thisdatedoesnotexist/app/core/store/connectivity_store.dart';
@@ -8,7 +7,7 @@ part 'start_store.g.dart';
 
 class StartStore = StartStoreBase with _$StartStore;
 
-abstract class StartStoreBase with Store implements Disposable{
+abstract class StartStoreBase with Store {
   final ConnectivityStore connectivity = Modular.get<ConnectivityStore>();
   final NotificationStore notification = Modular.get<NotificationStore>();
 
