@@ -278,84 +278,81 @@ class _HomePageState extends State<HomePage> {
           ),
         ],
       ),
-      body: Observer(
-        builder: (_) => 
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 15),
-            child: FutureBuilder(
-              future: store.getTodayCards(),
-              builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
-                if (snapshot.hasData) {
-                  if (snapshot.data == false) {
-                    return const Center(
-                      child: Text('No more cards for today!'),
-                    );
-                  }
-
-                  return Column(
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 15),
+        child: FutureBuilder(
+          future: store.getTodayCards(),
+          builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+            if (snapshot.hasData) {
+              if (snapshot.data == false) {
+                return const Center(
+                  child: Text('No more cards for today!'),
+                );
+              }
+      
+              return Column(
+                children: [
+                  Flexible(
+                    child: Observer(
+                      builder: (_) => AppinioSwiper(
+                        cardCount: store.cards.length,
+                        swipeOptions: const SwipeOptions.only(
+                          left: true,
+                          right: true,
+                        ),
+                        isDisabled: !store.allowSwiping,
+                        allowUnSwipe: false,
+                        allowUnlimitedUnSwipe: false,
+                        backgroundCardCount: 0,
+                        onSwipeEnd: (int index, int direction, SwiperActivity activity) => store.onSwipe(index, direction, activity, context),
+                        controller: controller,
+                        cardBuilder: (BuildContext context, int index) {
+                          final UserModel character = store.cards[index];
+      
+                          return CardWidget(
+                            homeStore: store,
+                            character: character,
+                            imageUrl: '${store.server}/uploads/characters/${character.uid}.png',
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 15),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      Flexible(
-                        child: Observer(
-                          builder: (_) => AppinioSwiper(
-                            cardCount: store.cards.length,
-                            swipeOptions: const SwipeOptions.only(
-                              left: true,
-                              right: true,
-                            ),
-                            isDisabled: !store.allowSwiping,
-                            allowUnSwipe: false,
-                            allowUnlimitedUnSwipe: false,
-                            backgroundCardCount: 0,
-                            onSwipeEnd: (int index, int direction, SwiperActivity activity) => store.onSwipe(index, direction, activity, context),
-                            controller: controller,
-                            cardBuilder: (BuildContext context, int index) {
-                              final UserModel character = store.cards[index];
-
-                              return CardWidget(
-                                homeStore: store,
-                                character: character,
-                                imageUrl: '${store.server}/uploads/characters/${character.uid}.png',
-                              );
-                            },
+                      Observer(
+                        builder: (_) => IconButton(
+                          onPressed: !store.allowSwiping ? null : () => controller!.swipeLeft(),
+                          color: Colors.white,
+                          style: IconButton.styleFrom(
+                            backgroundColor: Colors.red,
                           ),
+                          icon: const Icon(Icons.close),
                         ),
                       ),
-                      const SizedBox(height: 15),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          Observer(
-                            builder: (_) => IconButton(
-                              onPressed: !store.allowSwiping ? null : () => controller!.swipeLeft(),
-                              color: Colors.white,
-                              style: IconButton.styleFrom(
-                                backgroundColor: Colors.red,
-                              ),
-                              icon: const Icon(Icons.close),
-                            ),
+                      Observer(
+                        builder: (_) => IconButton(
+                          onPressed: !store.allowSwiping ? null : () => controller!.swipeRight(),
+                          color: Colors.white,
+                          style: IconButton.styleFrom(
+                            backgroundColor: Colors.green,
                           ),
-                          Observer(
-                            builder: (_) => IconButton(
-                              onPressed: !store.allowSwiping ? null : () => controller!.swipeRight(),
-                              color: Colors.white,
-                              style: IconButton.styleFrom(
-                                backgroundColor: Colors.green,
-                              ),
-                              icon: const Icon(Icons.check),
-                            ),
-                          ),
-                        ],
+                          icon: const Icon(Icons.check),
+                        ),
                       ),
                     ],
-                  );
-                }
-
-                return const Center(
-                  child: CircularProgressIndicator(),
-                );
-              },
-            ),
-          ),
+                  ),
+                ],
+              );
+            }
+      
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          },
+        ),
       ),
     );
   }
