@@ -21,7 +21,7 @@ class WebsocketServiceImpl implements WebsocketService {
   bool _isConnected = false;
   bool _isAuthenticated = false;
   Timer? _reconnectTimer;
-  final int _reconnectIntervalInSeconds = 5;
+  final int _reconnectIntervalInSeconds = 2;
   StreamController<Map<String, dynamic>> messageStreamController = StreamController<Map<String, dynamic>>.broadcast();
 
   @override
@@ -69,6 +69,11 @@ class WebsocketServiceImpl implements WebsocketService {
   }
 
   void _handleError(dynamic error) {
+    if (error is WebSocketChannelException) {
+      _handleDisconnection();
+      return;
+    }
+
     if (kDebugMode) {
       print('Websocket error: $error');
     }
@@ -109,7 +114,7 @@ class WebsocketServiceImpl implements WebsocketService {
 
   @override
   Future<void> disconnect() async {
-    if (_channel != null && _channel?.sink != null) {
+    if (_channel != null && _channel?.sink != null && _isConnected) {
       await _channel!.sink.close(1001);
     }
     _isConnected = false;
