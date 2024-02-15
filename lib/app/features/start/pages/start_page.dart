@@ -25,9 +25,7 @@ class _StartPageState extends State<StartPage> {
       builder: (context) {
         return reaction((_) => store.connectivity.connectivityStream.value, (result) {
           if (result == ConnectivityResult.none) {
-            context.showSnackBarError(message: "You don't have internet connection.");
-          } else {
-            context.showSnackBarSuccess(message: 'You have internet connection.');
+            context.showSnackBarError(message: "You don't have internet connection. Please, check your connection and try again.");
           }
         }, delay: 3000);
       },
