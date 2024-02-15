@@ -53,6 +53,9 @@ class WebsocketServiceImpl implements WebsocketService {
         Duration(seconds: _reconnectIntervalInSeconds),
         (timer) async {
           if (!_isConnected || !_isAuthenticated) {
+            if (kDebugMode) {
+              print('Reconnecting to websocket...');
+            }
             await connect();
           }
         },
@@ -98,11 +101,15 @@ class WebsocketServiceImpl implements WebsocketService {
     );
 
     _isConnected = true;
+
+    if (kDebugMode) {
+      print('Websocket connected');
+    }
   }
 
   @override
   Future<void> disconnect() async {
-    if (_channel != null) {
+    if (_channel != null && _channel?.sink != null) {
       await _channel!.sink.close(1001);
     }
     _isConnected = false;
