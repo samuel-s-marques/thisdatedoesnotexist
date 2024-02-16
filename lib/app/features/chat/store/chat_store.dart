@@ -478,20 +478,20 @@ abstract class ChatStoreBase with Store {
       final MessageFrom from = MessageFrom.values.byName(messageData['from']);
       final String? location = messageData['location'];
 
-      print(json['message']);
+      if (sendBy == character?.uid) {
+        final Message message = Message(
+          id: id,
+          content: text,
+          from: from,
+          type: type,
+          sendBy: sendBy,
+          status: status,
+          location: location,
+          createdAt: createdAt,
+        );
 
-      final Message message = Message(
-        id: id,
-        content: text,
-        from: from,
-        type: type,
-        sendBy: sendBy,
-        status: status,
-        location: location,
-        createdAt: createdAt,
-      );
-
-      messages.insert(0, message);
+        messages.insert(0, message);
+      }
     }
 
     if (json['type'] == 'message-status') {
