@@ -397,7 +397,7 @@ abstract class OnboardingStoreBase with Store {
         await OneSignal.Notifications.requestPermission(true);
       }
 
-      await Modular.to.pushReplacementNamed('/start/home/');
+      await Modular.to.pushReplacementNamed('/start/home');
     } else {
       context.showSnackBarError(
         message: 'Something went wrong. Please try again.',
