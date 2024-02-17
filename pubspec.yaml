@@ -16,6 +16,7 @@ dependencies:
   cupertino_icons: ^1.0.2
   dio: ^5.3.3
   emoji_picker_flutter: ^2.0.0
+  envied: ^0.5.3
   feedback: ^3.0.0
   firebase_auth: ^4.12.1
   firebase_core: ^2.21.0
@@ -53,6 +54,7 @@ dependencies:
 
 dev_dependencies:
   build_runner: ^2.4.6
+  envied_generator: ^0.5.3
   flutter_lints: ^3.0.1
   flutter_test:
     sdk: flutter
