@@ -9,6 +9,7 @@ import 'package:flutter_modular/flutter_modular.dart';
 import 'package:intl/intl.dart';
 import 'package:mobx/mobx.dart';
 import 'package:path_provider/path_provider.dart' as path_provider;
+import 'package:thisdatedoesnotexist/app/core/env/env.dart';
 import 'package:thisdatedoesnotexist/app/core/models/service_return_model.dart';
 import 'package:thisdatedoesnotexist/app/core/services/cache_service.dart';
 import 'package:thisdatedoesnotexist/app/core/util.dart';
@@ -19,7 +20,7 @@ part 'settings_store.g.dart';
 class SettingsStore = SettingsStoreBase with _$SettingsStore;
 
 abstract class SettingsStoreBase with Store {
-  String server = const String.fromEnvironment('SERVER');
+  String server = Env.server;
   final DateFormat dateFormat = DateFormat('HH:mm:ss dd/MM/yyyy');
   final SettingsService service = Modular.get();
 

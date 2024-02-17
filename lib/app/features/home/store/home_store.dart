@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:mobx/mobx.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
+import 'package:thisdatedoesnotexist/app/core/env/env.dart';
 import 'package:thisdatedoesnotexist/app/core/models/base_model.dart';
 import 'package:thisdatedoesnotexist/app/core/models/preferences_model.dart';
 import 'package:thisdatedoesnotexist/app/core/models/service_return_model.dart';
@@ -18,7 +19,7 @@ class HomeStore = HomeStoreBase with _$HomeStore;
 abstract class HomeStoreBase with Store {
   HomeService service = Modular.get();
   DataService dataService = Modular.get();
-  final String server = const String.fromEnvironment('SERVER');
+  final String server = Env.server;
 
   @observable
   int? swipes;

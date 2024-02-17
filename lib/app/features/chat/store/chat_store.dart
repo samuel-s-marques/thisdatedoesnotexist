@@ -9,6 +9,7 @@ import 'package:intl/intl.dart';
 import 'package:mobx/mobx.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:record/record.dart';
+import 'package:thisdatedoesnotexist/app/core/env/env.dart';
 import 'package:thisdatedoesnotexist/app/core/models/message_model.dart';
 import 'package:thisdatedoesnotexist/app/core/models/service_return_model.dart';
 import 'package:thisdatedoesnotexist/app/core/models/user_model.dart';
@@ -35,7 +36,7 @@ abstract class ChatStoreBase with Store {
   ReportService reportService = Modular.get();
   AuthService authService = Modular.get();
   WebsocketService wss = Modular.get();
-  String server = const String.fromEnvironment('SERVER');
+  String server = Env.server;
   BuildContext? buildContext;
   bool requestedChats = false;
   ScrollController chatScrollController = ScrollController();
