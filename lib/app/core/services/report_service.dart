@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:thisdatedoesnotexist/app/core/env/env.dart';
 import 'package:thisdatedoesnotexist/app/core/models/return_model.dart';
 import 'package:thisdatedoesnotexist/app/core/repository/repository.dart';
 import 'package:thisdatedoesnotexist/app/core/util.dart';
@@ -14,7 +15,7 @@ abstract class ReportService {
 
 class ReportServiceImpl implements ReportService {
   final Repository _repository = Modular.get<Repository>();
-  final String _server = const String.fromEnvironment('SERVER');
+  final String _server = Env.server;
   FlutterSecureStorage storage = const FlutterSecureStorage();
 
   @override

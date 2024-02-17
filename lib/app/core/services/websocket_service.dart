@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_modular/flutter_modular.dart';
+import 'package:thisdatedoesnotexist/app/core/env/env.dart';
 import 'package:thisdatedoesnotexist/app/features/auth/services/auth_service.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
@@ -16,7 +17,7 @@ abstract class WebsocketService {
 
 class WebsocketServiceImpl implements WebsocketService {
   WebSocketChannel? _channel;
-  final String _wss = const String.fromEnvironment('WSS_SERVER');
+  final String _wss = Env.wssServer;
   AuthService authService = Modular.get();
   bool _isConnected = false;
   bool _isAuthenticated = false;
