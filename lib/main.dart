@@ -11,16 +11,17 @@ import 'package:path_provider/path_provider.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:thisdatedoesnotexist/app/app_module.dart';
 import 'package:thisdatedoesnotexist/app/app_widget.dart';
+import 'package:thisdatedoesnotexist/app/core/env/env.dart';
 import 'package:thisdatedoesnotexist/app/features/notification/store/notification_store.dart';
 import 'package:thisdatedoesnotexist/firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  const String oneSignalAppId = String.fromEnvironment('ONESIGNAL_APP_ID');
+  final String oneSignalAppId = Env.oneSignalAppId;
 
   await SentryFlutter.init(
     (options) {
-      options.dsn = const String.fromEnvironment('SENTRY_DSN');
+      options.dsn = Env.sentryDsn;
       options.tracesSampleRate = 1.0;
     },
     appRunner: () async {
