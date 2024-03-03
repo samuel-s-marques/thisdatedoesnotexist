@@ -4,9 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:intl/intl.dart';
-import 'package:mobx/mobx.dart';
-import 'package:thisdatedoesnotexist/app/core/models/base_model.dart';
-import 'package:thisdatedoesnotexist/app/core/models/pronoun_model.dart';
 import 'package:thisdatedoesnotexist/app/core/models/user_model.dart';
 import 'package:thisdatedoesnotexist/app/core/util.dart';
 import 'package:thisdatedoesnotexist/app/core/widgets/section_widget.dart';
@@ -67,31 +64,7 @@ class _ProfilePageState extends State<ProfilePage> {
               final CountryCode country = CountryCode.fromCountryCode(user.country!);
               final String subjectPronoun = user.pronoun!.subjectPronoun!;
               final String objectPronoun = user.pronoun!.objectPronoun!;
-
-              store.nameController.text = user.name!;
-              store.surnameController.text = user.surname!;
-              store.bioController.text = user.bio ?? '';
-              store.selectedPronouns = user.pronoun ??
-                  Pronoun(
-                    objectPronoun: 'they',
-                    possessiveAdjective: 'their',
-                    possessivePronoun: 'theirs',
-                    subjectPronoun: 'them',
-                    type: 'neutral',
-                  );
-              store.heightController.text = user.height?.toString() ?? '1.66';
-              store.weightController.text = user.weight?.toString() ?? '60';
-              store.birthdayController.text = DateFormat('dd/MM/yyyy').format(user.birthDay!);
-              store.occupationController.text = user.occupation?.name ?? '';
-              store.selectedHobbies = ObservableList.of(user.hobbies!);
-              store.selectedCountry = user.country ?? 'Brasil';
-              store.selectedRelationshipGoal = user.relationshipGoal ?? BaseModel(id: 1, name: 'casual');
-              store.selectedPoliticalView = user.politicalView ?? BaseModel(id: 1, name: 'Far left');
-              store.religion = user.religion ?? BaseModel(id: 1, name: 'Islam');
-              store.sex = user.sex ?? BaseModel(id: 1, name: 'male');
-              store.birthDay = user.birthDay;
-
-              store.readyToEdit = true;
+              store.prepareEdit(user);
 
               return Column(
                 mainAxisSize: MainAxisSize.min,
