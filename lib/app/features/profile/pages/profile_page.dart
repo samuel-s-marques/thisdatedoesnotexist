@@ -196,6 +196,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   SectionWidget(
                     padding: const EdgeInsets.only(top: 20, bottom: 10),
                     title: 'About me',
+                    allowEdit: true,
                     content: Text(
                       user.bio?.trim() ?? '',
                       style: const TextStyle(fontSize: 16),
