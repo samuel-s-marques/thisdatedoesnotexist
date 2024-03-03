@@ -75,6 +75,9 @@ abstract class ProfileStoreBase with Store {
   ObservableList<BaseModel> occupations = ObservableList();
 
   @observable
+  DateTime? birthday;
+
+  @observable
   BaseModel? religion;
 
   @observable
