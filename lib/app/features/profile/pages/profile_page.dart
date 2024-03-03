@@ -81,6 +81,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   );
               store.heightController.text = user.height?.toString() ?? '1.66';
               store.weightController.text = user.weight?.toString() ?? '60';
+              store.birthdayController.text = DateFormat('dd/MM/yyyy').format(user.birthDay!);
               store.occupationController.text = user.occupation?.name ?? '';
               store.selectedHobbies = ObservableList.of(user.hobbies!);
               store.selectedCountry = user.country ?? 'Brasil';
@@ -88,6 +89,7 @@ class _ProfilePageState extends State<ProfilePage> {
               store.selectedPoliticalView = user.politicalView ?? BaseModel(id: 1, name: 'Far left');
               store.religion = user.religion ?? BaseModel(id: 1, name: 'Islam');
               store.sex = user.sex ?? BaseModel(id: 1, name: 'male');
+              store.birthDay = user.birthDay;
 
               store.readyToEdit = true;
 
