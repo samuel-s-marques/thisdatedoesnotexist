@@ -86,6 +86,8 @@ class _ProfilePageState extends State<ProfilePage> {
               store.selectedCountry = user.country ?? 'Brasil';
               store.selectedRelationshipGoal = user.relationshipGoal ?? BaseModel(id: 1, name: 'casual');
               store.selectedPoliticalView = user.politicalView ?? BaseModel(id: 1, name: 'Far left');
+              store.religion = user.religion ?? BaseModel(id: 1, name: 'Islam');
+              store.sex = user.sex ?? BaseModel(id: 1, name: 'male');
 
               store.readyToEdit = true;
 
@@ -166,10 +168,10 @@ class _ProfilePageState extends State<ProfilePage> {
                     children: [
                       Row(
                         children: [
-                          Icon(getGenderIconByName(user.sex!)),
+                          Icon(getGenderIconByName(user.sex?.name ?? '')),
                           const SizedBox(width: 5),
                           Text(
-                            replaceGender(user.sex!).capitalize(),
+                            replaceGender(user.sex?.name ?? '').capitalize(),
                             style: const TextStyle(fontSize: 16),
                           ),
                         ],
