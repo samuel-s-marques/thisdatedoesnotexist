@@ -12,7 +12,7 @@ Imagine a unique digital experience where real users can interact with AI-genera
 ## Technologies
 
 - **Frontend:** The frontend is built using Flutter, with a focus on creating a seamless, engaging user experience.
-- **Backend:** The backend is powered by Node.js, AdonisJS, MySQL and Firebase (for authentication), providing a robust, scalable infrastructure for the project.
+- **Backend:** The backend is powered by Node.js, AdonisJS, MySQL, Redis, and Firebase (for authentication), providing a robust, scalable infrastructure for the project.
 - **Error Monitoring:** Sentry is utilized for error monitoring and tracking within the application, ensuring quick identification and resolution of any issues that may arise in production environments.
 
 ## Screenshots and Videos
