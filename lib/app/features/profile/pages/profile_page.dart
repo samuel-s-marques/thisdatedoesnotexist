@@ -85,7 +85,7 @@ class _ProfilePageState extends State<ProfilePage> {
               store.selectedHobbies = ObservableList.of(user.hobbies!);
               store.selectedCountry = user.country ?? 'Brasil';
               store.selectedRelationshipGoal = user.relationshipGoal ?? BaseModel(id: 1, name: 'casual');
-              store.selectedPoliticalView = user.politicalView ?? 'Far left';
+              store.selectedPoliticalView = user.politicalView ?? BaseModel(id: 1, name: 'Far left');
 
               store.readyToEdit = true;
 
@@ -254,7 +254,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     padding: const EdgeInsets.symmetric(vertical: 10),
                     title: 'Political View',
                     content: Text(
-                      user.politicalView?.capitalize() ?? '',
+                      user.politicalView?.name!.capitalize() ?? '',
                       style: const TextStyle(fontSize: 16),
                     ),
                   ),
@@ -262,7 +262,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     padding: const EdgeInsets.symmetric(vertical: 10),
                     title: 'Religion',
                     content: Text(
-                      user.religion?.capitalize() ?? '',
+                      user.religion?.name?.capitalize() ?? '',
                       style: const TextStyle(fontSize: 16),
                     ),
                   ),

@@ -201,7 +201,7 @@ class ProfileDrawer extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(vertical: 10),
                 title: 'Political View',
                 content: Text(
-                  store.character!.politicalView?.capitalize() ?? '',
+                  store.character!.politicalView?.name?.capitalize() ?? '',
                   style: const TextStyle(fontSize: 16),
                 ),
               ),
@@ -209,7 +209,7 @@ class ProfileDrawer extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(vertical: 10),
                 title: 'Religion',
                 content: Text(
-                  store.character!.religion?.capitalize() ?? '',
+                  store.character!.religion?.name?.capitalize() ?? '',
                   style: const TextStyle(fontSize: 16),
                 ),
               ),

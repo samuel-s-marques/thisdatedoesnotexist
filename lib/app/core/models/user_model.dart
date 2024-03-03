@@ -44,9 +44,9 @@ class UserModel {
       age: map['age'],
       sex: map['sex'],
       bio: map['bio'],
-      religion: map['religion'],
+      religion: map['religion'] != null ? BaseModel.fromMap(map['religion']) : null,
       country: map['country'],
-      politicalView: map['political_view'],
+      politicalView: map['political_view'] != null ? BaseModel.fromMap(map['political_view']) : null,
       occupation: map['occupation'] != null ? BaseModel.fromMap(map['occupation']) : null,
       height: height,
       weight: weight,
@@ -78,10 +78,10 @@ class UserModel {
     String? sex,
     Pronoun? pronoun,
     String? bio,
-    String? religion,
+    BaseModel? religion,
     BaseModel? occupation,
     String? country,
-    String? politicalView,
+    BaseModel? politicalView,
     double? height,
     double? weight,
     String? imageUrl,
@@ -131,10 +131,10 @@ class UserModel {
   final String? sex;
   final Pronoun? pronoun;
   final String? bio;
-  final String? religion;
+  final BaseModel? religion;
   final BaseModel? occupation;
   final String? country;
-  final String? politicalView;
+  final BaseModel? politicalView;
   final double? height;
   final double? weight;
   final String? imageUrl;
@@ -157,9 +157,9 @@ class UserModel {
       'age': age,
       'sex': sex,
       'bio': bio,
-      'religion': religion,
+      'religion': religion?.toMap(),
       'country': country,
-      'political_view': politicalView,
+      'political_view': politicalView?.toMap(),
       'occupation': occupation?.toMap(),
       'height': height,
       'weight': weight,

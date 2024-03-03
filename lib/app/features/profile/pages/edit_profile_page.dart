@@ -2,6 +2,7 @@ import 'package:country_code_picker/country_code_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_modular/flutter_modular.dart';
+import 'package:thisdatedoesnotexist/app/core/models/base_model.dart';
 import 'package:thisdatedoesnotexist/app/core/util.dart';
 import 'package:thisdatedoesnotexist/app/core/widgets/searchable_list_view.dart';
 import 'package:thisdatedoesnotexist/app/features/profile/store/profile_store.dart';
@@ -190,6 +191,7 @@ class EditProfilePage extends StatelessWidget {
                       child: Text(name.capitalize()),
                     );
                   }).toList(),
+                  value: store.religion,
                   validator: (value) {
                     if (value == null) {
                       return 'Please enter your religion.';
@@ -203,7 +205,7 @@ class EditProfilePage extends StatelessWidget {
               const SizedBox(height: 15),
               const Text('Enter your relationship goal'),
               Observer(
-                builder: (_) => DropdownButtonFormField(
+                builder: (_) => DropdownButtonFormField<BaseModel>(
                   items: store.relationshipGoals.map((goal) {
                     final String name = goal.name!;
 
@@ -226,7 +228,8 @@ class EditProfilePage extends StatelessWidget {
               const SizedBox(height: 15),
               const Text('Enter your political view'),
               Observer(
-                builder: (_) => DropdownButtonFormField(
+                builder: (_) => DropdownButtonFormField<BaseModel>(
+                  value: store.selectedPoliticalView,
                   items: store.politicalViews.map((view) {
                     final String name = view.name!;
 

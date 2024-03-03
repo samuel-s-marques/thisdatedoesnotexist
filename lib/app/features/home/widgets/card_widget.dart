@@ -187,7 +187,7 @@ class CardWidget extends StatelessWidget {
                                 padding: const EdgeInsets.symmetric(vertical: 10),
                                 title: 'Political View',
                                 content: Text(
-                                  character.politicalView?.capitalize() ?? '',
+                                  character.politicalView?.name?.capitalize() ?? '',
                                   style: const TextStyle(fontSize: 16),
                                 ),
                               ),
@@ -195,7 +195,7 @@ class CardWidget extends StatelessWidget {
                                 padding: const EdgeInsets.symmetric(vertical: 10),
                                 title: 'Religion',
                                 content: Text(
-                                  character.religion?.capitalize() ?? '',
+                                  character.religion?.name?.capitalize() ?? '',
                                   style: const TextStyle(fontSize: 16),
                                 ),
                               ),

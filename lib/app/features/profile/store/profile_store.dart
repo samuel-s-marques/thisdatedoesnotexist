@@ -92,7 +92,7 @@ abstract class ProfileStoreBase with Store {
   BaseModel? selectedRelationshipGoal;
 
   @observable
-  String? selectedPoliticalView;
+  BaseModel? selectedPoliticalView;
 
   @observable
   BaseModel? occupation;
@@ -118,7 +118,7 @@ abstract class ProfileStoreBase with Store {
 
   @action
   void selectPoliticalView(BaseModel view) {
-    selectedPoliticalView = view.name;
+    selectedPoliticalView = view;
   }
 
   @action
