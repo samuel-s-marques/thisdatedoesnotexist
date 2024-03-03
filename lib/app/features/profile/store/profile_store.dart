@@ -231,6 +231,34 @@ abstract class ProfileStoreBase with Store {
     }
   }
 
+  @action
+  void prepareEdit(UserModel user) {
+    nameController.text = user.name!;
+    surnameController.text = user.surname!;
+    bioController.text = user.bio ?? '';
+    selectedPronouns = user.pronoun ??
+        Pronoun(
+          objectPronoun: 'they',
+          possessiveAdjective: 'their',
+          possessivePronoun: 'theirs',
+          subjectPronoun: 'them',
+          type: 'neutral',
+        );
+    heightController.text = user.height?.toString() ?? '1.66';
+    weightController.text = user.weight?.toString() ?? '60';
+    birthdayController.text = DateFormat('dd/MM/yyyy').format(user.birthDay!);
+    occupationController.text = user.occupation?.name ?? '';
+    selectedHobbies = ObservableList.of(user.hobbies!);
+    selectedCountry = user.country ?? 'Brasil';
+    selectedRelationshipGoal = user.relationshipGoal ?? BaseModel(id: 1, name: 'casual');
+    selectedPoliticalView = user.politicalView ?? BaseModel(id: 1, name: 'Far left');
+    religion = user.religion ?? BaseModel(id: 1, name: 'Islam');
+    sex = user.sex ?? BaseModel(id: 1, name: 'male');
+    birthDay = user.birthDay;
+
+    readyToEdit = true;
+  }
+
   Future<void> getData() async {
     final Future<ServiceReturn> politicalViewsFuture = dataService.getPoliticalViews();
     final Future<ServiceReturn> relationshipGoalsFuture = dataService.getRelationshipGoals();
