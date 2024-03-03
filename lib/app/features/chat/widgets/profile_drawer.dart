@@ -136,7 +136,7 @@ class ProfileDrawer extends StatelessWidget {
                       const Icon(Icons.work_outline),
                       const SizedBox(width: 5),
                       Text(
-                        store.character!.occupation!.capitalize(),
+                        store.character!.occupation!.name!.capitalize(),
                         style: const TextStyle(fontSize: 16),
                       ),
                     ],
