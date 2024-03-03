@@ -1,7 +1,12 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:country_code_picker/country_code_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:flutter_modular/flutter_modular.dart';
 import 'package:intl/intl.dart';
+import 'package:mobx/mobx.dart';
+import 'package:thisdatedoesnotexist/app/core/models/base_model.dart';
+import 'package:thisdatedoesnotexist/app/core/models/pronoun_model.dart';
 import 'package:thisdatedoesnotexist/app/core/models/user_model.dart';
 import 'package:thisdatedoesnotexist/app/core/util.dart';
 import 'package:thisdatedoesnotexist/app/core/widgets/section_widget.dart';
@@ -15,7 +20,7 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  ProfileStore store = ProfileStore();
+  ProfileStore store = Modular.get<ProfileStore>();
   Future<void>? _future;
 
   @override
@@ -23,23 +28,30 @@ class _ProfilePageState extends State<ProfilePage> {
     super.initState();
 
     _future = store.getUser();
+    store.getData();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Profile'),
-        actions: [
-          IconButton(
-            onPressed: () {},
-            icon: const Icon(Icons.edit),
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(kToolbarHeight),
+        child: Observer(
+          builder: (_) => AppBar(
+            title: const Text('Profile'),
+            actions: [
+              if (store.readyToEdit)
+                IconButton(
+                  onPressed: () => Navigator.pushNamed(context, '/profile/edit'),
+                  icon: const Icon(Icons.edit),
+                ),
+              IconButton(
+                onPressed: () => Navigator.pushNamed(context, '/settings/'),
+                icon: const Icon(Icons.settings),
+              ),
+            ],
           ),
-          IconButton(
-            onPressed: () => Navigator.pushNamed(context, '/settings/'),
-            icon: const Icon(Icons.settings),
-          ),
-        ],
+        ),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(
@@ -51,10 +63,31 @@ class _ProfilePageState extends State<ProfilePage> {
           builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
             if (snapshot.connectionState == ConnectionState.done && snapshot.hasData) {
               final UserModel user = snapshot.data;
-              final int age = user.age!;
+              final int age = DateTime.now().year - user.birthDay!.year;
               final CountryCode country = CountryCode.fromCountryCode(user.country!);
               final String subjectPronoun = user.pronoun!.subjectPronoun!;
               final String objectPronoun = user.pronoun!.objectPronoun!;
+
+              store.nameController.text = user.name!;
+              store.surnameController.text = user.surname!;
+              store.bioController.text = user.bio ?? '';
+              store.selectedPronouns = user.pronoun ??
+                  Pronoun(
+                    objectPronoun: 'they',
+                    possessiveAdjective: 'their',
+                    possessivePronoun: 'theirs',
+                    subjectPronoun: 'them',
+                    type: 'neutral',
+                  );
+              store.heightController.text = user.height?.toString() ?? '1.66';
+              store.weightController.text = user.weight?.toString() ?? '60';
+              store.occupationController.text = user.occupation?.name ?? '';
+              store.selectedHobbies = ObservableList.of(user.hobbies!);
+              store.selectedCountry = user.country ?? 'Brasil';
+              store.selectedRelationshipGoal = user.relationshipGoal ?? BaseModel(id: 1, name: 'casual');
+              store.selectedPoliticalView = user.politicalView ?? 'Far left';
+
+              store.readyToEdit = true;
 
               return Column(
                 mainAxisSize: MainAxisSize.min,
@@ -156,7 +189,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           const Icon(Icons.work_outline),
                           const SizedBox(width: 5),
                           Text(
-                            user.occupation!.capitalize(),
+                            user.occupation!.name!.capitalize(),
                             style: const TextStyle(fontSize: 16),
                           ),
                         ],
