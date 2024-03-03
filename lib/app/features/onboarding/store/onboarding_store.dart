@@ -371,7 +371,7 @@ abstract class OnboardingStoreBase with Store {
       politicalView: selectedPoliticalView!.name,
       relationshipGoal: selectedRelationshipGoal,
       sex: sex!.name,
-      occupation: occupation!.name,
+      occupation: occupation,
       imageUrl: profileImagePath,
       country: selectedCountry,
       pronoun: selectedPronouns,
