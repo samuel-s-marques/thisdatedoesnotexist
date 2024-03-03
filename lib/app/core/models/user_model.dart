@@ -42,7 +42,7 @@ class UserModel {
       name: map['name'],
       surname: map['surname'],
       age: map['age'],
-      sex: map['sex'],
+      sex: map['sex'] != null ? BaseModel.fromMap(map['sex']) : null,
       bio: map['bio'],
       religion: map['religion'] != null ? BaseModel.fromMap(map['religion']) : null,
       country: map['country'],
@@ -75,7 +75,7 @@ class UserModel {
     String? name,
     String? surname,
     int? age,
-    String? sex,
+    BaseModel? sex,
     Pronoun? pronoun,
     String? bio,
     BaseModel? religion,
@@ -128,7 +128,7 @@ class UserModel {
   final String? name;
   final String? surname;
   final int? age;
-  final String? sex;
+  final BaseModel? sex;
   final Pronoun? pronoun;
   final String? bio;
   final BaseModel? religion;
@@ -155,7 +155,7 @@ class UserModel {
       'name': name,
       'surname': surname,
       'age': age,
-      'sex': sex,
+      'sex': sex?.toMap(),
       'bio': bio,
       'religion': religion?.toMap(),
       'country': country,
