@@ -32,7 +32,6 @@ abstract class ProfileStoreBase with Store {
   TextEditingController birthdayController = TextEditingController();
   TextEditingController heightController = TextEditingController();
   TextEditingController weightController = TextEditingController();
-  DateTime? birthDay;
   final ImagePicker imagePicker = ImagePicker();
   final MaskTextInputFormatter heightMask = MaskTextInputFormatter(
     mask: '#,##',
@@ -75,9 +74,6 @@ abstract class ProfileStoreBase with Store {
   ObservableList<BaseModel> occupations = ObservableList();
 
   @observable
-  DateTime? birthday;
-
-  @observable
   BaseModel? religion;
 
   @observable
@@ -99,6 +95,9 @@ abstract class ProfileStoreBase with Store {
 
   @observable
   BaseModel? occupation;
+
+  @observable
+  DateTime? birthDay;
 
   @observable
   String selectedCountry = '';
