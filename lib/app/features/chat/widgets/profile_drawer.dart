@@ -113,10 +113,10 @@ class ProfileDrawer extends StatelessWidget {
                 children: [
                   Row(
                     children: [
-                      Icon(getGenderIconByName(store.character!.sex!)),
+                      Icon(getGenderIconByName(store.character!.sex?.name ?? '')),
                       const SizedBox(width: 5),
                       Text(
-                        replaceGender(store.character!.sex!).capitalize(),
+                        replaceGender(store.character!.sex?.name ?? '').capitalize(),
                         style: const TextStyle(fontSize: 16),
                       ),
                     ],
