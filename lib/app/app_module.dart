@@ -21,7 +21,9 @@ import 'package:thisdatedoesnotexist/app/features/notification/store/notificatio
 import 'package:thisdatedoesnotexist/app/features/onboarding/onboarding_module.dart';
 import 'package:thisdatedoesnotexist/app/features/onboarding/services/onboarding_service.dart';
 import 'package:thisdatedoesnotexist/app/features/onboarding/store/onboarding_store.dart';
+import 'package:thisdatedoesnotexist/app/features/profile/profile_module.dart';
 import 'package:thisdatedoesnotexist/app/features/profile/services/profile_service.dart';
+import 'package:thisdatedoesnotexist/app/features/profile/store/profile_store.dart';
 import 'package:thisdatedoesnotexist/app/features/settings/services/settings_service.dart';
 import 'package:thisdatedoesnotexist/app/features/settings/settings_module.dart';
 import 'package:thisdatedoesnotexist/app/features/settings/store/settings_store.dart';
@@ -50,6 +52,7 @@ class AppModule extends Module {
     i.add<HomeStore>((i) => HomeStore());
     i.add<SettingsStore>((i) => SettingsStore());
     i.addSingleton(ChatStore.new);
+    i.addSingleton(ProfileStore.new);
     i.addSingleton(StartStore.new);
   }
 
@@ -59,6 +62,7 @@ class AppModule extends Module {
     r.module('/onboarding', module: OnboardingModule());
     r.module('/start', module: StartModule(), guards: [AuthGuard()]);
     r.module('/chat', module: ChatModule(), guards: [AuthGuard()]);
+    r.module('/profile', module: ProfileModule(), guards: [AuthGuard()]);
     r.module('/settings', module: SettingsModule(), guards: [AuthGuard()]);
     r.module('/notifications', module: NotificationModule(), guards: [AuthGuard()]);
   }
