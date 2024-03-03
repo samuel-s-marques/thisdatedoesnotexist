@@ -29,6 +29,7 @@ class UserModel {
     this.status,
     this.statusReason,
     this.statusUntil,
+    this.birthDay,
     this.preferences,
   });
 
@@ -59,6 +60,7 @@ class UserModel {
       preferences: map['preferences'] != null ? Preferences.fromMap(map['preferences']) : null,
       status: map['status'],
       statusReason: map['status_reason'],
+      birthDay: map['birthday'] != null ? DateTime.parse(map['birthday']) : null,
       statusUntil: map['status_until'] != null ? DateTime.parse(map['status_until']) : null,
     );
   }
@@ -89,6 +91,7 @@ class UserModel {
     String? statusReason,
     DateTime? statusUntil,
     DateTime? lastSwipe,
+    DateTime? birthDay,
     BaseModel? relationshipGoal,
     List<Hobby>? hobbies,
     Preferences? preferences,
@@ -112,6 +115,7 @@ class UserModel {
       active: active ?? this.active,
       status: status ?? this.status,
       statusReason: statusReason ?? this.statusReason,
+      birthDay: birthDay ?? this.birthDay,
       statusUntil: statusUntil ?? this.statusUntil,
       lastSwipe: lastSwipe ?? this.lastSwipe,
       relationshipGoal: relationshipGoal ?? this.relationshipGoal,
@@ -140,6 +144,7 @@ class UserModel {
   final String? statusReason;
   final DateTime? statusUntil;
   final DateTime? lastSwipe;
+  final DateTime? birthDay;
   final BaseModel? relationshipGoal;
   final List<Hobby>? hobbies;
   final Preferences? preferences;
@@ -164,6 +169,7 @@ class UserModel {
       'active': active ?? false,
       'status': status,
       'status_reason': statusReason,
+      'birthday': birthDay?.toIso8601String(),
       'status_until': statusUntil?.toIso8601String(),
       'relationship_goal': relationshipGoal?.toMap(),
       'hobbies': hobbies?.map((Hobby hobby) => hobby.toMap()).toList(),
