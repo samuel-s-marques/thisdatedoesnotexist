@@ -122,7 +122,7 @@ class CardWidget extends StatelessWidget {
                                   const Icon(Icons.work_outline),
                                   const SizedBox(width: 5),
                                   Text(
-                                    character.occupation!.capitalize(),
+                                    character.occupation!.name!.capitalize(),
                                     style: const TextStyle(fontSize: 16),
                                   ),
                                 ],
