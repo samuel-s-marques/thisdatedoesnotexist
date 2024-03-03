@@ -370,7 +370,7 @@ abstract class OnboardingStoreBase with Store {
       religion: religion,
       politicalView: selectedPoliticalView,
       relationshipGoal: selectedRelationshipGoal,
-      sex: sex!.name,
+      sex: sex,
       occupation: occupation,
       imageUrl: profileImagePath,
       country: selectedCountry,
