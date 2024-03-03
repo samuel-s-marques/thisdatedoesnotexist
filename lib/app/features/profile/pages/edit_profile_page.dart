@@ -148,6 +148,7 @@ class EditProfilePage extends StatelessWidget {
                       child: Text(name),
                     );
                   }).toList(),
+                  value: store.sex,
                   validator: (value) {
                     if (value == null) {
                       return 'Please enter your sex.';
