@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:intl/intl.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:mobx/mobx.dart';
 import 'package:thisdatedoesnotexist/app/core/env/env.dart';
@@ -26,12 +25,6 @@ abstract class ProfileStoreBase with Store {
   final String server = Env.server;
   DataService dataService = Modular.get();
   OnboardingService onboardingService = Modular.get();
-  TextEditingController nameController = TextEditingController();
-  TextEditingController surnameController = TextEditingController();
-  TextEditingController bioController = TextEditingController();
-  TextEditingController birthdayController = TextEditingController();
-  TextEditingController heightController = TextEditingController();
-  TextEditingController weightController = TextEditingController();
   final ImagePicker imagePicker = ImagePicker();
   final MaskTextInputFormatter heightMask = MaskTextInputFormatter(
     mask: '#,##',
@@ -53,9 +46,6 @@ abstract class ProfileStoreBase with Store {
   bool? allowProfileImage;
 
   @observable
-  TextEditingController occupationController = TextEditingController();
-
-  @observable
   ObservableList<Hobby> selectedHobbies = ObservableList();
 
   @observable
@@ -74,9 +64,6 @@ abstract class ProfileStoreBase with Store {
   ObservableList<BaseModel> occupations = ObservableList();
 
   @observable
-  BaseModel? religion;
-
-  @observable
   ObservableList<BaseModel> sexes = ObservableList();
   Map<String, String> pluralSexesMap = {'male': 'Men', 'female': 'Women'};
   Map<String, String> singularSexesMap = {'male': 'Man', 'female': 'Woman'};
@@ -85,52 +72,37 @@ abstract class ProfileStoreBase with Store {
   ObservableList<Pronoun> pronouns = ObservableList();
 
   @observable
-  Pronoun? selectedPronouns;
-
-  @observable
-  BaseModel? selectedRelationshipGoal;
-
-  @observable
-  BaseModel? selectedPoliticalView;
-
-  @observable
-  BaseModel? occupation;
-
-  @observable
-  DateTime? birthDay;
-
-  @observable
-  String selectedCountry = '';
-
-  @observable
-  BaseModel? sex;
-
-  @observable
   String? profileImagePath;
+
+  @observable
+  UserModel? user;
+
+  @observable
+  UserModel? updatedUser;
 
   @action
   void selectCountry(String country) {
-    selectedCountry = country;
+    updatedUser = updatedUser!.copyWith(country: country);
   }
 
   @action
   void selectRelationshipGoal(BaseModel goal) {
-    selectedRelationshipGoal = goal;
+    updatedUser = updatedUser!.copyWith(relationshipGoal: goal);
   }
 
   @action
   void selectPoliticalView(BaseModel view) {
-    selectedPoliticalView = view;
+    updatedUser = updatedUser!.copyWith(politicalView: view);
   }
 
   @action
   void setPronouns(Pronoun pronouns) {
-    selectedPronouns = pronouns;
+    updatedUser = updatedUser!.copyWith(pronoun: pronouns);
   }
 
   @action
-  void selectSex(BaseModel selectedSex) {
-    sex = selectedSex;
+  void selectSex(BaseModel sex) {
+    updatedUser = updatedUser!.copyWith(sex: sex);
   }
 
   @action
@@ -153,17 +125,13 @@ abstract class ProfileStoreBase with Store {
   }
 
   @action
-  void selectReligion(BaseModel selectedReligion) {
-    religion = selectedReligion;
+  void selectReligion(BaseModel religion) {
+    updatedUser = updatedUser!.copyWith(religion: religion);
   }
 
   @action
-  void selectOccupation(BaseModel selectedOccupation) {
-    occupation = selectedOccupation;
-
-    if (occupation != null) {
-      occupationController.text = occupation!.name!.capitalize();
-    }
+  void selectOccupation(BaseModel occupation) {
+    updatedUser = updatedUser!.copyWith(occupation: occupation);
   }
 
   @action
@@ -233,30 +201,7 @@ abstract class ProfileStoreBase with Store {
 
   @action
   void prepareEdit(UserModel user) {
-    nameController.text = user.name!;
-    surnameController.text = user.surname!;
-    bioController.text = user.bio ?? '';
-    selectedPronouns = user.pronoun ??
-        Pronoun(
-          objectPronoun: 'they',
-          possessiveAdjective: 'their',
-          possessivePronoun: 'theirs',
-          subjectPronoun: 'them',
-          type: 'neutral',
-        );
-    heightController.text = user.height?.toString() ?? '1.66';
-    weightController.text = user.weight?.toString() ?? '60';
-    birthdayController.text = DateFormat('dd/MM/yyyy').format(user.birthDay!);
-    occupationController.text = user.occupation?.name ?? '';
     selectedHobbies = ObservableList.of(user.hobbies!);
-    selectedCountry = user.country ?? 'Brasil';
-    selectedRelationshipGoal = user.relationshipGoal ?? BaseModel(id: 1, name: 'casual');
-    selectedPoliticalView = user.politicalView ?? BaseModel(id: 1, name: 'Far left');
-    religion = user.religion ?? BaseModel(id: 1, name: 'Islam');
-    sex = user.sex ?? BaseModel(id: 1, name: 'male');
-    birthDay = user.birthDay;
-
-    readyToEdit = true;
   }
 
   Future<void> getData() async {
@@ -334,7 +279,6 @@ abstract class ProfileStoreBase with Store {
   Future<void> selectBirthday(BuildContext context) async {
     final DateTime minDate = DateTime(DateTime.now().year - 18);
     final DateTime maxDate = DateTime(DateTime.now().year - 70);
-    final DateFormat format = DateFormat('dd/MM/yyyy');
 
     final DateTime? pickedDate = await showDatePicker(
       context: context,
@@ -342,15 +286,28 @@ abstract class ProfileStoreBase with Store {
       lastDate: minDate,
     );
 
-    if (pickedDate != null && pickedDate != birthDay) {
-      birthDay = pickedDate;
-      birthdayController.text = format.format(birthDay!);
+    if (pickedDate != null && pickedDate != user!.birthDay) {
+      updatedUser!.copyWith(birthDay: pickedDate);
     }
   }
 
   @action
-  Future<UserModel?> getUser() => service.getUser();
+  Future<bool> getUser() async {
+    user = await service.getUser();
+
+    if (user != null) {
+      updatedUser = user;
+      readyToEdit = true;
+
+      return true;
+    }
+
+    return false;
+  }
 
   @action
-  Future<void> updateUser(UserModel user) => service.updateUser(user);
+  Future<void> updateUser() async {
+    //print(updatedUser!.toMap());
+    await service.updateUser(updatedUser!);
+  }
 }
