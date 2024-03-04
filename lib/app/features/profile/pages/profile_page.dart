@@ -58,13 +58,19 @@ class _ProfilePageState extends State<ProfilePage> {
         child: FutureBuilder(
           future: _future,
           builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
-            if (snapshot.connectionState == ConnectionState.done && snapshot.hasData) {
-              final UserModel user = snapshot.data;
+            if (snapshot.connectionState == ConnectionState.done && snapshot.data != false) {
+              final UserModel? user = store.user;
+
+              if (user == null) {
+                return const Center(
+                  child: Text('An error occurred while trying to load your profile.'),
+                );
+              }
+
               final int age = DateTime.now().year - user.birthDay!.year;
               final CountryCode country = CountryCode.fromCountryCode(user.country!);
               final String subjectPronoun = user.pronoun!.subjectPronoun!;
               final String objectPronoun = user.pronoun!.objectPronoun!;
-              store.prepareEdit(user);
 
               return Column(
                 mainAxisSize: MainAxisSize.min,
