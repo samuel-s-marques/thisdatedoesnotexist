@@ -16,8 +16,8 @@ Imagine a unique digital experience where real users can interact with AI-genera
 - **Error Monitoring:** Sentry is utilized for error monitoring and tracking within the application, ensuring quick identification and resolution of any issues that may arise in production environments.
 
 ## Screenshots and Videos
-
-Soon.
+- [Chatting with a matched character - VIDEO](https://www.youtube.com/watch?v=bp5w28hu6S8)
+- [Swiping characters - VIDEO](https://youtube.com/shorts/Via6c4NeUug)
 
 ## Installation
 
